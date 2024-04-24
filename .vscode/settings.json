@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "system_error": "cpp",
+        "memory_resource": "cpp",
+        "array": "cpp",
+        "exception": "cpp"
+    }
+}
