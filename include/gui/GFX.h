@@ -1,20 +1,24 @@
-#include "common.h"
-#include "Point.h"
-#include "Size.h"
+#ifndef GUI_GFX_H
+#define GUI_GFX_H 
+#include "cordinates.h"
 
-class GFX_;
-typedef GFX_ *GFX;
 
-class GFX_
+class GFX
 {
 protected:
-    Point _absolute_point;
-    Size _max_size;
+    Bounds _bounds;
+
+    Point local_to_absolute(Point local) const;
 public:
-    GFX_(Point absolute_point, Size max_size);
-    ~GFX_();
+    GFX(Bounds bounds);
+    ~GFX();
 
-    virtual void print_text(Point start_point, wchar_t* text) = 0;
+    virtual void draw_rectangle(Bounds bounds) const = 0;
+    virtual void print_text(Point start_point, char* text) const = 0;
 
-    virtual GFX slice(Point start_point, Size size) = 0;
+    virtual GFX* slice(Bounds bounds) const = 0;
+
+    Size size() const;
 };
+
+#endif

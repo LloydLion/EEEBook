@@ -1,16 +1,21 @@
-#include "common.h"
+#ifndef GUI_UISTORAGE_H
+#define GUI_UISTORAGE_H
+
+#include "cordinates.h"
 #include "UIElement.h"
 #include <vector>
 
 class UIStorage_;
 typedef UIStorage_ *UIStorage;
 
-class UIStorage_
+class UIStorage_ : public UIElement_
 {
 public:
-    UIStorage_();
-    ~UIStorage_();
+    UIStorage_() { };
+    ~UIStorage_() { };
 
     virtual std::vector<UIElement>::iterator list_children() = 0;
     virtual size_t count_children() = 0;
 };
+
+#endif
