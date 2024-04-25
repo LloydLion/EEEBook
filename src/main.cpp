@@ -4,20 +4,17 @@
 #include <gdey/GxEPD2_420_GDEY042T81.h>
 #include <Fonts/FreeMonoBold12pt7b.h>
 #include "gui/elements/Rectangle.h"
+#include "gui/GraphicsEngine.h"
 
-GxEPD2_BW<GxEPD2_420_GDEY042T81, GxEPD2_420_GDEY042T81::HEIGHT> display(GxEPD2_420_GDEY042T81(/*CS=5*/ SS, /*DC=*/ 17, /*RST=*/ 16, /*BUSY=*/ 4)); // GYE042A87, 400x300, SSD1683 (HINK-E042-A07-FPC-A1)
-class GxEPDGFX:public GFX
+GxEPD2_BW<GxEPD2_420_GDEY042T81, GxEPD2_420_GDEY042T81::HEIGHT> display(GxEPD2_420_GDEY042T81(/*CS=5*/ SS, /*DC=*/ 4, /*RST=*/ 16, /*BUSY=*/ 17)); // GYE042A87, 400x300, SSD1683 (HINK-E042-A07-FPC-A1)
+Grid grid;
+
+
+class GxEPD_GraphicsEngine : public GraphicsEngine_
 {
-private:
-    GxEPDGFX(Bounds bounds) : GFX(bounds)
-    { }
-public:
-    GxEPDGFX() : GFX(create_bounds(Point(), create_size(300, 400)))
-    { }
-
     void draw_rectangle(Bounds bounds) const override
     {
-        Point start =  local_to_absolute(bounds.start_point);
+        Point start = bounds.start_point;
         Size size = bounds.size;
         display.setPartialWindow(start.x, start.y, size.width, size.height);
         display.firstPage();
@@ -47,24 +44,28 @@ public:
         }
         while (display.nextPage());
     }
-
-    GFX* slice(Bounds bounds) const override
-    {
-        auto pointer = new GxEPDGFX(cast(_bounds, bounds));
-        return pointer;
-    }
 };
 
 
 
 void setup()
 {
-    GxEPDGFX gfx;
-    Grid grid;
+    pinMode(2, OUTPUT);
+    digitalWrite(2, HIGH);
+    delay(100);
+    digitalWrite(2, LOW);
+    delay(100);
+    digitalWrite(2, HIGH);
+    delay(100);
+    digitalWrite(2, LOW);
+
+    GxEPD_GraphicsEngine engine;
 
     display.init(9600, true, 2, false);
     display.setRotation(1);
 
+    GFX root_gfx(&engine, create_size(300, 400));
+    
 
     Rectangle rect1 = new Rectangle_(5, 5);
     Rectangle rect2 = new Rectangle_(5, 5);
@@ -77,8 +78,11 @@ void setup()
         std::vector<GridElement> { fit_in_grid(rect1, 0, 0), fit_in_grid(rect2, 0, 1), fit_in_grid(rect3, 1, 0), fit_in_grid(rect4, 1, 1) }
     );
 
-    grid->render(gfx);
-    delete rect1,rect2,rect3,rect4,grid,gfx;
+    grid->render(root_gfx);
+
+    Serial.println(8);
+
+    //delete rect1, rect2, rect3, rect4, grid;
 }
 
 void loop()

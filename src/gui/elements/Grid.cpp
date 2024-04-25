@@ -43,16 +43,19 @@ void Grid_::render(const GFX& gfx)
 
     Serial.println(1);
 
-    cord_t* rows_rs = new cord_t[_rows.size()];
-    cord_t* columns_rs = new cord_t[_columns.size()];
+    cord_t rows_rs[2];
+    cord_t columns_rs[2];
 
     Serial.println(2);
 
     calculate_real_sizes(gfx.size().width, columns_rs, GridRC::Column);
     calculate_real_sizes(gfx.size().height, rows_rs, GridRC::Row);
 
-    cord_t* rows_pos = new cord_t[_rows.size()];
-    cord_t* columns_pos = new cord_t[_columns.size()];
+    cord_t rows_pos[2];
+    cord_t columns_pos[2];
+
+    Serial.println(_rows.size());
+    Serial.println(_columns.size());
 
     Serial.println(3);
 
@@ -70,26 +73,21 @@ void Grid_::render(const GFX& gfx)
         size_t r = element.row;
         size_t c = element.column;
 
-        GFX *new_gfx = gfx.slice(create_bounds(
+        GFX new_gfx = gfx.slice(create_bounds(
             create_point(columns_pos[c], rows_pos[r]),
             create_size(columns_rs[c], rows_rs[r])
         ));
 
         Serial.println(5);
 
-        element.ui->render(*new_gfx);
-
-        delete new_gfx;
+        element.ui->render(new_gfx);
     }
 
-    delete[] rows_rs;
-    delete[] columns_rs;
-
-    delete[] rows_pos;
-    delete[] columns_pos;
+    Serial.println(6);
 
     _is_moved = false;
     _is_drawn = true;
+    Serial.println(7);
 }
 
 void Grid_::calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_column)

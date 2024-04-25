@@ -1,22 +1,22 @@
 #ifndef GUI_GFX_H
 #define GUI_GFX_H 
 #include "cordinates.h"
-
+#include "GraphicsEngine.h"
 
 class GFX
 {
-protected:
+private:
     Bounds _bounds;
+    GraphicsEngine _engine;
 
-    Point local_to_absolute(Point local) const;
+    GFX(GraphicsEngine engine, Bounds bounds);
 public:
-    GFX(Bounds bounds);
-    ~GFX();
+    GFX(GraphicsEngine engine, Size display_size);
 
-    virtual void draw_rectangle(Bounds bounds) const = 0;
-    virtual void print_text(Point start_point, char* text) const = 0;
+    void draw_rectangle(Bounds bounds) const;
+    void print_text(Point start_point, char* text) const;
 
-    virtual GFX* slice(Bounds bounds) const = 0;
+    GFX slice(Bounds local_bounds) const;
 
     Size size() const;
 };
