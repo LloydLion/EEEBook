@@ -1,12 +1,24 @@
 #include "gui/GFX.h"
 
-GFX_::GFX_(Point absolute_point, Size max_size) :
-    _absolute_point(absolute_point), _max_size(max_size)
+GFX::GFX(Bounds bounds): _bounds(bounds)
 {
 
 }
 
-GFX_::~GFX_()
+GFX::~GFX()
 {
     
+}
+
+Point GFX::local_to_absolute(Point local) const
+{
+    Point result;
+    result.x = local.x + _bounds.start_point.x;
+    result.y = local.y + _bounds.start_point.y;
+    return result;
+}
+
+Size GFX::size() const
+{
+    return _bounds.size;
 }
