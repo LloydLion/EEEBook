@@ -1,5 +1,8 @@
 #include "gui/elements/Grid.h"
+#include <exception>
 #include <Arduino.h>
+
+#define MAX_GRID_SIZE 20
 
 GridRCDefinition define_grid_rc(GridRCSizeType size_type, cord_t size)
 {
@@ -19,10 +22,16 @@ GridElement fit_in_grid(UIElement element, size_t row, size_t column)
 }
 
 
-Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements)
-    : _rows(rows), _columns(columns), _elements(elements)
+Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements): _elements(elements)
 {
-    
+    if (rows.size() > MAX_GRID_SIZE)
+        throw std::runtime_error("Rows are so many, max rows count is determined by MAX_GRID_SIZE define in Grid.cpp");
+        
+    if (columns.size() > MAX_GRID_SIZE)
+        throw std::runtime_error("Columns are so many, max columns count is determined by MAX_GRID_SIZE define in Grid.cpp");
+
+    _rows = rows;
+    _columns = columns;
 }
 
 Size Grid_::min_size()
@@ -41,23 +50,18 @@ void Grid_::render(const GFX& gfx)
     if (_is_drawn and !_is_moved)
         return;
 
-    Serial.println(1);
-
-    cord_t rows_rs[2];
-    cord_t columns_rs[2];
-
-    Serial.println(2);
+    cord_t rows_rs[MAX_GRID_SIZE];
+    cord_t columns_rs[MAX_GRID_SIZE];
+    memset(&rows_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
+    memset(&columns_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
 
     calculate_real_sizes(gfx.size().width, columns_rs, GridRC::Column);
     calculate_real_sizes(gfx.size().height, rows_rs, GridRC::Row);
 
-    cord_t rows_pos[2];
-    cord_t columns_pos[2];
-
-    Serial.println(_rows.size());
-    Serial.println(_columns.size());
-
-    Serial.println(3);
+    cord_t rows_pos[MAX_GRID_SIZE];
+    cord_t columns_pos[MAX_GRID_SIZE];
+    memset(&rows_pos, 0, MAX_GRID_SIZE * sizeof(cord_t));
+    memset(&columns_pos, 0, MAX_GRID_SIZE * sizeof(cord_t));
 
     rows_pos[0] = 0;
     for (size_t i = 1; i <= _rows.size(); i++)
@@ -66,7 +70,6 @@ void Grid_::render(const GFX& gfx)
     columns_pos[0] = 0;
     for (size_t i = 1; i <= _columns.size(); i++)
         columns_pos[i] += columns_pos[i - 1] + columns_rs[i - 1];
-
 
     for (auto element : _elements)
     {
@@ -78,16 +81,11 @@ void Grid_::render(const GFX& gfx)
             create_size(columns_rs[c], rows_rs[r])
         ));
 
-        Serial.println(5);
-
         element.ui->render(new_gfx);
     }
 
-    Serial.println(6);
-
     _is_moved = false;
     _is_drawn = true;
-    Serial.println(7);
 }
 
 void Grid_::calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_column)
@@ -161,6 +159,5 @@ std::vector<UIElement>::iterator Grid_::list_children()
 
 size_t Grid_::count_children()
 {
-    //TODO: implement
-    return 4;
+    return _elements.size();
 }

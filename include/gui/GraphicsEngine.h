@@ -8,8 +8,8 @@ typedef GraphicsEngine_ *GraphicsEngine;
 class GraphicsEngine_
 {
 public:
-    virtual void draw_rectangle(Bounds bounds) const = 0;
-    virtual void print_text(Point start_point, char* text) const = 0;
+    virtual void draw_rectangle(Bounds bounds) = 0;
+    virtual void print_text(Point start_point, char* text) = 0;
 };
 
 #endif
