@@ -26,10 +26,10 @@ void GFX::draw_rectangle(Bounds bounds) const
     _engine->draw_rectangle(cast(_bounds, bounds));
 }
 
-void GFX::print_text(Point start_point, char* text) const
+void GFX::print_text(Point start_point, const char* text) const
 {
     Point point;
     point.x = start_point.x + _bounds.start_point.x;
     point.y = start_point.y + _bounds.start_point.y;
-    _engine->print_text(point,text);
+    _engine->print_text(point, text);
 }

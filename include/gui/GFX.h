@@ -14,7 +14,7 @@ public:
     GFX(GraphicsEngine engine, Size display_size);
 
     void draw_rectangle(Bounds bounds) const;
-    void print_text(Point start_point, char* text) const;
+    void print_text(Point start_point, const char* text) const;
 
     GFX slice(Bounds local_bounds) const;
 

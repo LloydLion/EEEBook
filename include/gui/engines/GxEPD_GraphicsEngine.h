@@ -14,7 +14,7 @@ public:
     GxEPD_GraphicsEngine(DISPLAY_TYPE *display);
 
     void draw_rectangle(Bounds bounds) override;
-    void print_text(Point start_point, char* text) override;
+    void print_text(Point start_point, const char* text) override;
 };
 
 #endif

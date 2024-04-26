@@ -16,7 +16,7 @@ void Serial_GraphicsEngine::draw_rectangle(Bounds bounds)
     Serial.print('\n');
 }
 
-void Serial_GraphicsEngine::print_text(Point start_point, char* text)
+void Serial_GraphicsEngine::print_text(Point start_point, const char* text)
 {
     Serial.print("text: ");
     Serial.print(start_point.x);

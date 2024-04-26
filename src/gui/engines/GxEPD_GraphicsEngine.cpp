@@ -22,7 +22,7 @@ void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds)
     while (_display->nextPage());
 }
 
-void GxEPD_GraphicsEngine::print_text(Point start_point, char* text)
+void GxEPD_GraphicsEngine::print_text(Point start_point, const char* text)
 {
     _display->setFont(&FreeMonoBold12pt7b);
     _display->setTextColor(GxEPD_BLACK);

@@ -1,12 +1,18 @@
 #include "gui/elements/Label.h"
+#include <Arduino.h>
 
-Label_::Label_(char* text) : _text(text){}
+Label_::Label_(const char* text)
+{
+    _text = text;
+    Serial.println(_text);
+}
 
 void Label_::render(const GFX& gfx)
 {
     if (_is_drawn and !_is_moved)
-    return;
+        return;
 
+    Serial.println(_text);
     gfx.print_text(create_point(0,0),_text);
 
     _is_drawn = true;

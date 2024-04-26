@@ -10,7 +10,7 @@ typedef Label_ *Label;
 class Label_ : public UIElement_
 {
 public:
-    Label_(char* text);
+    Label_(const char* text);
 
     void render(const GFX& gfx) override;
 
@@ -18,7 +18,7 @@ public:
 
     Size min_size() override;
 private:
-    char* _text;
+    const char* _text;
     bool _is_drawn = false;
 };
 

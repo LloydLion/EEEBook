@@ -9,7 +9,7 @@ class GraphicsEngine_
 {
 public:
     virtual void draw_rectangle(Bounds bounds) = 0;
-    virtual void print_text(Point start_point, char* text) = 0;
+    virtual void print_text(Point start_point, const char* text) = 0;
 };
 
 #endif
