@@ -79,8 +79,8 @@ void setup()
 
     root = new Grid_(
         std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 2), define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Fixed, 50) },
-        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 2) },
-        std::vector<GridElement> { fit_in_grid(label1, 0, 0), fit_in_grid(inner_grid, 0, 1), fit_in_grid(rect1, 1, 0), fit_in_grid(rect2, 1, 1) }
+        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 2), define_grid_rc(GridRCSizeType::Proportional, 2) },
+        std::vector<GridElement> { fit_in_grid(rect1, 0, 0), fit_in_grid(inner_grid, 0, 1), fit_in_grid(rect1, 1, 0), fit_in_grid(label1, 1, 1) }
     );
 
 #if IS_VIRTUAL_DISPLAY_USED
