@@ -15,15 +15,11 @@ public:
 
     void render(const GFX& gfx) override;
 
-    bool is_updated() override;
-
     Size min_size() override;
-
 
 private:
     cord_t _margin;
     cord_t _thickness;
-    bool _is_drawn = false;
 };
 
 #endif

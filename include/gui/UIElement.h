@@ -15,12 +15,7 @@ public:
 
     virtual void render(const GFX& gfx) = 0;
 
-    virtual bool is_updated() = 0;
-    bool is_moved();
-    void mark_as_moved();
     virtual Size min_size() = 0;
-protected:
-    bool _is_moved;
 };
 
 #endif

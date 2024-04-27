@@ -41,7 +41,6 @@ class Grid_ : public UIStorage_
 private:
     std::vector<GridRCDefinition> _rows, _columns;
     std::vector<GridElement> _elements;
-    bool _is_drawn = false;
     
     cord_t get_auto_size(size_t index, GridRC row_or_column);
     void calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_column);
@@ -53,7 +52,6 @@ public:
     size_t count_children() override;
     void render(const GFX& gfx) override;
     Size min_size() override;
-    bool is_updated() override;
 };
 
 #endif

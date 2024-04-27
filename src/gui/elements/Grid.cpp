@@ -40,16 +40,8 @@ Size Grid_::min_size()
     return create_size(100, 100);
 }
 
-bool Grid_::is_updated()
-{
-    return !_is_drawn;
-}
-
 void Grid_::render(const GFX& gfx)
 {
-    if (_is_drawn and !_is_moved)
-        return;
-
     cord_t rows_rs[MAX_GRID_SIZE];
     cord_t columns_rs[MAX_GRID_SIZE];
     memset(&rows_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
@@ -83,9 +75,6 @@ void Grid_::render(const GFX& gfx)
 
         element.ui->render(new_gfx);
     }
-
-    _is_moved = false;
-    _is_drawn = true;
 }
 
 void Grid_::calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_column)

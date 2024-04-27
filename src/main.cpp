@@ -3,7 +3,7 @@
 #include "gui/elements/Rectangle.h"
 #include "gui/elements/Label.h"
 #include "gui/GraphicsEngine.h"
-
+#include "gui/elements/DockPanel.h"
 
 #if IS_VIRTUAL_DISPLAY_USED
 
@@ -61,30 +61,6 @@ void setup()
     
     Serial.begin(9600);
     
-    char* text = new char[13];
-    strcpy(text, "Hello World!");
-
-    Label label1 = new Label_(text);
-    Rectangle rect1 = new Rectangle_(5, 5);
-    Rectangle rect2 = new Rectangle_(5, 5);
-    
-    Rectangle recti1 = new Rectangle_(5, 5);
-    Rectangle recti2 = new Rectangle_(5, 5);
-    Rectangle recti3 = new Rectangle_(5, 5);
-    Rectangle recti4 = new Rectangle_(5, 5);
-
-    Grid inner_grid = new Grid_(
-        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1)},
-        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1) },
-        std::vector<GridElement> { fit_in_grid(recti1, 0, 0), fit_in_grid(recti2, 0, 1), fit_in_grid(recti3, 1, 0), fit_in_grid(recti4, 1, 1) }
-    );
-
-    root = new Grid_(
-        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 2), define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Fixed, 50) },
-        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 2), define_grid_rc(GridRCSizeType::Proportional, 2) },
-        std::vector<GridElement> { fit_in_grid(rect1, 0, 0), fit_in_grid(inner_grid, 0, 1), fit_in_grid(rect1, 1, 0), fit_in_grid(label1, 1, 1) }
-    );
-
 #if IS_VIRTUAL_DISPLAY_USED
     delay(4000); //Time to connect VScreen to ESP
 #endif
@@ -96,9 +72,37 @@ void loop()
     delay(100);
     digitalWrite(2, LOW);
 
-    GFX root_gfx(engine, create_size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+    static char* text = new char[40];
+    static cord_t y = 1;
 
+    itoa(y, text, 10);
+    strcat(text, "Hello World!");
+
+    //Label label1 = new Label_(text);
+    //Rectangle rect1 = new Rectangle_(0,0);
+    //DockPanel panel1 = new DockPanel_(std::vector<DockElement>{fit_in_dock(rect1,create_point(0, 0)), fit_in_dock(label1,create_point(y, y))});
+
+    Rectangle recti1 = new Rectangle_(5, 5);
+    Rectangle recti2 = new Rectangle_(5, 5);
+    Rectangle recti3 = new Rectangle_(5, 5);
+    Rectangle recti4 = new Rectangle_(5, 5);
+
+    Grid inner_grid = new Grid_(
+        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1)},
+        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1) },
+        std::vector<GridElement> { fit_in_grid(recti1, 0, 0), fit_in_grid(recti2, 0, 1), fit_in_grid(recti3, 1, 0), fit_in_grid(recti4, 1, 1) }
+    );
+
+    root = inner_grid;
+
+    GFX root_gfx(engine, create_size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
     root->render(root_gfx);
 
-    delay(10000);
+    //delete label1;
+    //delete rect1;
+    //delete panel1;
+
+    y += 3;
+
+    delay(300);
 }
