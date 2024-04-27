@@ -28,8 +28,10 @@ DISPLAY_TYPE display(DISPLAY_DRIVER(DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_
 void init_display()
 {
     display.init(9600, true, 2, false);
-    display.setRotation(1);
-    display.clearScreen();
+#ifdef DISPLAY_ROTATION
+    display.setRotation(DISPLAY_ROTATION);
+#endif
+    display.fillScreen(GxEPD_WHITE);
 }
 
 GraphicsEngine create_graphics_engine()
@@ -94,7 +96,7 @@ void loop()
     delay(100);
     digitalWrite(2, LOW);
 
-    GFX root_gfx(engine, create_size(300, 400));
+    GFX root_gfx(engine, create_size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
 
     root->render(root_gfx);
 

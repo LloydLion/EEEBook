@@ -1,6 +1,7 @@
 import processing.serial.*;
 
 Serial serial;
+PFont f;
 
 void setup()
 {
@@ -8,8 +9,7 @@ void setup()
    background(255);
    
    serial = new Serial(this, "COM3", 9600);
-   
-   textSize(12);
+   f = createFont("Arial", 15, true);
 }
 
 void draw()
@@ -41,11 +41,15 @@ void draw()
         int start_x = Integer.parseInt(data[0]);
         int start_y = Integer.parseInt(data[1]);
         
-        String text = serial.readStringUntil(0);
-        
+        String text = readUntil('\0'); 
         serial.read();
         
-        text(text, start_x, start_y);
+        println(text);
+        
+        textAlign(LEFT);
+        textFont(f);
+        fill(0);
+        text(text, start_x, start_y + 15);
       }
     }
     catch (Exception ex)
