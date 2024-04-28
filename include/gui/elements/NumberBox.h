@@ -8,6 +8,9 @@ typedef NumberBox_ *NumberBox;
 
 class NumberBox_ : public Label_
 {
+private:
+    char _text[20];
+
 public:
     //Integer numbers
     NumberBox_(long number);

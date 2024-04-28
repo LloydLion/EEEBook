@@ -78,25 +78,25 @@ void loop()
     itoa(y, text, 10);
     strcat(text, "Hello World!");
 
-    //Label label1 = new Label_(text);
-    //Rectangle rect1 = new Rectangle_(0,0);
-    //DockPanel panel1 = new DockPanel_(std::vector<DockElement>{fit_in_dock(rect1,create_point(0, 0)), fit_in_dock(label1,create_point(y, y))});
+    Label label1 = new Label_(text);
+    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_in_dock(label1,create_point(y, y)) });
 
-    Rectangle recti1 = new Rectangle_(5, 5);
-    Rectangle recti2 = new Rectangle_(5, 5);
-    Rectangle recti3 = new Rectangle_(5, 5);
-    Rectangle recti4 = new Rectangle_(5, 5);
+    //Rectangle recti1 = new Rectangle_(5, 5);
+    //Rectangle recti2 = new Rectangle_(5, 5);
+    //Rectangle recti3 = new Rectangle_(5, 5);
+    //Rectangle recti4 = new Rectangle_(5, 5);
 
-    Grid inner_grid = new Grid_(
-        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1)},
-        std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1) },
-        std::vector<GridElement> { fit_in_grid(recti1, 0, 0), fit_in_grid(recti2, 0, 1), fit_in_grid(recti3, 1, 0), fit_in_grid(recti4, 1, 1) }
-    );
+    //Grid inner_grid = new Grid_(
+    //    std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1)},
+    //    std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1) },
+    //    std::vector<GridElement> { fit_in_grid(recti1, 0, 0), fit_in_grid(recti2, 0, 1), fit_in_grid(recti3, 1, 0), fit_in_grid(recti4, 1, 1) }
+    //);
 
-    root = inner_grid;
+    root = panel1;
 
     GFX root_gfx(engine, create_size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
     root->render(root_gfx);
+    engine->push();
 
     //delete label1;
     //delete rect1;
@@ -104,5 +104,5 @@ void loop()
 
     y += 3;
 
-    delay(300);
+    delay(8000);
 }

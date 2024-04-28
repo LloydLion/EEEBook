@@ -22,8 +22,11 @@ void draw()
     
     try
     {
-      
-      if (drawCall.startsWith("rect: "))
+      if (drawCall.startsWith("clear"))
+      {
+          background(255);
+      }
+      else if (drawCall.startsWith("rect: "))
       {
         String[] data = split(drawCall.substring(6), ',');
         int start_x = Integer.parseInt(data[0]);

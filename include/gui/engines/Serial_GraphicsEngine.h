@@ -7,9 +7,12 @@
 
 class Serial_GraphicsEngine : public GraphicsEngine_
 {
+private:
+    bool _clearing_required = false;
 public:
     void draw_rectangle(Bounds bounds) override;
-    void print_text(Point start_point, const char* text) override;
+    void print_text(Point start_point, cord_t width_limit, const char *text) override;
+    void push();
 };
 
 #endif
