@@ -1,5 +1,4 @@
 #include "gui/GFX.h"
-#include "gui/text.h"
 
 GFX::GFX(GraphicsEngine engine, Bounds bounds): _engine(engine), _bounds(bounds)
 {
@@ -27,27 +26,33 @@ void GFX::draw_rectangle(Bounds bounds) const
     _engine->draw_rectangle(cast(_bounds, bounds));
 }
 
-void GFX::print_text(Point start_point, cord_t width_limit, const char *text) const
+void GFX::print_text(Point start_point, cord_t width_limit, const char *text, Font font) const
 {
+    if (font == nullptr)
+        font = get_default_font();
+
     Point point;
     point.x = start_point.x + _bounds.start_point.x;
     point.y = start_point.y + _bounds.start_point.y;
-    _engine->print_text(point, width_limit, text);
+    _engine->print_text(point, width_limit, text, font);
 }
 
-void GFX::print_text(Point start_point, const char *text) const
+void GFX::print_text(Point start_point, const char *text, Font font) const
 {
-    print_text(start_point, size().width - start_point.x, text);
+    print_text(start_point, size().width - start_point.x, text, font);
 }
 
-void GFX::cut_and_print_text(Point start_point, char *text_buffer) const
+void GFX::cut_and_print_text(Point start_point, char *text_buffer, Font font) const
 {
+    if (font == nullptr)
+        font = get_default_font();
+
     cord_t width_limit = size().width - start_point.x;
-    cut_text(*this, width_limit, text_buffer);
+    font->cut_text(width_limit, text_buffer);
     print_text(start_point, width_limit, text_buffer);
 }
 
-Size GFX::get_text_size(const char *text) const
+Font GFX::get_default_font() const
 {
-    return _engine->get_text_size(text);
+    return _engine->get_default_font();
 }

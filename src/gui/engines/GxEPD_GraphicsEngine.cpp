@@ -6,7 +6,7 @@
 
 GxEPD_GraphicsEngine::GxEPD_GraphicsEngine(DISPLAY_TYPE *display): _display(display)
 {
-    _display->setFont(&FreeMonoBold12pt7b);
+    
 }
 
 void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds)
@@ -19,17 +19,17 @@ void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds)
     _operation_queue.push_back(operation);
 }
 
-void GxEPD_GraphicsEngine::print_text(Point start_point, cord_t width_limit, const char *text)
+void GxEPD_GraphicsEngine::print_text(Point start_point, cord_t width_limit, const char *text, Font font)
 {
     Bounds bounds;
-    Size size = get_text_size(text);
+    cord_t width = font->get_string_width(text);
 
-    if (width_limit < size.width)
+    if (width_limit < width)
     {
         throw std::runtime_error("Text is too long");
     }
 
-    bounds.size.height = size.height;
+    bounds.size.height = font->get_height();
     bounds.size.width = width_limit;
 
     DrawOperation operation;
@@ -37,7 +37,8 @@ void GxEPD_GraphicsEngine::print_text(Point start_point, cord_t width_limit, con
     operation.bounds.start_point = start_point;
     operation.color = color_t::Black; //TODO: Add color as parameter
 
-    *(const char**)&operation = text;
+    operation.args.text.text = text;
+    operation.args.text.font = font;
 
     _operation_queue.push_back(operation);
 }

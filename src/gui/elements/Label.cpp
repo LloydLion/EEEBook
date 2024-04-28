@@ -1,5 +1,4 @@
 #include "gui/elements/Label.h"
-#include "gui/text.h"
 
 Label_::Label_(const char* text): _original_text(text)
 {
