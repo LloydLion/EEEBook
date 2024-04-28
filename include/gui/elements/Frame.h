@@ -14,7 +14,8 @@ public:
     Frame_(cord_t margin, cord_t thickness, UIElement element);
 
     void render(const GFX& gfx) override;
-
+    std::vector<UIElement>::iterator list_children() override;
+    size_t count_children() override;
     Size min_size() override;
 
 private:

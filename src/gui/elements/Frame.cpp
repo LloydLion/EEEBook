@@ -14,6 +14,12 @@ void Frame_::render(const GFX& gfx)
     GFX new_gfx = gfx.slice(inner_bounds);
     _element->render(new_gfx);
 }
+std::vector<UIElement>::iterator Frame_::list_children()
+{
+ //TODO: list children
+}
+
+size_t Frame_::count_children(){return 1;};
 Size Frame_::min_size()
 {
     cord_t offset = 2 * _margin + _thickness;
