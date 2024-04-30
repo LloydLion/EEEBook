@@ -14,15 +14,15 @@ private:
 public:
     GFX(GraphicsEngine engine, Size display_size);
 
-    void draw_rectangle(Bounds bounds) const;
+    void draw_rectangle(LocalBounds bounds) const;
 
-    void print_text(Point start_point, cord_t width_limit, const char *text, Font font = nullptr) const;
-    void print_text(Point start_point, const char *text, Font font = nullptr) const;
-    void cut_and_print_text(Point start_point, char *text_buffer, Font font = nullptr) const;
+    void print_text(LocalVector start, cord_t width_limit, const char *text, Font font = nullptr) const;
+    void print_text(LocalVector start, const char *text, Font font = nullptr) const;
+    void cut_and_print_text(LocalVector start, char *text_buffer, Font font = nullptr) const;
 
     Font get_default_font() const;
 
-    GFX slice(Bounds local_bounds) const;
+    GFX slice(LocalBounds local_bounds) const;
 
     Size size() const;
 };

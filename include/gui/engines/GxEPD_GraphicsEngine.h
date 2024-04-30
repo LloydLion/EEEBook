@@ -50,7 +50,7 @@ public:
     GxEPD_GraphicsEngine(DISPLAY_TYPE *display);
 
     void draw_rectangle(Bounds bounds) override;
-    void print_text(Point start_point, cord_t width_limit, const char *text, Font font) override;
+    void print_text(Vector start_point, cord_t width_limit, const char *text, Font font) override;
 
     Font get_default_font() override;
     FontEngine get_font_engine() override;

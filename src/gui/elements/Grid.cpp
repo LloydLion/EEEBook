@@ -37,7 +37,7 @@ Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> c
 Size Grid_::min_size()
 {
     //TODO: fix it
-    return create_size(100, 100);
+    return Size(100, 100);
 }
 
 void Grid_::render(const GFX& gfx)
@@ -68,9 +68,9 @@ void Grid_::render(const GFX& gfx)
         size_t r = element.row;
         size_t c = element.column;
 
-        GFX new_gfx = gfx.slice(create_bounds(
-            create_point(columns_pos[c], rows_pos[r]),
-            create_size(columns_rs[c], rows_rs[r])
+        GFX new_gfx = gfx.slice(Bounds(
+            columns_pos[c], rows_pos[r],
+            columns_rs[c], rows_rs[r]
         ));
 
         element.ui->render(new_gfx);

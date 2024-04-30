@@ -6,7 +6,7 @@ GFX::GFX(GraphicsEngine engine, Bounds bounds): _engine(engine), _bounds(bounds)
 }
 
 GFX::GFX(GraphicsEngine engine, Size display_size):
-    _engine(engine), _bounds(create_bounds(create_point(0, 0), display_size))
+    _engine(engine), _bounds(Vector(0, 0), display_size)
 {
 
 }
@@ -16,33 +16,30 @@ Size GFX::size() const
     return _bounds.size;
 }
 
-GFX GFX::slice(Bounds local_bounds) const
+GFX GFX::slice(LocalBounds local_bounds) const
 {
-    return GFX(_engine, cast(_bounds, local_bounds));
+    return GFX(_engine, _bounds.cast(local_bounds));
 }
 
-void GFX::draw_rectangle(Bounds bounds) const
+void GFX::draw_rectangle(LocalBounds bounds) const
 {
-    _engine->draw_rectangle(cast(_bounds, bounds));
+    _engine->draw_rectangle(_bounds.cast(bounds));
 }
 
-void GFX::print_text(Point start_point, cord_t width_limit, const char *text, Font font) const
+void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, Font font) const
 {
     if (font == nullptr)
         font = get_default_font();
 
-    Point point;
-    point.x = start_point.x + _bounds.start_point.x;
-    point.y = start_point.y + _bounds.start_point.y;
-    _engine->print_text(point, width_limit, text, font);
+    _engine->print_text(_bounds.cast(start), width_limit, text, font);
 }
 
-void GFX::print_text(Point start_point, const char *text, Font font) const
+void GFX::print_text(LocalVector start, const char *text, Font font) const
 {
-    print_text(start_point, size().width - start_point.x, text, font);
+    print_text(start, size().width - start.x, text, font);
 }
 
-void GFX::cut_and_print_text(Point start_point, char *text_buffer, Font font) const
+void GFX::cut_and_print_text(Vector start_point, char *text_buffer, Font font) const
 {
     if (font == nullptr)
         font = get_default_font();

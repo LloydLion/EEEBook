@@ -79,7 +79,7 @@ void loop()
     strcat(text, "Hello World!");
 
     Label label1 = new Label_(text);
-    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_in_dock(label1,create_point(y, y)) });
+    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_in_dock(label1, Vector(y, y)) });
 
     //Rectangle recti1 = new Rectangle_(5, 5);
     //Rectangle recti2 = new Rectangle_(5, 5);
@@ -94,7 +94,7 @@ void loop()
 
     root = panel1;
 
-    GFX root_gfx(engine, create_size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+    GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
     root->render(root_gfx);
     engine->push();
 

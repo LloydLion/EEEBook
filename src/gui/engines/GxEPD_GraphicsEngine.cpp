@@ -19,7 +19,7 @@ void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds)
     _operation_queue.push_back(operation);
 }
 
-void GxEPD_GraphicsEngine::print_text(Point start_point, cord_t width_limit, const char *text, Font font)
+void GxEPD_GraphicsEngine::print_text(Vector start, cord_t width_limit, const char *text, Font font)
 {
     Bounds bounds;
     cord_t width = font->get_string_width(text);
@@ -34,7 +34,7 @@ void GxEPD_GraphicsEngine::print_text(Point start_point, cord_t width_limit, con
 
     DrawOperation operation;
     operation.type = DrawOperationType::Text;
-    operation.bounds.start_point = start_point;
+    operation.bounds.start = start;
     operation.color = color_t::Black; //TODO: Add color as parameter
 
     operation.args.text.text = text;
@@ -59,22 +59,6 @@ void GxEPD_GraphicsEngine::push()
     _operation_queue.clear();
 }
 
-Size GxEPD_GraphicsEngine::get_text_size(const char *text)
-{
-    char *new_line = strchr(text, '\n');
-    if (new_line != nullptr)
-    {
-        throw std::runtime_error("Multiple lines are disallowed");
-    }
-
-    int16_t text_dx, text_dy;
-    uint16_t text_width, text_height;
-
-    _display->getTextBounds(text, 0, 0, &text_dx, &text_dy, &text_width, &text_height);
-
-    return create_size(text_width, text_height);
-}
-
 void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
 {
     Bounds bounds = operation.bounds;
@@ -84,8 +68,8 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
     {
     case DrawOperationType::Rectangle:
         _display->fillRect(
-            bounds.start_point.x,
-            bounds.start_point.y,
+            bounds.start.x,
+            bounds.start.y,
             bounds.size.width,
             bounds.size.height,
             color
@@ -102,7 +86,7 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
 
         _display->getTextBounds(text, 0, 0, &text_dx, &text_dy, &text_width, &text_height);
 
-        _display->setCursor(bounds.start_point.x - text_dx, bounds.start_point.y - text_dy);
+        _display->setCursor(bounds.start.x - text_dx, bounds.start.y - text_dy);
         _display->print(text);
         break;
     }

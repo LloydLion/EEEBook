@@ -10,10 +10,10 @@ typedef DockPanel_ *DockPanel;
 struct DockElement
 {
     UIElement ui;
-    Point point;
+    Vector point;
 };
 
-DockElement fit_in_dock(UIElement element, Point point);
+DockElement fit_in_dock(UIElement element, Vector point);
 
 class DockPanel_ : public UIStorage_
 {

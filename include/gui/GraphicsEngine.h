@@ -10,7 +10,7 @@ class GraphicsEngine_
 {
 public:
     virtual void draw_rectangle(Bounds bounds) = 0;
-    virtual void print_text(Point start_point, cord_t width_limit, const char *text, Font font) = 0;
+    virtual void print_text(Vector start_point, cord_t width_limit, const char *text, Font font) = 0;
 
     virtual Font get_default_font() = 0;
     virtual FontEngine get_font_engine() = 0;

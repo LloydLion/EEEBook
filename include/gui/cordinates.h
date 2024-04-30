@@ -3,29 +3,74 @@
 
 typedef unsigned int cord_t;
 
-struct Point
+class Vector
 {
+public:
     cord_t x;
     cord_t y;
+
+    Vector();
+    Vector(cord_t x, cord_t y);
+
+    Vector operator+(const Vector &other) const;
+    Vector operator-() const;
+    Vector operator-(const Vector &other) const;
 };
 
-struct Size
+typedef Vector LocalVector;
+
+class Size
 {
+public:
     cord_t width;
     cord_t height;
+
+    Size();
+    Size(cord_t width, cord_t height);
+    Size(Vector start, Vector end);
+
+    LocalVector start_to_end() const;
+
+    Size operator+(const Vector &other) const;
+    Size operator-(const Vector &other) const;
 };
 
-struct Bounds
+class Bounds;
+typedef Bounds LocalBounds;
+
+class Bounds
 {
-    Point start_point;
+public:
+    Vector start;
     Size size;
+
+    Bounds();
+    Bounds(Vector start, Size size);
+    Bounds(Vector start, Vector end);
+    Bounds(cord_t x, cord_t y, cord_t w, cord_t h);
+
+    bool is_inside_abs(Vector absolute_vector) const;
+    bool is_inside_local(LocalVector local_vector) const;
+    Bounds slice(LocalVector local_vector, Size size) const;
+    Bounds cast(LocalBounds local_bounds) const;
+    Vector cast(LocalVector local_vector) const;
+    Vector end() const;
 };
 
-Point create_point(cord_t x, cord_t y);
-Size create_size(cord_t width, cord_t height);
-Bounds create_bounds(Point start_point, Size size);
-Bounds create_bounds(Point start_point, Point end_point);
-bool point_is_inside(Point point, Bounds bound);
-Bounds cast(Bounds outer_bounds, Bounds sub_bounds);
+class Distance4Sides
+{
+public:
+    cord_t up;
+    cord_t down;
+    cord_t left;
+    cord_t right;
+
+    Distance4Sides(cord_t up, cord_t down, cord_t left, cord_t right);
+
+    Bounds cast(Bounds original_bounds) const;
+};
+
+typedef Distance4Sides MarginSize;
+typedef Distance4Sides PaddingSize;
 
 #endif

@@ -1,6 +1,6 @@
 #include "gui/elements/DockPanel.h"
 
-DockElement fit_in_dock(UIElement element, Point point)
+DockElement fit_in_dock(UIElement element, Vector point)
 {
     DockElement dock_element;
     dock_element.ui = element;
@@ -21,15 +21,15 @@ size_t DockPanel_::count_children()
 void DockPanel_::render(const GFX& gfx)
 {
     //TODO: ADD min size
-    Point corner = create_point(gfx.size().width, gfx.size().height);
+    Vector corner = Vector(gfx.size().width, gfx.size().height);
 
     for (auto el : _elements)
     {
-        GFX new_gfx = gfx.slice(create_bounds(el.point, corner));
+        GFX new_gfx = gfx.slice(Bounds(el.point, corner));
         el.ui->render(new_gfx);
     }
 }
 Size DockPanel_::min_size()
 {
-    return create_size(100, 100);
+    return Size(100, 100);
 }

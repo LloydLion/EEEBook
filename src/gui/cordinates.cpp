@@ -1,51 +1,86 @@
 #include "gui/cordinates.h"
 
-Point create_point(cord_t x, cord_t y)
+Vector::Vector(): x(), y() { }
+Vector::Vector(cord_t x, cord_t y): x(x), y(y) { }
+
+Vector Vector::operator+(const Vector &other) const
 {
-    Point result;
-    result.x = x;
-    result.y = y;
-    return result;
+    return Vector(x + other.x, y + other.y);
 }
 
-Size create_size(cord_t width, cord_t height)
+Vector Vector::operator-(const Vector &other) const
 {
-    Size result;
-    result.width = width;
-    result.height = height;
-    return result;
+    return Vector(x - other.x, y - other.y);
 }
 
-Bounds create_bounds(Point start_point, Size size)
+Vector Vector::operator-() const
 {
-    Bounds result;
-    result.start_point = start_point;
-    result.size = size;
-    return result;
+    return Vector(-x, -y);
 }
 
-Bounds create_bounds(Point start_point, Point end_point)
+Size::Size(): width(), height() { }
+Size::Size(cord_t width, cord_t height): width(width), height(height) { }
+Size::Size(Vector start, Vector end): width(end.x - start.x), height(end.y - start.y) { }
+
+LocalVector Size::start_to_end() const
 {
-    Size size;
-    size.width = end_point.x - start_point.x;
-    size.height = end_point.y - start_point.y;
-    return create_bounds(start_point,size);    
+    return LocalVector(width, height);
 }
 
-bool point_is_inside(Point point, Bounds bound)
+Size Size::operator+(const Vector &other) const
 {
-    return point.x >= bound.start_point.x and
-        point.x <= bound.start_point.x + bound.size.width and
-        point.y >= bound.start_point.y and
-        point.y <= bound.start_point.y + bound.size.height;
+    return Size(width + other.x, height + other.y);
 }
 
-Bounds cast(Bounds outer_bounds, Bounds sub_bounds)
+Size Size::operator-(const Vector &other) const
 {
-    Bounds result;
-    result.start_point.x = outer_bounds.start_point.x + sub_bounds.start_point.x;
-    result.start_point.y = outer_bounds.start_point.y + sub_bounds.start_point.y;
-    result.size = sub_bounds.size;
-    return result;
+    return Size(width - other.x, height - other.y);
+}
 
+Bounds::Bounds(): start(), size() { }
+Bounds::Bounds(Vector start, Size size): start(start), size(size) { }
+Bounds::Bounds(Vector start, Vector end): start(start), size(start, end) { }
+Bounds::Bounds(cord_t x, cord_t y, cord_t w, cord_t h): start(x, y), size(w, h) { }
+    
+bool Bounds::is_inside_abs(Vector absolute_vector) const
+{
+    auto endv = end();
+    return
+        absolute_vector.x >= start.x and
+        absolute_vector.x <= endv.x and
+        absolute_vector.y >= start.y and
+        absolute_vector.y >= endv.y;
+}
+
+bool Bounds::is_inside_local(LocalVector local_vector) const
+{
+    return local_vector.x <= size.width and local_vector.y <= size.height;
+}
+
+Vector Bounds::cast(LocalVector local_vector) const
+{
+    return start + local_vector;
+}
+
+Vector Bounds::end() const
+{
+    return start + size.start_to_end();    
+}
+
+Distance4Sides::Distance4Sides(cord_t up, cord_t down, cord_t left, cord_t right):
+    up(up), down(down), left(left), right(right) { }
+
+Bounds Distance4Sides::cast(Bounds original_bounds) const
+{
+    return Bounds(original_bounds.start + Vector(left, up), original_bounds.size - Vector(right, down));
+}
+
+Bounds Bounds::cast(LocalBounds local_bounds) const
+{
+    return Bounds(cast(local_bounds.start), local_bounds.size);
+}
+
+Bounds Bounds::slice(LocalVector local_vector, Size size) const
+{
+    return Bounds(cast(local_vector), size);
 }

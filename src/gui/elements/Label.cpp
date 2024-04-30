@@ -13,7 +13,7 @@ Label_::~Label_()
 void Label_::render(const GFX& gfx)
 {
     strcpy(_text_buffer, _original_text);
-    gfx.cut_and_print_text(create_point(0, 0), _text_buffer);
+    gfx.cut_and_print_text(Vector(), _text_buffer);
 }
 
 void Label_::set_text(const char *text)
@@ -26,6 +26,6 @@ void Label_::set_text(const char *text)
 Size Label_::min_size()
 {
     //TODO 
-    return create_size(10,30);
+    return Size(10,30);
 }
 
