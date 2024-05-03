@@ -1,5 +1,5 @@
-#ifndef GUI_UISTORAGE_H
-#define GUI_UISTORAGE_H
+#ifndef GUI_UI_STORAGE_H
+#define GUI_UI_STORAGE_H
 
 #include "cordinates.h"
 #include "UIElement.h"

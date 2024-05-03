@@ -1,5 +1,5 @@
-#ifndef GUI_UIELEMENT_H
-#define GUI_UIELEMENT_H
+#ifndef GUI_UI_ELEMENT_H
+#define GUI_UI_ELEMENT_H
 
 #include "cordinates.h"
 #include "GFX.h"

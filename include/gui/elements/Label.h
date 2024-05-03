@@ -2,12 +2,12 @@
 #define GUI_ELEMENTS_LABEL_H
 
 #include "../cordinates.h"
-#include "../UIElement.h"
+#include "../TextElement.h"
 
 class Label_;
 typedef Label_ *Label;
 
-class Label_ : public UIElement_
+class Label_ : public TextElement_
 {
 public:
     Label_(const char *text);
