@@ -7,9 +7,9 @@ void Frame_::render(const GFX& gfx)
     cord_t offset = 2 * _margin + _thickness;
     Bounds inner_bounds = Bounds(Vector( offset, offset), Vector(gfx.size().width - offset, gfx.size().height - offset));
     //Black rectangle
-    gfx.draw_rectangle(Bounds(Vector(_margin, _margin), Vector(gfx.size().width - _margin, gfx.size().height - _margin)));
+    gfx.draw_rectangle(Bounds(Vector(_margin, _margin), Vector(gfx.size().width - _margin, gfx.size().height - _margin)), foreground_color);
     //White rectangle
-    gfx.draw_rectangle(Bounds(Vector(_margin + _thickness, _margin + _thickness), Vector(gfx.size().width -_margin - _thickness, gfx.size().height -_margin - _thickness)));
+    gfx.draw_rectangle(Bounds(Vector(_margin + _thickness, _margin + _thickness), Vector(gfx.size().width -_margin - _thickness, gfx.size().height -_margin - _thickness)), foreground_color);
     GFX new_gfx = gfx.slice(inner_bounds);
     _element->render(new_gfx);
 }

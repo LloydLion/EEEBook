@@ -17,8 +17,8 @@ public:
     cord_t get_char_width(char c);
     cord_t get_string_width(const char* str);
     cord_t get_height();
-
-    size_t cut_text(cord_t width_limit, char* text);
+    
+    font_id_t id();
 };
 
 #endif

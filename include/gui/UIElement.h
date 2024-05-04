@@ -10,6 +10,9 @@ typedef UIElement_ *UIElement;
 class UIElement_
 {
 public:
+    color_t foreground_color;
+    color_t background_color;
+
     UIElement_();
     ~UIElement_();
 

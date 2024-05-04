@@ -12,6 +12,7 @@ class Rectangle_ : public UIElement_
 {
 public:
     Rectangle_(cord_t margin, cord_t thickness);
+    Rectangle_(cord_t margin);
 
     void render(const GFX& gfx) override;
 

@@ -22,6 +22,8 @@ GraphicsEngine create_graphics_engine()
 #else
 
 #include "gui/engines/GxEPD_GraphicsEngine.h"
+//#include "gui/fonts/FreeMonoBold12pt7b.h"
+#include <Fonts/FreeMonoBold12pt7b.h>
 
 DISPLAY_TYPE display(DISPLAY_DRIVER(DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_PIN, DISPLAY_BUSY_PIN));
 
@@ -36,7 +38,9 @@ void init_display()
 
 GraphicsEngine create_graphics_engine()
 {
-    return new GxEPD_GraphicsEngine(&display);
+    auto engine = new GxEPD_GraphicsEngine(&display);
+    engine->register_font(&FreeMonoBold12pt7b);
+    return engine;
 }
 
 #endif
@@ -55,11 +59,17 @@ void setup()
     delay(100);
     digitalWrite(2, LOW);
 
+    Serial.begin(9600);
+    Serial.println();
+    Serial.println();
+    Serial.println("----RESTART----");
+    Serial.println();
+    delay(200);
+
     init_display();
 
     engine = create_graphics_engine();
     
-    Serial.begin(9600);
     
 #if IS_VIRTUAL_DISPLAY_USED
     delay(4000); //Time to connect VScreen to ESP
@@ -76,10 +86,10 @@ void loop()
     static cord_t y = 1;
 
     itoa(y, text, 10);
-    strcat(text, "Hello World!");
+    strcat(text, "Hello 1234567890 1234567890");
 
     Label label1 = new Label_(text);
-    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_in_dock(label1, Vector(y, y)) });
+    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_in_dock(label1, Vector(0, 20+y)) });
 
     //Rectangle recti1 = new Rectangle_(5, 5);
     //Rectangle recti2 = new Rectangle_(5, 5);
@@ -102,7 +112,9 @@ void loop()
     //delete rect1;
     //delete panel1;
 
-    y += 3;
 
-    delay(8000);
+
+    y += 8;
+
+    delay(3000);
 }
