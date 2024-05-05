@@ -1,28 +1,26 @@
 #include "gui/elements/Frame.h"
 
-Frame_::Frame_(cord_t margin, cord_t thickness, UIElement element): _margin(margin), _thickness(thickness), _element(element) {}
+Frame_::Frame_(cord_t thickness, UIElement element): thickness(thickness), _element(element) { }
 
-void Frame_::render(const GFX& gfx)
+void Frame_::render(const GFX& pgfx)
 {
-    cord_t offset = 2 * _margin + _thickness;
-    Bounds inner_bounds = Bounds(Vector( offset, offset), Vector(gfx.size().width - offset, gfx.size().height - offset));
-    //Black rectangle
-    gfx.draw_rectangle(Bounds(Vector(_margin, _margin), Vector(gfx.size().width - _margin, gfx.size().height - _margin)), foreground_color);
-    //White rectangle
-    gfx.draw_rectangle(Bounds(Vector(_margin + _thickness, _margin + _thickness), Vector(gfx.size().width -_margin - _thickness, gfx.size().height -_margin - _thickness)), foreground_color);
-    GFX new_gfx = gfx.slice(inner_bounds);
-    _element->render(new_gfx);
-}
+    ASSUME_MARGIN(pgfx);
 
-std::vector<UIElement>::iterator Frame_::list_children()
-{
-    //TODO: list children
-}
+    gfx.fill_screen(foreground_color);
 
-size_t Frame_::count_children() { return 1; };
+    gfx = gfx.slice(Distance4Sides(thickness));
+
+    gfx.fill_screen(background_color);
+
+    _element->render(gfx);
+}
 
 Size Frame_::min_size()
 {
-    cord_t offset = 2 * _margin + _thickness;
-    return Size(_element->min_size().width + offset, _element->min_size().height + offset);
+    return margin.expand(Distance4Sides(thickness).expand(_element->min_size()));
+}
+
+UIElement Frame_::get_element()
+{
+    return _element;
 }

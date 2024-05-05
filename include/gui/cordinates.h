@@ -65,9 +65,12 @@ public:
     cord_t left;
     cord_t right;
 
+    Distance4Sides();
     Distance4Sides(cord_t up, cord_t down, cord_t left, cord_t right);
+    Distance4Sides(cord_t all_directions);
 
     Bounds cast(Bounds original_bounds) const;
+    Size expand(Size original_size) const;
 };
 
 typedef Distance4Sides MarginSize;

@@ -22,9 +22,19 @@ GFX GFX::slice(LocalBounds local_bounds) const
     return GFX(_engine, _bounds.cast(local_bounds));
 }
 
+GFX GFX::slice(Distance4Sides distances) const
+{
+    return GFX(_engine, distances.cast(_bounds));
+}
+
 void GFX::draw_rectangle(LocalBounds bounds, color_t color) const
 {
     _engine->draw_rectangle(_bounds.cast(bounds), color);
+}
+
+void GFX::fill_screen(color_t color) const
+{
+    _engine->draw_rectangle(_bounds, color);
 }
 
 void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, color_t color, size_t len_limit, Font font) const

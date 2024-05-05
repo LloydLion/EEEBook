@@ -4,6 +4,8 @@
 #include "cordinates.h"
 #include "GFX.h"
 
+#define ASSUME_MARGIN(X) GFX gfx = X.slice(margin)
+
 class UIElement_;
 typedef UIElement_ *UIElement;
 
@@ -12,12 +14,9 @@ class UIElement_
 public:
     color_t foreground_color;
     color_t background_color;
-
-    UIElement_();
-    ~UIElement_();
+    MarginSize margin;
 
     virtual void render(const GFX& gfx) = 0;
-
     virtual Size min_size() = 0;
 };
 

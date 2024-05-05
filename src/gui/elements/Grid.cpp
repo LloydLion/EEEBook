@@ -21,8 +21,11 @@ GridElement fit_in_grid(UIElement element, size_t row, size_t column)
     return el;
 }
 
+UIElement &selector(GridElement &el) { return el.ui; }
 
-Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements): _elements(elements)
+
+Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements):
+    _elements(elements), _vec_it(_elements), _iterator(&_vec_it, selector)
 {
     if (rows.size() > MAX_GRID_SIZE)
         throw std::runtime_error("Rows are so many, max rows count is determined by MAX_GRID_SIZE define in Grid.cpp");
@@ -40,8 +43,12 @@ Size Grid_::min_size()
     return Size(100, 100);
 }
 
-void Grid_::render(const GFX& gfx)
+void Grid_::render(const GFX& pgfx)
 {
+    ASSUME_MARGIN(pgfx);
+
+    gfx.fill_screen(background_color);
+
     cord_t rows_rs[MAX_GRID_SIZE];
     cord_t columns_rs[MAX_GRID_SIZE];
     memset(&rows_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
@@ -68,10 +75,10 @@ void Grid_::render(const GFX& gfx)
         size_t r = element.row;
         size_t c = element.column;
 
-        GFX new_gfx = gfx.slice(Bounds(
+        GFX new_gfx = assume_padding(gfx.slice(Bounds(
             columns_pos[c], rows_pos[r],
             columns_rs[c], rows_rs[r]
-        ));
+        )));
 
         element.ui->render(new_gfx);
     }
@@ -140,10 +147,10 @@ cord_t Grid_::get_auto_size(size_t index, GridRC row_or_column)
     return 20;
 }
 
-std::vector<UIElement>::iterator Grid_::list_children()
+Iterator<UIElement> *Grid_::list_children()
 {
-    //TODO: implement
-    throw 0;
+    _iterator.reset();
+    return &_iterator;
 }
 
 size_t Grid_::count_children()

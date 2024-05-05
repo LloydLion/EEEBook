@@ -2,7 +2,8 @@
 #define GUI_ELEMENTS_DOCK_PANEL_H
 
 #include "../cordinates.h"
-#include "../UIStorage.h"
+#include "../UIContainer.h"
+#include "std/iterator.h"
 
 class DockPanel_;
 typedef DockPanel_ *DockPanel;
@@ -13,19 +14,24 @@ struct DockElement
     Vector point;
 };
 
-DockElement fit_in_dock(UIElement element, Vector point);
+DockElement fit_into_dock(UIElement element, Vector point);
 
-class DockPanel_ : public UIStorage_
+class DockPanel_ : public UIContainer_
 {
 private:
     std::vector<DockElement> _elements;
+
+    SelectIterator<DockElement, UIElement> _iterator;
+    VectorIterator<DockElement> _vec_it;
+
 public:
     DockPanel_(std::vector<DockElement> elements);
 
-    std::vector<UIElement>::iterator list_children() override;
-    size_t count_children() override;
     void render(const GFX& gfx) override;
     Size min_size() override;
+
+    const Iterator<UIElement> *list_children() override;
+    size_t count_children() override;
 };
 
 #endif

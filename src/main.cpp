@@ -89,7 +89,7 @@ void loop()
     strcat(text, "Hello 1234567890 1234567890");
 
     Label label1 = new Label_(text);
-    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_in_dock(label1, Vector(0, 20+y)) });
+    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(label1, Vector(0, 20+y)) });
 
     //Rectangle recti1 = new Rectangle_(5, 5);
     //Rectangle recti2 = new Rectangle_(5, 5);

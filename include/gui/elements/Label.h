@@ -12,10 +12,11 @@ class Label_ : public TextElement_
 public:
     Label_(const char *text);
 
-    void render(const GFX &gfx) override;
     void set_text(const char *text);
-    
+
+    void render(const GFX &gfx) override;
     Size min_size() override;
+    
 private:
     const char* _text;
 };

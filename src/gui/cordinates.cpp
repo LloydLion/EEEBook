@@ -67,14 +67,6 @@ Vector Bounds::end() const
     return start + size.start_to_end();    
 }
 
-Distance4Sides::Distance4Sides(cord_t up, cord_t down, cord_t left, cord_t right):
-    up(up), down(down), left(left), right(right) { }
-
-Bounds Distance4Sides::cast(Bounds original_bounds) const
-{
-    return Bounds(original_bounds.start + Vector(left, up), original_bounds.size - Vector(right, down));
-}
-
 Bounds Bounds::cast(LocalBounds local_bounds) const
 {
     return Bounds(cast(local_bounds.start), local_bounds.size);
@@ -83,4 +75,21 @@ Bounds Bounds::cast(LocalBounds local_bounds) const
 Bounds Bounds::slice(LocalVector local_vector, Size size) const
 {
     return Bounds(cast(local_vector), size);
+}
+
+Distance4Sides::Distance4Sides():
+    up(), down(), left(), right() { }
+Distance4Sides::Distance4Sides(cord_t up, cord_t down, cord_t left, cord_t right):
+    up(up), down(down), left(left), right(right) { }
+Distance4Sides::Distance4Sides(cord_t all_directions):
+    up(all_directions), down(all_directions), left(all_directions), right(all_directions) { }
+
+Bounds Distance4Sides::cast(Bounds original_bounds) const
+{
+    return Bounds(original_bounds.start + Vector(left, up), original_bounds.size - Vector(right, down));
+}
+
+Size Distance4Sides::expand(Size original_size) const
+{
+    return Size(original_size.width + left + right, original_size.height + up + down);
 }
