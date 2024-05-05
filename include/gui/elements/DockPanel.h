@@ -21,8 +21,7 @@ class DockPanel_ : public UIContainer_
 private:
     std::vector<DockElement> _elements;
 
-    SelectIterator<DockElement, UIElement> _iterator;
-    VectorIterator<DockElement> _vec_it;
+    SelectIterator<VectorIterator<DockElement>, DockElement, UIElement> _iterator;
 
 public:
     DockPanel_(std::vector<DockElement> elements);

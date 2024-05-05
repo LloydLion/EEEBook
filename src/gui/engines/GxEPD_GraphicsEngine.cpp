@@ -1,8 +1,6 @@
 #include "gui/engines/GxEPD_GraphicsEngine.h"
 #include <exception>
 
-#define TEXT_DEBUG
-
 #if !IS_VIRTUAL_DISPLAY_USED
 
 bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos_y, uint16_t cursor_x, cord_t width_limit, DISPLAY_TYPE *display);
@@ -16,7 +14,7 @@ GxEPD_GraphicsEngine::GxEPD_GraphicsEngine(DISPLAY_TYPE *display):
 void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds, color_t color)
 {
     DrawOperation operation;
-    operation.type = DrawOperationType::Text;
+    operation.type = DrawOperationType::Rectangle;
     operation.bounds = bounds;
     operation.color = color;
 
@@ -43,10 +41,47 @@ void GxEPD_GraphicsEngine::push()
 
     _display->firstPage();
 
+#if GxEPD_GE_DEBUG_OPTIONS & GxEPD_GE_RENDER_DEBUG
+    Serial.println("GxEPD_GraphicsEngine: pushing operations to display");
+
+    for (size_t i = 0; i < _operation_queue.size(); i++)        
+    {
+        auto operation = _operation_queue[i];
+
+        Serial.printf("[%d]: Bounds(%d, %d, %d, %d), color=%d | ",
+            i,
+            operation.bounds.start.x,
+            operation.bounds.start.y,
+            operation.bounds.size.width,
+            operation.bounds.size.height,
+            operation.color
+        );
+
+        switch (operation.type)
+        {
+        case DrawOperationType::Rectangle:
+            Serial.println("RECT");
+            break;
+
+            
+        case DrawOperationType::Text:
+            Serial.printf("TEXT len_limit=%d, font=%d, text=", operation.args.text.len_limit, (int)operation.args.text.font);
+            Serial.println(operation.args.text.text);
+            break;
+        
+        default:
+            Serial.println("UNKNOWN fix it");
+            break;
+        }
+    }
+#endif
+
     do
     {
         for (auto operation : _operation_queue)
+        {
             do_operation(operation);
+        }
     }
     while (_display->nextPage());
 
@@ -88,7 +123,7 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
             {
                 GFXglyph *glyph = font->glyph + (c - first);
 
-#ifdef TEXT_DEBUG
+#if GxEPD_GE_DEBUG_OPTIONS & GxEPD_GE_TEXT_DEBUG
                 _display->drawFastHLine(cursor_x, bounds.start.y, glyph->xAdvance, color);
                 _display->drawFastVLine(cursor_x, bounds.start.y - 1, 5, color);
 #endif
@@ -117,7 +152,7 @@ bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos
         int8_t xo = glyph->xOffset;
         int8_t yo = glyph->yOffset;
 
-#ifdef TEXT_DEBUG
+#if GxEPD_GE_DEBUG_OPTIONS & GxEPD_GE_TEXT_DEBUG
         display->drawRect(cursor_x + xo,
             pos_y + yo,
             w, h, color);
@@ -144,7 +179,7 @@ bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos
                     else
                         was_clipped = true;
                 
-#ifdef TEXT_DEBUG
+#if GxEPD_GE_DEBUG_OPTIONS & GxEPD_GE_TEXT_DEBUG
                 if (cursor_x + xo + xx > width_limit)
                     display->writePixel(cursor_x + xo + xx, pos_y + yo + yy, color);
 #endif
@@ -229,11 +264,6 @@ font_id_t GxEPD_GraphicsEngine::Fonts::register_font(const GFXfont *font)
 
     ifont.height = max_y - min_y;
     ifont.y_offset = -min_y;
-
-    Serial.println(max_y);
-    Serial.println(min_y);
-    Serial.println(ifont.height);
-    Serial.println(ifont.y_offset);
 
     _fonts.push_back(ifont);
     return _fonts.size() - 1;

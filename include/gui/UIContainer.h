@@ -12,8 +12,6 @@ typedef UIContainer_ *UIContainer;
 class UIContainer_ : public UIElement_
 {
 protected:
-    std::vector<UIElement> _elements;
-
     GFX assume_padding(const GFX &gfx);
 
 public:

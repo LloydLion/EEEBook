@@ -85,11 +85,11 @@ void loop()
     static char* text = new char[40];
     static cord_t y = 1;
 
-    itoa(y, text, 10);
-    strcat(text, "Hello 1234567890 1234567890");
+    strcpy(text, "HO_HO_HO_HO_HO");
 
     Label label1 = new Label_(text);
     DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(label1, Vector(0, 20+y)) });
+    panel1->padding = PaddingSize(13);
 
     //Rectangle recti1 = new Rectangle_(5, 5);
     //Rectangle recti2 = new Rectangle_(5, 5);
@@ -108,9 +108,9 @@ void loop()
     root->render(root_gfx);
     engine->push();
 
-    //delete label1;
+    delete label1;
     //delete rect1;
-    //delete panel1;
+    delete panel1;
 
 
 

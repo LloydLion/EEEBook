@@ -86,7 +86,7 @@ Distance4Sides::Distance4Sides(cord_t all_directions):
 
 Bounds Distance4Sides::cast(Bounds original_bounds) const
 {
-    return Bounds(original_bounds.start + Vector(left, up), original_bounds.size - Vector(right, down));
+    return Bounds(original_bounds.start + Vector(left, up), original_bounds.size - Vector(left + right, up + down));
 }
 
 Size Distance4Sides::expand(Size original_size) const

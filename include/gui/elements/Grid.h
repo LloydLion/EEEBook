@@ -42,11 +42,11 @@ private:
     std::vector<GridRCDefinition> _rows, _columns;
     std::vector<GridElement> _elements;
 
-    SelectIterator<GridElement, UIElement> _iterator;
-    VectorIterator<GridElement> _vec_it;
+    SelectIterator<VectorIterator<GridElement>, GridElement, UIElement> _iterator;
     
     cord_t get_auto_size(size_t index, GridRC row_or_column);
     void calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_column);
+    cord_t get_min_size_dimension(std::vector<GridRCDefinition> defenitions, GridRC type);
 
 public:
     Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements);

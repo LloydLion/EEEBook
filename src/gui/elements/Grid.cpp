@@ -25,7 +25,7 @@ UIElement &selector(GridElement &el) { return el.ui; }
 
 
 Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements):
-    _elements(elements), _vec_it(_elements), _iterator(&_vec_it, selector)
+    _elements(elements), _iterator(VectorIterator<GridElement>(_elements), selector)
 {
     if (rows.size() > MAX_GRID_SIZE)
         throw std::runtime_error("Rows are so many, max rows count is determined by MAX_GRID_SIZE define in Grid.cpp");
@@ -37,10 +37,34 @@ Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> c
     _columns = columns;
 }
 
+cord_t Grid_::get_min_size_dimension(std::vector<GridRCDefinition> defenitions, GridRC type)
+{
+    cord_t min_size = 0;
+    for (size_t i = 0; i < defenitions.size(); i++)
+    {
+        GridRCDefinition defenition = defenitions[i];
+        switch (defenition.size_type)
+        {
+        case GridRCSizeType::Auto:
+            min_size += get_auto_size(i, GridRC::Column);
+            break;
+
+        case GridRCSizeType::Fixed:
+            min_size += defenition.size;
+            break;
+        
+        default:
+            //Do nothing
+            break;
+        }
+    }
+
+    return min_size;
+}
+
 Size Grid_::min_size()
 {
-    //TODO: fix it
-    return Size(100, 100);
+    return margin.expand(Size(get_min_size_dimension(_columns, GridRC::Column), get_min_size_dimension(_rows, GridRC::Row)));
 }
 
 void Grid_::render(const GFX& pgfx)
@@ -143,8 +167,22 @@ void Grid_::calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_
 
 cord_t Grid_::get_auto_size(size_t index, GridRC row_or_column)
 {
-    //TODO: implement it
-    return 20;
+    cord_t result = 0;
+    for (auto el : _elements)
+    {
+        if (row_or_column == GridRC::Column)
+        {
+            if (el.column == index)
+                result = max(result, padding.expand(el.ui->min_size()).width);
+        }
+        else //GridRC::Row
+        {
+            if (el.row == index)
+                result = max(result, padding.expand(el.ui->min_size()).height);
+        }
+    }
+
+    return result;
 }
 
 Iterator<UIElement> *Grid_::list_children()
