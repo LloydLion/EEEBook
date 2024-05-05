@@ -140,7 +140,7 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
     }
 }
 
-bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos_y, uint16_t cursor_x, cord_t width_limit, DISPLAY_TYPE *display)
+bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos_y, uint16_t cursor_x, cord_t end_x, DISPLAY_TYPE *display)
 {
     bool was_clipped = false;
 
@@ -174,7 +174,7 @@ bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos
                     bits = bitmap[bo++];
 
                 if (bits & 0x80)
-                    if (cursor_x + xo + xx <= width_limit)
+                    if (cursor_x + xo + xx < end_x)
                         display->writePixel(cursor_x + xo + xx, pos_y + yo + yy, color);
                     else
                         was_clipped = true;

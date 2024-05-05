@@ -12,8 +12,8 @@ typedef UIElement_ *UIElement;
 class UIElement_
 {
 public:
-    color_t foreground_color = color_t::Black;
-    color_t background_color = color_t::White;
+    transparent_color_t foreground_color = color_t::Black;
+    transparent_color_t background_color = color_t::White;
     MarginSize margin = MarginSize(0);
 
     virtual void render(const GFX& gfx) = 0;

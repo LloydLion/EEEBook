@@ -14,11 +14,11 @@ private:
 public:
     GFX(GraphicsEngine engine, Size display_size);
 
-    void draw_rectangle(LocalBounds bounds, color_t color) const;
-    void fill_screen(color_t color) const;
+    void draw_rectangle(LocalBounds bounds, transparent_color_t color) const;
+    void fill_screen(transparent_color_t color) const;
 
-    void print_text(LocalVector start, cord_t width_limit, const char *text, color_t color, size_t len_limit = -1, Font font = nullptr) const;
-    void print_text(LocalVector start, const char *text, color_t color, size_t len_limit = -1, Font font = nullptr) const;
+    void print_text(LocalVector start, cord_t width_limit, const char *text, transparent_color_t color, size_t len_limit = -1, Font font = nullptr) const;
+    void print_text(LocalVector start, const char *text, transparent_color_t color, size_t len_limit = -1, Font font = nullptr) const;
 
     Font get_default_font() const;
 
