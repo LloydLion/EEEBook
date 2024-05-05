@@ -18,6 +18,11 @@ public:
     //Floating point numbers
     NumberBox_(float number);
     NumberBox_(double number);
+
+    void set_value(long number);
+    void set_value(float number);
+    void set_value(double number);
+
 };
 
 #endif
