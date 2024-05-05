@@ -28,8 +28,17 @@ void DockPanel_::render(const GFX& pgfx)
 
 Size DockPanel_::min_size()
 {
-    //TODO: write min size
-    return Size(100, 100);
+    cord_t max_width, max_height;
+    for( auto el : _elements)
+    {   
+        cord_t current_width, current_height;
+        current_width = el.point.x + el.ui->min_size().width;
+        current_height = el.point.y + el.ui->min_size().height;
+
+        max_width = max_width < current_width ? current_width : max_width;
+        max_height = max_height < current_height ? current_height : max_height; 
+    }
+    return Size(max_width, max_height);
 }
 
 const Iterator<UIElement> *DockPanel_::list_children()
