@@ -92,9 +92,10 @@ void loop()
     label1->background_color = transparent_color();
 
     Rectangle recti1 = new Rectangle_(5);
-    recti1->background_color = color_t::Red;
+    recti1->foreground_color = color_t::Black;
+    recti1->background_color = transparent_color();
 
-    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(recti1, Vector(50, 50)),  fit_into_dock(label1, Vector(0, 20 + y)) });
+    DockPanel panel1 = new DockPanel_(std::vector<DockElement> {fit_into_dock(label1, Vector(0, 20 + y)), fit_into_dock(recti1, Vector(50, 50)) });
     panel1->padding = PaddingSize(13);
 
     root = panel1;

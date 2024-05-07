@@ -29,16 +29,16 @@ GFX GFX::slice(Distance4Sides distances) const
     return GFX(_engine, distances.cast(_bounds));
 }
 
-void GFX::draw_rectangle(LocalBounds bounds, transparent_color_t color) const
+void GFX::draw_rectangle(LocalBounds bounds, transparent_color_t color, cord_t thickness) const
 {
     RETURN_IF_COLOR_TRANSPERENT;
-    _engine->draw_rectangle(_bounds.cast(bounds), color.color);
+    _engine->draw_rectangle(_bounds.cast(bounds), color.color, thickness);
 }
 
 void GFX::fill_screen(transparent_color_t color) const
 {
     RETURN_IF_COLOR_TRANSPERENT;
-    _engine->draw_rectangle(_bounds, color.color);
+    _engine->draw_rectangle(_bounds, color.color, 0);
 }
 
 void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, transparent_color_t color, size_t len_limit, Font font) const

@@ -25,7 +25,7 @@ private:
 
     struct RectDrawOperationArgs
     {
-
+        cord_t thickness;
     };
 
     union DrawOpetationArgs
@@ -80,7 +80,7 @@ private:
 public:
     GxEPD_GraphicsEngine(DISPLAY_TYPE *display);
 
-    void draw_rectangle(Bounds bounds, color_t color) override;
+    void draw_rectangle(Bounds bounds, color_t color, cord_t thickness) override;
     void print_text(Vector start_point, cord_t width_limit, const char *text, size_t len_limit, color_t color, Font font) override;
 
     Font get_default_font() override;

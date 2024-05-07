@@ -10,7 +10,7 @@ typedef GraphicsEngine_ *GraphicsEngine;
 class GraphicsEngine_
 {
 public:
-    virtual void draw_rectangle(Bounds bounds, color_t color) = 0;
+    virtual void draw_rectangle(Bounds bounds, color_t color, cord_t thickness) = 0;
     virtual void print_text(Vector start_point, cord_t width_limit, const char *text, size_t len_limit, color_t color, Font font) = 0;
 
     virtual Font get_default_font() = 0;
