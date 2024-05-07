@@ -24,7 +24,7 @@ Size::Size(Vector start, Vector end): width(end.x - start.x), height(end.y - sta
 
 LocalVector Size::start_to_end() const
 {
-    return LocalVector(width, height);
+    return LocalVector(width - 1, height - 1);
 }
 
 Size Size::operator+(const Vector &other) const

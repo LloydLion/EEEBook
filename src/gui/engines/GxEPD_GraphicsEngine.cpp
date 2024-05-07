@@ -231,7 +231,7 @@ cord_t GxEPD_GraphicsEngine::Fonts::get_char_width(font_id_t font, char c)
 bool GxEPD_GraphicsEngine::Fonts::is_legit_char(font_id_t font, char c)
 {
     const GFXfont *adafruit_font =  _fonts[font].font;
-    return c < adafruit_font->first or c > adafruit_font->last;
+    return adafruit_font->first < c and c < adafruit_font->last;
 }
 
 size_t GxEPD_GraphicsEngine::Fonts::first_non_legit_char(font_id_t font, const char* str)
