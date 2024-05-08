@@ -37,7 +37,7 @@ void GxEPD_GraphicsEngine::print_text(Vector start, cord_t width_limit, const ch
     _operation_queue.push_back(operation);
 }
 
-void GxEPD_GraphicsEngine::push()
+void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
 {
     _display->setPartialWindow(0, 0, _display->width(), _display->height());
 
@@ -45,6 +45,9 @@ void GxEPD_GraphicsEngine::push()
 
 #if GxEPD_GE_DEBUG_OPTIONS & GxEPD_GE_RENDER_DEBUG
     Serial.println("GxEPD_GraphicsEngine: pushing operations to display");
+
+    Serial.printf("DrawSettings: background=%d", draw_settings.background_color);
+    Serial.println();
 
     for (size_t i = 0; i < _operation_queue.size(); i++)        
     {
@@ -81,6 +84,8 @@ void GxEPD_GraphicsEngine::push()
 
     do
     {
+        _display->fillScreen(color_to_rgb565(draw_settings.background_color));
+
         for (auto operation : _operation_queue)
         {
             do_operation(operation);

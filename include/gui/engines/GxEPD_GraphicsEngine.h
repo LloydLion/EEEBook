@@ -86,7 +86,7 @@ public:
     Font get_default_font() override;
     FontEngine get_font_engine() override;
 
-    void push() override;
+    void push(DrawSettings settings) override;
 
     font_id_t register_font(const GFXfont *font);
 };

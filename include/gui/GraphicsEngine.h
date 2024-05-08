@@ -2,6 +2,7 @@
 #define GUI_GRAPHICS_ENGINE_H
 #include "cordinates.h"
 #include "gui/Font.h"
+#include "gui/DrawSettings.h"
 #include "color.h"
 
 class GraphicsEngine_;
@@ -16,7 +17,7 @@ public:
     virtual Font get_default_font() = 0;
     virtual FontEngine get_font_engine() = 0;
 
-    virtual void push() = 0;
+    virtual void push(DrawSettings settings) = 0;
 };
 
 #endif
