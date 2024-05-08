@@ -199,7 +199,7 @@ bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos
                     bits = bitmap[bo++];
 
                 if (bits & 0x80)
-                    if (cursor_x + xo + xx < end_x)
+                    if (cursor_x + xo + xx <= end_x)
                         display->writePixel(cursor_x + xo + xx, pos_y + yo + yy, color);
                     else
                         was_clipped = true;
