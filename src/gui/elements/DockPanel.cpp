@@ -17,6 +17,7 @@ DockPanel_::DockPanel_(std::vector<DockElement> elements):
 void DockPanel_::render(const GFX& pgfx)
 {
     ASSUME_MARGIN(pgfx);
+    gfx.fill_screen(background_color);
 
     Vector corner = Vector(gfx.size().width, gfx.size().height);
     for (auto el : _elements)

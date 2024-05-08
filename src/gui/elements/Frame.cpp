@@ -1,23 +1,20 @@
 #include "gui/elements/Frame.h"
 
-Frame_::Frame_(cord_t thickness, UIElement element): thickness(thickness), _element(element) { }
+Frame_::Frame_(cord_t thickness, UIElement element): _thickness(thickness), _element(element) { }
 
 void Frame_::render(const GFX& pgfx)
 {
     ASSUME_MARGIN(pgfx);
 
-    gfx.fill_screen(foreground_color);
+    gfx.draw_rectangle(LocalBounds(Vector(), gfx.size()), foreground_color, _thickness);
 
-    gfx = gfx.slice(Distance4Sides(thickness));
-
-    gfx.fill_screen(background_color);
-
-    _element->render(gfx);
+    if (_thickness != 0)
+        gfx.slice(Distance4Sides(_thickness)).fill_screen(background_color);
 }
 
 Size Frame_::min_size()
 {
-    return margin.expand(Distance4Sides(thickness).expand(_element->min_size()));
+    return margin.expand(Distance4Sides(_thickness).expand(_element->min_size()));
 }
 
 UIElement Frame_::get_element()
