@@ -2,19 +2,23 @@
 
 Frame_::Frame_(cord_t thickness, UIElement element): _thickness(thickness), _element(element) { }
 
-void Frame_::render(const GFX& pgfx)
+void Frame_::i_render(const GFX& gfx)
 {
-    ASSUME_MARGIN(pgfx);
-
     gfx.draw_rectangle(LocalBounds(Vector(), gfx.size()), foreground_color, _thickness);
 
     if (_thickness != 0)
         gfx.slice(Distance4Sides(_thickness)).fill_screen(background_color);
 }
 
-Size Frame_::min_size()
+Size Frame_::i_min_size()
 {
-    return margin.expand(Distance4Sides(_thickness).expand(_element->min_size()));
+    return Distance4Sides(_thickness).expand(_element->min_size());
+}
+
+Size Frame_::i_max_size()
+{
+    //TODO: delete code repetition
+    return Distance4Sides(_thickness).expand(_element->max_size());
 }
 
 UIElement Frame_::get_element()

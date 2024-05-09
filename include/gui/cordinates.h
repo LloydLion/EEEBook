@@ -30,9 +30,16 @@ public:
     Size(Vector start, Vector end);
 
     LocalVector start_to_end() const;
+    bool is_null() const;
+
+    static Size intersect(Size a, Size b);
+    static Size combine(Size a, Size b);
 
     Size operator+(const Vector &other) const;
     Size operator-(const Vector &other) const;
+
+    bool operator>(const Size &other) const;
+    bool operator<(const Size &other) const;
 };
 
 class Bounds;
@@ -55,6 +62,11 @@ public:
     Bounds cast(LocalBounds local_bounds) const;
     Vector cast(LocalVector local_vector) const;
     Vector end() const;
+    bool is_null() const;
+
+    
+    static Bounds intersect(Bounds a, Bounds b);
+    static Bounds combine(Bounds a, Bounds b);
 };
 
 class Distance4Sides

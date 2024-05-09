@@ -14,12 +14,11 @@ DockPanel_::DockPanel_(std::vector<DockElement> elements):
     _elements(elements), _iterator(VectorIterator<DockElement>(_elements), selector)
 { }
 
-void DockPanel_::render(const GFX& pgfx)
+void DockPanel_::i_render(const GFX& gfx)
 {
-    ASSUME_MARGIN(pgfx);
     gfx.fill_screen(background_color);
 
-    Vector corner = Vector(gfx.size().width, gfx.size().height);
+    Vector corner = gfx.size().start_to_end();
     for (auto el : _elements)
     {
         GFX new_gfx = assume_padding(gfx.slice(Bounds(el.point, corner)));
@@ -27,7 +26,7 @@ void DockPanel_::render(const GFX& pgfx)
     }
 }
 
-Size DockPanel_::min_size()
+Size DockPanel_::i_min_size()
 {
     Size result;
     for (auto el : _elements)
@@ -35,11 +34,26 @@ Size DockPanel_::min_size()
         Size el_size = padding.expand(el.ui->min_size());
         Size required_size = el_size + el.point;
 
-        result.width = max(result.width, required_size.width);
-        result.height = max(result.height, required_size.height); 
+        result = Size::combine(result, required_size);
     }
 
-    return margin.expand(result);
+    return result;
+}
+
+Size DockPanel_::i_max_size()
+{
+    //TODO: delete code repetition
+    Size result;
+    for (auto el : _elements)
+    {
+        Size el_size = el.ui->max_size();
+        if (el_size.is_null()) continue;
+        Size required_size = padding.expand(el_size) + el.point;
+        
+        result = Size::combine(result, required_size);
+    }
+
+    return result;
 }
 
 const Iterator<UIElement> *DockPanel_::list_children()

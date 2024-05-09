@@ -1,4 +1,5 @@
 #include "gui/cordinates.h"
+#include <Arduino.h>
 
 Vector::Vector(): x(), y() { }
 Vector::Vector(cord_t x, cord_t y): x(x), y(y) { }
@@ -20,11 +21,26 @@ Vector Vector::operator-() const
 
 Size::Size(): width(), height() { }
 Size::Size(cord_t width, cord_t height): width(width), height(height) { }
-Size::Size(Vector start, Vector end): width(end.x - start.x), height(end.y - start.y) { }
+Size::Size(Vector start, Vector end): width(end.x - start.x + 1), height(end.y - start.y + 1) { }
 
 LocalVector Size::start_to_end() const
 {
     return LocalVector(width - 1, height - 1);
+}
+
+bool Size::is_null() const
+{
+    return width == 0 and height == 0;
+}
+
+Size Size::intersect(Size a, Size b)
+{
+    return Size(min(a.width, b.width), min(a.height, b.height));
+}
+
+Size Size::combine(Size a, Size b)
+{
+    return Size(max(a.width, b.width), max(a.height, b.height));
 }
 
 Size Size::operator+(const Vector &other) const
@@ -35,6 +51,16 @@ Size Size::operator+(const Vector &other) const
 Size Size::operator-(const Vector &other) const
 {
     return Size(width - other.x, height - other.y);
+}
+
+bool Size::operator>(const Size &other) const
+{
+    return other.height > height or other.width > width;
+}
+
+bool Size::operator<(const Size &other) const
+{
+    return other > *this;
 }
 
 Bounds::Bounds(): start(), size() { }

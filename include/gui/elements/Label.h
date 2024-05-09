@@ -14,8 +14,9 @@ public:
 
     void set_text(const char *text);
 
-    void render(const GFX &gfx) override;
-    Size min_size() override;
+    void i_render(const GFX& gfx) override;
+    Size i_min_size() override;
+    Size i_max_size() override;
     
 private:
     const char* _text;

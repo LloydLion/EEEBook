@@ -62,15 +62,18 @@ cord_t Grid_::get_min_size_dimension(std::vector<GridRCDefinition> defenitions, 
     return min_size;
 }
 
-Size Grid_::min_size()
+Size Grid_::i_min_size()
 {
-    return margin.expand(Size(get_min_size_dimension(_columns, GridRC::Column), get_min_size_dimension(_rows, GridRC::Row)));
+    return Size(get_min_size_dimension(_columns, GridRC::Column), get_min_size_dimension(_rows, GridRC::Row));
 }
 
-void Grid_::render(const GFX& pgfx)
+Size Grid_::i_max_size()
 {
-    ASSUME_MARGIN(pgfx);
+    //TODO: implement
+}
 
+void Grid_::i_render(const GFX& gfx)
+{
     gfx.fill_screen(background_color);
 
     cord_t rows_rs[MAX_GRID_SIZE];

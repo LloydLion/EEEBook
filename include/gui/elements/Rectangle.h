@@ -14,9 +14,9 @@ public:
     Rectangle_(cord_t thickness);
     Rectangle_();
 
-    void render(const GFX& gfx) override;
-
-    Size min_size() override;
+    void i_render(const GFX& gfx) override;
+    Size i_min_size() override;
+    Size i_max_size() override;
 
 private:
     cord_t _thickness;

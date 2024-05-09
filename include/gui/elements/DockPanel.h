@@ -26,8 +26,9 @@ private:
 public:
     DockPanel_(std::vector<DockElement> elements);
 
-    void render(const GFX& gfx) override;
-    Size min_size() override;
+    void i_render(const GFX& gfx) override;
+    Size i_min_size() override;
+    Size i_max_size() override;
 
     const Iterator<UIElement> *list_children() override;
     size_t count_children() override;
