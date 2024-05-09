@@ -88,28 +88,30 @@ void loop()
     strcpy(text, "HO_HO_HO_HO_HO");
 
     Label label1 = new Label_(text);
-    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(label1, Vector(0, 20+y)) });
+    label1->foreground_color = color_t::White;
+    label1->background_color = transparent_color();
+
+    Rectangle recti1 = new Rectangle_(5);
+    recti1->foreground_color = color_t::Black;
+    recti1->background_color = transparent_color();
+
+    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(label1, Vector(0, 20 + y)), fit_into_dock(recti1, Vector(50, 50)) });
+    panel1->foreground_color = panel1->background_color = transparent_color();
     panel1->padding = PaddingSize(13);
-
-    //Rectangle recti1 = new Rectangle_(5, 5);
-    //Rectangle recti2 = new Rectangle_(5, 5);
-    //Rectangle recti3 = new Rectangle_(5, 5);
-    //Rectangle recti4 = new Rectangle_(5, 5);
-
-    //Grid inner_grid = new Grid_(
-    //    std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1)},
-    //    std::vector<GridRCDefinition> { define_grid_rc(GridRCSizeType::Proportional, 1), define_grid_rc(GridRCSizeType::Proportional, 1) },
-    //    std::vector<GridElement> { fit_in_grid(recti1, 0, 0), fit_in_grid(recti2, 0, 1), fit_in_grid(recti3, 1, 0), fit_in_grid(recti4, 1, 1) }
-    //);
 
     root = panel1;
 
     GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
     root->render(root_gfx);
-    engine->push(FullRule);
+
+    DrawSettings draw_settings;
+    draw_settings.background_color = color_t::Red;
+    draw_settings.update_rule = FullRule;
+
+    engine->push(draw_settings);
 
     delete label1;
-    //delete rect1;
+    delete recti1;
     delete panel1;
 
 

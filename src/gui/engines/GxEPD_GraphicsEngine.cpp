@@ -11,12 +11,14 @@ GxEPD_GraphicsEngine::GxEPD_GraphicsEngine(DISPLAY_TYPE *display):
 
 }
 
-void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds, color_t color)
+void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds, color_t color, cord_t thickness)
 {
     DrawOperation operation;
     operation.type = DrawOperationType::Rectangle;
     operation.bounds = bounds;
     operation.color = color;
+
+    operation.args.rect.thickness = thickness;
 
     _operation_queue.push_back(operation);
 }
@@ -35,15 +37,18 @@ void GxEPD_GraphicsEngine::print_text(Vector start, cord_t width_limit, const ch
     _operation_queue.push_back(operation);
 }
 
-void GxEPD_GraphicsEngine::push(UpdateRule rule)
+void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
 {   
-    if(rule->is_partial_update())
+    if(draw_settings.update_rule->is_partial_update())
         _display->setPartialWindow(0, 0, _display->width(), _display->height());
 
     _display->firstPage();
 
 #if GxEPD_GE_DEBUG_OPTIONS & GxEPD_GE_RENDER_DEBUG
     Serial.println("GxEPD_GraphicsEngine: pushing operations to display");
+
+    Serial.printf("DrawSettings: background=%d", draw_settings.background_color);
+    Serial.println();
 
     for (size_t i = 0; i < _operation_queue.size(); i++)        
     {
@@ -61,24 +66,27 @@ void GxEPD_GraphicsEngine::push(UpdateRule rule)
         switch (operation.type)
         {
         case DrawOperationType::Rectangle:
-            Serial.println("RECT");
+            Serial.printf("RECT thickness=%d", operation.args.rect.thickness);
             break;
 
             
         case DrawOperationType::Text:
             Serial.printf("TEXT len_limit=%d, font=%d, text=", operation.args.text.len_limit, (int)operation.args.text.font);
-            Serial.println(operation.args.text.text);
+            Serial.print(operation.args.text.text);
             break;
         
         default:
-            Serial.println("UNKNOWN fix it");
+            Serial.print("UNKNOWN fix it");
             break;
         }
+        Serial.println();
     }
 #endif
 
     do
     {
+        _display->fillScreen(color_to_rgb565(draw_settings.background_color));
+
         for (auto operation : _operation_queue)
         {
             do_operation(operation);
@@ -97,51 +105,73 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
     switch (operation.type)
     {
     case DrawOperationType::Rectangle:
-        _display->fillRect(
-            bounds.start.x,
-            bounds.start.y,
-            bounds.size.width,
-            bounds.size.height,
-            color
-        );
+        {
+            cord_t thickness = operation.args.rect.thickness;
+            if (thickness == 0)
+            {
+                _display->fillRect(
+                    bounds.start.x,
+                    bounds.start.y,
+                    bounds.size.width,
+                    bounds.size.height,
+                    color
+                );
+            }
+            else
+            {
+                _display->startWrite();
+                Vector end = bounds.end();
+                for (cord_t delta = 0; delta < thickness; delta++)
+                {
+                    _display->drawFastVLine(bounds.start.x + delta, bounds.start.y, bounds.size.height, color);   
+                    _display->drawFastVLine(end.x - delta, bounds.start.y, bounds.size.height, color);
+
+                    _display->drawFastHLine(bounds.start.x, bounds.start.y + delta, bounds.size.width, color);
+                    _display->drawFastHLine(bounds.start.x, end.y - delta, bounds.size.width, color);
+                }
+                _display->endWrite();
+            }
+        }
         break;
         
     case DrawOperationType::Text:
-        const char *text = operation.args.text.text;
-        font_id_t font_id = operation.args.text.font->id();
-        const GFXfont *font = _fonts.get_font(font_id);
-
-        uint16_t cursor_x = bounds.start.x;
-        uint16_t pos_y = bounds.start.y + _fonts.get_yoffset(font_id);
-
-        size_t i = 0;
-        while (char c = *text++)
         {
-            if (i++ >= operation.args.text.len_limit) break;
+            const char *text = operation.args.text.text;
+            font_id_t font_id = operation.args.text.font->id();
+            const GFXfont *font = _fonts.get_font(font_id);
 
-            uint8_t first = font->first;
-            if ((c >= first) && (c <= font->last))
+            uint16_t cursor_x = bounds.start.x;
+            uint16_t pos_y = bounds.start.y + _fonts.get_yoffset(font_id);
+
+            size_t i = 0;
+            while (char c = *text++)
             {
-                GFXglyph *glyph = font->glyph + (c - first);
+                if (i++ >= operation.args.text.len_limit) break;
+
+                uint8_t first = font->first;
+                if ((c >= first) && (c <= font->last))
+                {
+                    GFXglyph *glyph = font->glyph + (c - first);
 
 #if GxEPD_GE_DEBUG_OPTIONS & GxEPD_GE_TEXT_DEBUG
-                _display->drawFastHLine(cursor_x, bounds.start.y, glyph->xAdvance, color);
-                _display->drawFastVLine(cursor_x, bounds.start.y - 1, 5, color);
+                    _display->drawFastHLine(cursor_x, bounds.start.y, glyph->xAdvance, color);
+                    _display->drawFastVLine(cursor_x, bounds.start.y - 1, 5, color);
 #endif
 
-                bool was_clipped = drawChar(glyph, font, color, pos_y, cursor_x, bounds.end().x, _display);
+                    bool was_clipped = drawChar(glyph, font, color, pos_y, cursor_x, bounds.end().x, _display);
 
-                if (was_clipped)
-                    break;
+                    if (was_clipped)
+                        break;
 
-                cursor_x += glyph->xAdvance;
+                    cursor_x += glyph->xAdvance;
+                }
             }
         }
         break;
     }
 }
 
-bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos_y, uint16_t cursor_x, cord_t width_limit, DISPLAY_TYPE *display)
+bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos_y, uint16_t cursor_x, cord_t end_x, DISPLAY_TYPE *display)
 {
     bool was_clipped = false;
 
@@ -175,7 +205,7 @@ bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos
                     bits = bitmap[bo++];
 
                 if (bits & 0x80)
-                    if (cursor_x + xo + xx <= width_limit)
+                    if (cursor_x + xo + xx <= end_x)
                         display->writePixel(cursor_x + xo + xx, pos_y + yo + yy, color);
                     else
                         was_clipped = true;

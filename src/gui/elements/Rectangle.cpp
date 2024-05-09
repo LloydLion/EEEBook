@@ -10,10 +10,10 @@ void Rectangle_::render(const GFX& pgfx)
 {
     ASSUME_MARGIN(pgfx);
 
-    gfx.fill_screen(background_color);
+    gfx.draw_rectangle(LocalBounds(Vector(), gfx.size()), foreground_color, _thickness);
 
     if (_thickness != 0)
-        gfx.slice(Distance4Sides(_thickness)).fill_screen(foreground_color);
+        gfx.slice(Distance4Sides(_thickness)).fill_screen(background_color);
 }
 
 Size Rectangle_::min_size()
