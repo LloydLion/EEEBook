@@ -10,30 +10,33 @@ UpdateType inverse_update(UpdateType type)
     return UpdateType::PartialUpdate;
 }
 
-UpdateRule_::UpdateRule_(UpdateType type, int delay, int count): _default_type(type), _update_delay(delay), _update_count(count){}
+UpdateRule_::UpdateRule_(UpdateType type, int delay, int count, int percentage): _default_type(type), _update_delay(delay), _update_count(count), _percentage(percentage){}
 
-unsigned long abs(unsigned long a, unsigned long b) {
-    return (a > b) ? (a - b) : (b - a);
+int get_percentage(Size size, Iterator<Bounds> *regions)
+{
+    int total_area, regions_area = 0;
+    total_area = size.width * size.height;
+    while(regions->next())
+    {
+        Size region_size = regions->current().size;
+        regions_area += region_size.width * region_size.height;
+    }
+    return (regions_area*100)/total_area;
 }
 
-bool UpdateRule_::is_partial_update()
+
+bool UpdateRule_::is_partial_update(Size size, Iterator<Bounds> *regions)
 {
-    if (_update_delay == 0);
-    // min(millis() - _time, _time - millis())
-    else if (_update_delay <= abs(millis(), _time))
-        _count = 0;
-        _time = millis();
-        return inverse_update(_default_type);
-    if (_update_count == 0);
-    else if (_count <= _update_count)
-    {
-        _count = 0;
-        _time = millis();
-        return inverse_update(_default_type);
-    }
-    _count ++;
+    bool is_inverse_update = (_update_delay <=millis() - _time && _update_delay != 0) || //time condition 
+                            (_count % _update_count == 0 && _update_count != 0) || //count condition
+                            (_percentage <= get_percentage(size,regions) && _percentage != 0); //regions condition 
+    //update time and time and count
     _time = millis();
-    return _default_type;
+    _count ++;
+    //returning inverse update if all conditions passed and returning default update type if not 
+    return is_inverse_update ? 
+        inverse_update(_default_type) : _default_type;
+
 }
 
 
