@@ -10,22 +10,33 @@ uint16_t color_to_rgb565(color_t color)
     case color_t::Black:
         return 0x0000;
 
+#ifdef IS_RBW_DISPLAY
+    case color_t::Red:
+        return 0xF800;
+#endif
+
     default:
         return 0x0000;
     }
 }
 
-color_t get_opposite_color(color_t color)
+
+transparent_color_t transparent_color()
 {
-    switch (color)
-    {
-    case color_t::White:
-        return color_t::Black;
+    transparent_color_t tcolor;
+    tcolor.is_transparent = true;
+    tcolor.color = color_t::Black;
+    return tcolor;
+}
 
-    case color_t::Black:
-        return color_t::White;
+transparent_color_t::transparent_color_t(const color_t& other)
+{
+    is_transparent = false;
+    color = other;
+}
 
-    default:
-        return color_t::Black;
-    }
+transparent_color_t::transparent_color_t()
+{
+    is_transparent = true;
+    color = color_t::Black;
 }
