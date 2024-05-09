@@ -12,7 +12,7 @@ private:
 public:
     void draw_rectangle(Bounds bounds) override;
     void print_text(Point start_point, cord_t width_limit, const char *text) override;
-    void push();
+    void push(UpdateRule rule);
 };
 
 #endif

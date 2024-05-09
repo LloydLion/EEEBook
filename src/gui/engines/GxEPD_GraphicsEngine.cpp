@@ -35,9 +35,10 @@ void GxEPD_GraphicsEngine::print_text(Vector start, cord_t width_limit, const ch
     _operation_queue.push_back(operation);
 }
 
-void GxEPD_GraphicsEngine::push()
-{
-    _display->setPartialWindow(0, 0, _display->width(), _display->height());
+void GxEPD_GraphicsEngine::push(UpdateRule rule)
+{   
+    if(rule->is_partial_update())
+        _display->setPartialWindow(0, 0, _display->width(), _display->height());
 
     _display->firstPage();
 

@@ -106,7 +106,7 @@ void loop()
 
     GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
     root->render(root_gfx);
-    engine->push();
+    engine->push(FullRule);
 
     delete label1;
     //delete rect1;

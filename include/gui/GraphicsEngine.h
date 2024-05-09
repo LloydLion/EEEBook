@@ -1,8 +1,9 @@
 #ifndef GUI_GRAPHICS_ENGINE_H
 #define GUI_GRAPHICS_ENGINE_H
-#include "cordinates.h"
+#include "gui/cordinates.h"
 #include "gui/Font.h"
-#include "color.h"
+#include "gui/color.h"
+#include "gui/UpdateRule.h"
 
 class GraphicsEngine_;
 typedef GraphicsEngine_ *GraphicsEngine;
@@ -16,7 +17,7 @@ public:
     virtual Font get_default_font() = 0;
     virtual FontEngine get_font_engine() = 0;
 
-    virtual void push() = 0;
+    virtual void push(UpdateRule rule) = 0;
 };
 
 #endif
