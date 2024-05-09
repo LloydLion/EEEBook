@@ -7,7 +7,7 @@
 struct DrawSettings
 {
     color_t background_color;
-    UpdateRule update_rule
+    UpdateRule update_rule;
 };
 
 #endif

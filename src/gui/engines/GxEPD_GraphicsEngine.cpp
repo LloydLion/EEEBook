@@ -5,8 +5,13 @@
 
 bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos_y, uint16_t cursor_x, cord_t width_limit, DISPLAY_TYPE *display);
 
+Bounds &selector(GxEPD_GraphicsEngine::DrawOperation &draw_operation)
+{
+    return draw_operation.bounds;
+}
+
 GxEPD_GraphicsEngine::GxEPD_GraphicsEngine(DISPLAY_TYPE *display):
-    _display(display), _default_font(0, &_fonts)
+    _display(display), _default_font(0, &_fonts), _operation_bounds_iterator(VectorIterator<DrawOperation>(_operation_queue), selector)
 {
 
 }
@@ -39,7 +44,8 @@ void GxEPD_GraphicsEngine::print_text(Vector start, cord_t width_limit, const ch
 
 void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
 {   
-    if(draw_settings.update_rule->is_partial_update())
+    _operation_bounds_iterator.reset();
+    if(draw_settings.update_rule->is_partial_update(Size(_display->width(), _display->height()), &_operation_bounds_iterator))
         _display->setPartialWindow(0, 0, _display->width(), _display->height());
 
     _display->firstPage();

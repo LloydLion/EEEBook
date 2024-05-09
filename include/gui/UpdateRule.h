@@ -23,7 +23,7 @@ private:
 public:
     UpdateRule_(UpdateType type, int delay = 0, int count = 0, int _percentage = 0);
     bool is_partial_update(Size size, Iterator<Bounds> *regions);
+    static UpdateRule get_full_update();
+    static UpdateRule get_partial_update();
 };
-const UpdateRule FullRule = new UpdateRule_(UpdateType::FullUpdate);
-const UpdateRule PartialRule = new UpdateRule_(UpdateType::PartialUpdate);
 #endif

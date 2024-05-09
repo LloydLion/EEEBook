@@ -78,45 +78,56 @@ void setup()
 
 void loop()
 {
-    digitalWrite(2, HIGH);
-    delay(100);
-    digitalWrite(2, LOW);
+    try
+    {
+        digitalWrite(2, HIGH);
+        delay(100);
+        digitalWrite(2, LOW);
 
-    static char* text = new char[40];
-    static cord_t y = 1;
+        static char* text = new char[40];
+        static cord_t y = 1;
 
-    strcpy(text, "HO_HO_HO_HO_HO");
+        strcpy(text, "HO_HO_HO_HO_HO");
 
-    Label label1 = new Label_(text);
-    label1->foreground_color = color_t::White;
-    label1->background_color = transparent_color();
+        Label label1 = new Label_(text);
+        label1->foreground_color = color_t::Black;
+        label1->background_color = transparent_color();
 
-    Rectangle recti1 = new Rectangle_(5);
-    recti1->foreground_color = color_t::Black;
-    recti1->background_color = transparent_color();
+        Rectangle recti1 = new Rectangle_(5);
+        recti1->foreground_color = color_t::Black;
+        recti1->background_color = transparent_color();
 
-    DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(label1, Vector(0, 20 + y)), fit_into_dock(recti1, Vector(50, 50)) });
-    panel1->foreground_color = panel1->background_color = transparent_color();
-    panel1->padding = PaddingSize(13);
+        DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(label1, Vector(0, 20 + y)), fit_into_dock(recti1, Vector(50, 50)) });
+        panel1->foreground_color = panel1->background_color = transparent_color();
+        panel1->padding = PaddingSize(13);
 
-    root = panel1;
+        root = panel1;
 
-    GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
-    root->render(root_gfx);
+        GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+        root->render(root_gfx);
 
-    DrawSettings draw_settings;
-    draw_settings.background_color = color_t::Red;
-    draw_settings.update_rule = FullRule;
+        DrawSettings draw_settings;
+        draw_settings.background_color = color_t::White;
+        draw_settings.update_rule = UpdateRule_::get_full_update();
 
-    engine->push(draw_settings);
+        engine->push(draw_settings);
 
-    delete label1;
-    delete recti1;
-    delete panel1;
+        delete label1;
+        delete recti1;
+        delete panel1;
 
+        y += 8;
 
+        delay(3000);
+    }
+    catch (const std::runtime_error &err)
+    {
+        Serial.println();
+        Serial.println();
+        Serial.println("----CRITICAL ERROR----");
+        Serial.println("Manual restart required");
+        Serial.println(err.what());
 
-    y += 8;
-
-    delay(3000);
+        while (1) delay(100);
+    }
 }
