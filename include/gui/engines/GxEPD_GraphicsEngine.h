@@ -70,7 +70,6 @@ private:
         cord_t get_yoffset(font_id_t id);
     };
 
-    SelectIterator<VectorIterator<DrawOperation>, DrawOperation, Bounds> _operation_bounds_iterator;
     std::vector<DrawOperation> _operation_queue;
     DISPLAY_TYPE *_display;
     Fonts _fonts;
@@ -90,8 +89,6 @@ public:
     void push(DrawSettings settings) override;
 
     font_id_t register_font(const GFXfont *font);
-
-    friend Bounds &selector(GxEPD_GraphicsEngine::DrawOperation &draw_operation);
 };
 
 

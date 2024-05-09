@@ -12,17 +12,21 @@ enum UpdateType : bool
     PartialUpdate = true,
     FullUpdate = false
 };
+
 UpdateType inverse_update(UpdateType type);
 
 class UpdateRule_
 {
 private:
     UpdateType _default_type;
-    int _update_delay, _update_count, _count = 0, _percentage;
+    int _update_delay, _update_count, _count = 0;
     unsigned long _time = 0;
+
 public:
-    UpdateRule_(UpdateType type, int delay = 0, int count = 0, int _percentage = 0);
-    bool is_partial_update(Size size, Iterator<Bounds> *regions);
+    UpdateRule_(UpdateType type, int delay = 0, int count = 0);
+
+    bool is_partial_update();
+
     static UpdateRule get_full_update();
     static UpdateRule get_partial_update();
 };

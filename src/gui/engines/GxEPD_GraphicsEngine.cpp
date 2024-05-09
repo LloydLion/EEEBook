@@ -5,15 +5,10 @@
 
 bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos_y, uint16_t cursor_x, cord_t width_limit, DISPLAY_TYPE *display);
 
-Bounds &selector(GxEPD_GraphicsEngine::DrawOperation &draw_operation)
-{
-    return draw_operation.bounds;
-}
-
 GxEPD_GraphicsEngine::GxEPD_GraphicsEngine(DISPLAY_TYPE *display):
-    _display(display), _default_font(0, &_fonts), _operation_bounds_iterator(VectorIterator<DrawOperation>(_operation_queue), selector)
+    _display(display), _default_font(0, &_fonts)
 {
-
+    
 }
 
 void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds, color_t color, cord_t thickness)
@@ -43,15 +38,22 @@ void GxEPD_GraphicsEngine::print_text(Vector start, cord_t width_limit, const ch
 }
 
 void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
-{   
-    _operation_bounds_iterator.reset();
-    if(draw_settings.update_rule->is_partial_update(Size(_display->width(), _display->height()), &_operation_bounds_iterator))
+{
+    bool is_partial_update_required = draw_settings.update_rule->is_partial_update();
+
+    if (is_partial_update_required)
         _display->setPartialWindow(0, 0, _display->width(), _display->height());
+    else
+        _display->setFullWindow();
 
     _display->firstPage();
 
 #if GxEPD_GE_DEBUG_OPTIONS & GxEPD_GE_RENDER_DEBUG
     Serial.println("GxEPD_GraphicsEngine: pushing operations to display");
+
+    if (is_partial_update_required)
+        Serial.println("Using partal window update mode");
+    else Serial.println("Using full window update mode");
 
     Serial.printf("DrawSettings: background=%d", draw_settings.background_color);
     Serial.println();
