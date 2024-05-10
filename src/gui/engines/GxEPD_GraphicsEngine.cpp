@@ -93,7 +93,7 @@ void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
 
     do
     {
-        //_display->fillScreen(color_to_rgb565(draw_settings.background_color));
+        _display->fillScreen(color_to_rgb565(draw_settings.background_color));
 
         for (auto operation : _operation_queue)
         {
