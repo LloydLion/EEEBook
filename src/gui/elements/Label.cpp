@@ -7,8 +7,8 @@ Label_::Label_(const char* text): _text(text)
 
 void Label_::i_render(const GFX& gfx)
 {
-    gfx.fill_screen(background_color);
-    gfx.print_text(Vector(), _text, foreground_color, -1, get_font());
+    gfx.fill_screen(background_color());
+    gfx.print_text(Vector(), _text, foreground_color(), -1, get_font());
 }
 
 void Label_::set_text(const char *text)

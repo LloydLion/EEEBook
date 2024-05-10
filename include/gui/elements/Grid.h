@@ -2,7 +2,7 @@
 #define GUI_ELEMENTS_GRID_H
 
 #include "../cordinates.h"
-#include "../UIContainer.h"
+#include "../UIComposer.h"
 
 class Grid_;
 typedef Grid_ *Grid;
@@ -36,7 +36,7 @@ struct GridElement
 GridRCDefinition define_grid_rc(GridRCSizeType size_type, cord_t size = 0);
 GridElement fit_in_grid(UIElement element, size_t row, size_t column);
 
-class Grid_ : public UIContainer_
+class Grid_ : public UIComposer_
 {
 private:
     std::vector<GridRCDefinition> _rows, _columns;

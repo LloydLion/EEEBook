@@ -2,7 +2,7 @@
 #define GUI_ELEMENTS_DOCK_PANEL_H
 
 #include "../cordinates.h"
-#include "../UIContainer.h"
+#include "../UIComposer.h"
 #include "std/iterator.h"
 
 class DockPanel_;
@@ -16,7 +16,7 @@ struct DockElement
 
 DockElement fit_into_dock(UIElement element, Vector point);
 
-class DockPanel_ : public UIContainer_
+class DockPanel_ : public UIComposer_
 {
 private:
     std::vector<DockElement> _elements;
@@ -30,7 +30,7 @@ public:
     Size i_min_size() override;
     Size i_max_size() override;
 
-    const Iterator<UIElement> *list_children() override;
+    Iterator<UIElement> *list_children() override;
     size_t count_children() override;
 };
 

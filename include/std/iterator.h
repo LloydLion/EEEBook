@@ -59,4 +59,27 @@ public:
     { _current_index = -1; }
 };
 
+template<class T>
+class SingleElementIterator : public Iterator<T>
+{
+private:
+    T *_element;
+    bool _state;
+public:
+    SingleElementIterator(T *element): _element(element) { }
+
+    bool next() override
+    {   
+        if (_state == false)
+            return _state = true;
+        else return false;
+    }
+
+    T &current() override
+    { return *_element; }
+
+    void reset() override
+    { _state = false; }
+};
+
 #endif

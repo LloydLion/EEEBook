@@ -70,11 +70,12 @@ Size Grid_::i_min_size()
 Size Grid_::i_max_size()
 {
     //TODO: implement
+    return Size();
 }
 
 void Grid_::i_render(const GFX& gfx)
 {
-    gfx.fill_screen(background_color);
+    gfx.fill_screen(background_color());
 
     cord_t rows_rs[MAX_GRID_SIZE];
     cord_t columns_rs[MAX_GRID_SIZE];

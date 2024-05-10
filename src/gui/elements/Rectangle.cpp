@@ -8,10 +8,10 @@ Rectangle_::Rectangle_(): _thickness(0)
 
 void Rectangle_::i_render(const GFX& gfx)
 {
-    gfx.draw_rectangle(LocalBounds(Vector(), gfx.size()), foreground_color, _thickness);
+    gfx.draw_rectangle(LocalBounds(Vector(), gfx.size()), foreground_color(), _thickness);
 
     if (_thickness != 0)
-        gfx.slice(Distance4Sides(_thickness)).fill_screen(background_color);
+        gfx.slice(Distance4Sides(_thickness)).fill_screen(background_color());
 }
 
 Size Rectangle_::i_min_size()

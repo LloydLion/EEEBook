@@ -16,7 +16,7 @@ DockPanel_::DockPanel_(std::vector<DockElement> elements):
 
 void DockPanel_::i_render(const GFX& gfx)
 {
-    gfx.fill_screen(background_color);
+    gfx.fill_screen(background_color());
 
     Vector corner = gfx.size().start_to_end();
     for (auto el : _elements)
@@ -56,7 +56,7 @@ Size DockPanel_::i_max_size()
     return result;
 }
 
-const Iterator<UIElement> *DockPanel_::list_children()
+Iterator<UIElement> *DockPanel_::list_children()
 {
     _iterator.reset();
     return &_iterator;

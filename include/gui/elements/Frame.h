@@ -16,11 +16,9 @@ public:
     void i_render(const GFX& gfx) override;
     Size i_min_size() override;
     Size i_max_size() override;
-    UIElement get_element() override;
 
-    cord_t _thickness;
 private:
-    UIElement _element;
+    cord_t _thickness;
 };
 
 #endif

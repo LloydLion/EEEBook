@@ -1,6 +1,8 @@
 #include "gui/cordinates.h"
 #include <Arduino.h>
 
+#define DEFAULT_NOT_EQUAL_IMPL { return !(other == *this); }
+
 Vector::Vector(): x(), y() { }
 Vector::Vector(cord_t x, cord_t y): x(x), y(y) { }
 
@@ -18,6 +20,13 @@ Vector Vector::operator-() const
 {
     return Vector(-x, -y);
 }
+
+bool Vector::operator==(const Vector &other) const
+{
+    return x == other.x && y == other.y;
+}
+
+bool Vector::operator!=(const Vector &other) const DEFAULT_NOT_EQUAL_IMPL
 
 Size::Size(): width(), height() { }
 Size::Size(cord_t width, cord_t height): width(width), height(height) { }
@@ -63,6 +72,14 @@ bool Size::operator<(const Size &other) const
     return other > *this;
 }
 
+bool Size::operator==(const Size &other) const
+{
+    return width == other.width && height == other.height;
+}
+
+bool Size::operator!=(const Size &other) const DEFAULT_NOT_EQUAL_IMPL
+
+
 Bounds::Bounds(): start(), size() { }
 Bounds::Bounds(Vector start, Size size): start(start), size(size) { }
 Bounds::Bounds(Vector start, Vector end): start(start), size(start, end) { }
@@ -103,6 +120,13 @@ Bounds Bounds::slice(LocalVector local_vector, Size size) const
     return Bounds(cast(local_vector), size);
 }
 
+bool Bounds::operator==(const Bounds &other) const
+{
+    return start == other.start && size == other.size;
+}
+
+bool Bounds::operator!=(const Bounds &other) const DEFAULT_NOT_EQUAL_IMPL
+
 Distance4Sides::Distance4Sides():
     up(), down(), left(), right() { }
 Distance4Sides::Distance4Sides(cord_t up, cord_t down, cord_t left, cord_t right):
@@ -119,3 +143,10 @@ Size Distance4Sides::expand(Size original_size) const
 {
     return Size(original_size.width + left + right, original_size.height + up + down);
 }
+
+bool Distance4Sides::operator==(const Distance4Sides &other) const
+{
+    return up == other.up && down == other.down && left == other.left && right == other.right;
+}
+
+bool Distance4Sides::operator!=(const Distance4Sides &other) const DEFAULT_NOT_EQUAL_IMPL

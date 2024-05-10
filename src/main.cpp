@@ -50,6 +50,7 @@ GraphicsEngine engine;
 
 void setup()
 {
+
     pinMode(2, OUTPUT);
     digitalWrite(2, HIGH);
     delay(100);
@@ -64,6 +65,7 @@ void setup()
     Serial.println();
     Serial.println("----RESTART----");
     Serial.println();
+
     delay(200);
 
     init_display();
@@ -90,16 +92,17 @@ void loop()
         strcpy(text, "HO_HO_HO_HO_HO");
 
         Label label1 = new Label_(text);
-        label1->foreground_color = color_t::White;
-        label1->background_color = color_t::Black;
+        label1->foreground_color(color_t::White);
+        label1->background_color(color_t::Black);
         label1->set_font(engine->get_default_font());
 
         Rectangle recti1 = new Rectangle_(5);
-        recti1->foreground_color = color_t::Black;
-        recti1->background_color = transparent_color();
+        recti1->foreground_color(color_t::Black);
+        recti1->background_color(transparent_color());
 
         DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(label1, Vector(0, 20 + y)), fit_into_dock(recti1, Vector(20, 20)) });
-        panel1->foreground_color = panel1->background_color = transparent_color();
+        panel1->foreground_color(transparent_color());
+        panel1->background_color(transparent_color());
         panel1->padding = PaddingSize(13);
 
         root = panel1;

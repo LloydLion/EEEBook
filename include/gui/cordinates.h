@@ -15,6 +15,9 @@ public:
     Vector operator+(const Vector &other) const;
     Vector operator-() const;
     Vector operator-(const Vector &other) const;
+
+    bool operator==(const Vector &other) const;
+    bool operator!=(const Vector &other) const;
 };
 
 typedef Vector LocalVector;
@@ -40,6 +43,9 @@ public:
 
     bool operator>(const Size &other) const;
     bool operator<(const Size &other) const;
+
+    bool operator==(const Size &other) const;
+    bool operator!=(const Size &other) const;
 };
 
 class Bounds;
@@ -63,10 +69,12 @@ public:
     Vector cast(LocalVector local_vector) const;
     Vector end() const;
     bool is_null() const;
-
     
     static Bounds intersect(Bounds a, Bounds b);
     static Bounds combine(Bounds a, Bounds b);
+
+    bool operator==(const Bounds &other) const;
+    bool operator!=(const Bounds &other) const;
 };
 
 class Distance4Sides
@@ -83,6 +91,9 @@ public:
 
     Bounds cast(Bounds original_bounds) const;
     Size expand(Size original_size) const;
+
+    bool operator==(const Distance4Sides &other) const;
+    bool operator!=(const Distance4Sides &other) const;
 };
 
 typedef Distance4Sides MarginSize;

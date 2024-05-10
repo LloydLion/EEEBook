@@ -14,10 +14,16 @@ class UIContainer_ : public UIElement_
 protected:
     GFX assume_padding(const GFX &gfx);
 
+    void subscribe_all_children();
+    void subscribe_child(UIElement element);
+    void unsubscribe_child(UIElement element);
+
 public:
     PaddingSize padding;
 
-    virtual const Iterator<UIElement> *list_children() = 0;
+    virtual void c_notify_composition_mutation(UIElement element);
+
+    virtual Iterator<UIElement> *list_children() = 0;
     virtual size_t count_children() = 0;
 };
 
