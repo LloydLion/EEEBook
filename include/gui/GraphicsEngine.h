@@ -1,9 +1,10 @@
 #ifndef GUI_GRAPHICS_ENGINE_H
 #define GUI_GRAPHICS_ENGINE_H
-#include "cordinates.h"
+#include "gui/cordinates.h"
 #include "gui/Font.h"
+#include "gui/color.h"
+#include "gui/UpdateRule.h"
 #include "gui/DrawSettings.h"
-#include "color.h"
 
 class GraphicsEngine_;
 typedef GraphicsEngine_ *GraphicsEngine;
