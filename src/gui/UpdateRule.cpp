@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 UpdateRule_ FullRule = UpdateRule_(UpdateType::FullUpdate);
-UpdateRule_ PartialRule = UpdateRule_(UpdateType::FullUpdate);
+UpdateRule_ PartialRule = UpdateRule_(UpdateType::PartialUpdate);
 
 UpdateType inverse_update(UpdateType type)
 {

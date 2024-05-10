@@ -42,7 +42,7 @@ void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
     bool is_partial_update_required = draw_settings.update_rule->is_partial_update();
 
     if (is_partial_update_required)
-        _display->setPartialWindow(0, 0, _display->width(), _display->height());
+            _display->setPartialWindow(0, 0, _display->width(), _display->height());
     else
         _display->setFullWindow();
 
@@ -52,7 +52,7 @@ void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
     Serial.println("GxEPD_GraphicsEngine: pushing operations to display");
 
     if (is_partial_update_required)
-        Serial.println("Using partal window update mode");
+        Serial.println("Using partial window update mode");
     else Serial.println("Using full window update mode");
 
     Serial.printf("DrawSettings: background=%d", draw_settings.background_color);
@@ -93,7 +93,7 @@ void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
 
     do
     {
-        _display->fillScreen(color_to_rgb565(draw_settings.background_color));
+        //_display->fillScreen(color_to_rgb565(draw_settings.background_color));
 
         for (auto operation : _operation_queue)
         {
