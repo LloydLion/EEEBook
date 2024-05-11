@@ -11,7 +11,7 @@ GxEPD_GraphicsEngine::GxEPD_GraphicsEngine(DISPLAY_TYPE *display):
     
 }
 
-void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds, color_t color, cord_t thickness)
+void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds, color_t color, cord_t thickness, Pattern pattern)
 {
     DrawOperation operation;
     operation.type = DrawOperationType::Rectangle;
@@ -19,8 +19,43 @@ void GxEPD_GraphicsEngine::draw_rectangle(Bounds bounds, color_t color, cord_t t
     operation.color = color;
 
     operation.args.rect.thickness = thickness;
+    operation.args.rect.pattern = pattern;
 
     _operation_queue.push_back(operation);
+}
+
+void GxEPD_GraphicsEngine::draw_line(Vector start_point, Vector end_point, color_t color, cord_t thickness, cord_t bias, Pattern pattern)
+{
+    DrawOperation operation;
+    operation.type = DrawOperationType::Line;
+    operation.bounds = Bounds(start_point,end_point);
+    operation.color = color;
+
+    operation.args.line.is_main_diagonal = (start_point.x < end_point.x) ^ (start_point.y < end_point.y);
+    operation.args.line.thickness = thickness;
+    operation.args.line.pattern = pattern;
+
+}
+
+void GxEPD_GraphicsEngine::draw_ellipse(Bounds bounds, color_t color, cord_t thickness, Pattern pattern)
+{
+    DrawOperation operation;
+    operation.type = DrawOperationType::Ellipse;
+    operation.bounds = bounds;
+    operation.color = color;
+
+    operation.args.ellipse.thickness = thickness;
+    operation.args.ellipse.pattern = pattern;
+}
+
+void GxEPD_GraphicsEngine::draw_bitmap(Vector star_point, Bitmap bitmap, color_t color)
+{
+    DrawOperation operation;
+    operation.type = DrawOperationType::Picture;
+    operation.bounds = Bounds(star_point,bitmap.size());
+    operation.color = color;
+
+    operation.args.picture.bitmap = bitmap;
 }
 
 void GxEPD_GraphicsEngine::print_text(Vector start, cord_t width_limit, const char *text, size_t len_limit, color_t color, Font font)
@@ -112,6 +147,12 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
 
     switch (operation.type)
     {
+    case DrawOperationType::Line:
+    {
+        //TODO: add Line, Ellipse, Bitmap support
+    }
+    break;
+
     case DrawOperationType::Rectangle:
         {
             cord_t thickness = operation.args.rect.thickness;
@@ -140,7 +181,7 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
                 _display->endWrite();
             }
         }
-        break;
+    break;
         
     case DrawOperationType::Text:
         {

@@ -8,6 +8,7 @@ private:
 public:
 
     Pattern(bool (*func)(int x, int y));
+    Pattern();
 
     Pattern inverse();
     bool executePattern(int pixel_count, int layer);

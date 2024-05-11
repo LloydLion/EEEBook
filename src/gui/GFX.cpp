@@ -1,7 +1,7 @@
 #include "gui/GFX.h"
 #include <limits>
 
-#define RETURN_IF_COLOR_TRANSPERENT if (color.is_transparent) return
+#define RETURN_IF_COLOR_TRANSPARENT if (color.is_transparent) return
 
 GFX::GFX(GraphicsEngine engine, Bounds bounds): _engine(engine), _bounds(bounds)
 {
@@ -29,21 +29,42 @@ GFX GFX::slice(Distance4Sides distances) const
     return GFX(_engine, distances.cast(_bounds));
 }
 
-void GFX::draw_rectangle(LocalBounds bounds, transparent_color_t color, cord_t thickness) const
+void GFX::draw_rectangle(LocalBounds bounds, transparent_color_t color, cord_t thickness, Pattern pattern) const
 {
-    RETURN_IF_COLOR_TRANSPERENT;
-    _engine->draw_rectangle(_bounds.cast(bounds), color.color, thickness);
+    RETURN_IF_COLOR_TRANSPARENT;
+    _engine->draw_rectangle(_bounds.cast(bounds), color.color, thickness, pattern);
 }
+
+void GFX::draw_line(LocalVector start_point, LocalVector end_point, transparent_color_t color, cord_t thickness, cord_t bias, Pattern pattern) const
+{
+    RETURN_IF_COLOR_TRANSPARENT;
+    _engine->draw_line(_bounds.cast(start_point), _bounds.cast(end_point), color.color, thickness, bias, pattern);
+}
+
+void GFX::draw_ellipse(LocalBounds bounds, transparent_color_t color, cord_t thickness, Pattern pattern) const
+{
+    RETURN_IF_COLOR_TRANSPARENT;
+    _engine->draw_ellipse(_bounds.cast(bounds), color.color, thickness, pattern);
+}
+void GFX::draw_circle(LocalVector start_point, cord_t radius, transparent_color_t color, cord_t thickness = 0, Pattern pattern = Pattern::get_fill_pattern()) const
+    {draw_ellipse(LocalBounds(start_point, Size(radius*2, radius*2)), color.color, thickness, pattern);}
+
 
 void GFX::fill_screen(transparent_color_t color) const
 {
-    RETURN_IF_COLOR_TRANSPERENT;
-    _engine->draw_rectangle(_bounds, color.color, 0);
+    RETURN_IF_COLOR_TRANSPARENT;
+    _engine->draw_rectangle(_bounds, color.color, 0, Pattern::get_fill_pattern());
+}
+
+void GFX::draw_bitmap(LocalVector star_point, Bitmap bitmap, transparent_color_t color) const
+{
+    RETURN_IF_COLOR_TRANSPARENT;
+    _engine->draw_bitmap(_bounds.cast(star_point), bitmap, color.color);
 }
 
 void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, transparent_color_t color, size_t len_limit, Font font) const
 {
-    RETURN_IF_COLOR_TRANSPERENT;
+    RETURN_IF_COLOR_TRANSPARENT;
     if (font == nullptr)
         font = get_default_font();
 

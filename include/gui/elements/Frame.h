@@ -17,8 +17,8 @@ public:
     Size min_size() override;
     UIElement get_element() override;
 
-    cord_t _thickness;
 private:
+    cord_t _thickness;
     UIElement _element;
 };
 

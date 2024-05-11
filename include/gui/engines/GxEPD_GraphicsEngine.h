@@ -14,7 +14,17 @@ private:
     enum DrawOperationType : uint8_t
     {
         Rectangle,
-        Text
+        Text,
+        Ellipse,
+        Line,
+        Picture
+    };
+
+    struct LineDrawOperationArgs
+    {
+        bool is_main_diagonal;
+        cord_t thickness;
+        Pattern pattern;
     };
 
     struct TextDrawOperationArgs
@@ -27,12 +37,29 @@ private:
     struct RectDrawOperationArgs
     {
         cord_t thickness;
+        Pattern pattern;
     };
 
-    union DrawOpetationArgs
+    struct EllipseDrawOperationArgs
+    {
+        cord_t thickness;
+        Pattern pattern;
+    };
+
+    struct PictureDrawOperationArgs
+    {
+        Bitmap bitmap;
+        PictureDrawOperationArgs(): bitmap(nullptr, 0, 0) {};
+    };
+
+    union DrawOperationArgs
     {
         TextDrawOperationArgs text;
         RectDrawOperationArgs rect;
+        EllipseDrawOperationArgs ellipse; 
+        PictureDrawOperationArgs picture;
+        LineDrawOperationArgs line;
+        DrawOperationArgs(){};
     };
 
     struct DrawOperation
@@ -40,7 +67,7 @@ private:
         DrawOperationType type;
         Bounds bounds;
         color_t color;
-        DrawOpetationArgs args;
+        DrawOperationArgs args;
     };
     
 
@@ -80,7 +107,10 @@ private:
 public:
     GxEPD_GraphicsEngine(DISPLAY_TYPE *display);
 
-    void draw_rectangle(Bounds bounds, color_t color, cord_t thickness) override;
+    void draw_rectangle(Bounds bounds, color_t color, cord_t thickness, Pattern pattern) override;
+    void draw_line(Vector start_point, Vector end_point, color_t color, cord_t thickness, cord_t bias, Pattern pattern) override;
+    void draw_ellipse(Bounds bounds, color_t color, cord_t thickness, Pattern pattern) override;
+    void draw_bitmap(Vector star_point, Bitmap bitmap, color_t color) override;
     void print_text(Vector start_point, cord_t width_limit, const char *text, size_t len_limit, color_t color, Font font) override;
 
     Font get_default_font() override;

@@ -1,6 +1,6 @@
 #include"gui/pattern.h"
 
-bool fill(int x, int y)
+bool fill(int, int)
 {
     return true;    
 }
