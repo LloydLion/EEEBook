@@ -13,8 +13,12 @@ void UIElement_::render(const GFX& gfx)
     }
 
     Size min = min_size();
-    if (ngfx.size() < min)  
+    if (ngfx.size() < min)
     {
+        UI_PRINT_SELF;
+        Serial.printf("min Size(%d, %d), realm Size(%d, %d), prov Size(%d, %d)",
+            min.width, min.height, ngfx.size().width, ngfx.size().height, gfx.size().width, gfx.size().height);
+        Serial.println(" Min size restrict!");
         ngfx.fill_screen(color_t::Black);
         return;
     }
@@ -63,6 +67,14 @@ void UIElement_::reset_cache(CacheChannel channel)
 {
     CONNECT_CACHE_CHANNEL(min_size, CacheChannel::Composition);
     CONNECT_CACHE_CHANNEL(max_size, CacheChannel::Composition);
+
+#if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
+    UI_PRINT_SELF;
+    Serial.print("Cache has been reset, channel mask: ");
+    for (size_t bit = 0; bit < 8; bit++)
+        { Serial.print((bool)(channel & 0b10000000)); channel = (CacheChannel)(channel << 1); }
+    Serial.println();
+#endif
 }
 
 void UIElement_::bind_parent(UIContainer parent)
@@ -84,15 +96,28 @@ void UIElement_::unbind_parent(UIContainer parent)
 
 void UIElement_::trigger_mutation(MutationType type)
 {
+#if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
+    UI_PRINT_SELF;
+    Serial.print("Element mutation triggered. Type: ");
+#endif
     switch (type)
     {
     case MutationType::CompositionState:
+    
+#if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
+        if (_p_parent != nullptr)
+            Serial.println("CompositionState, parent will be notified");
+        else Serial.println("CompositionState, no parent to be notified");
+#endif
         if (_p_parent != nullptr)
             _p_parent->c_notify_composition_mutation(this);
         reset_cache(Composition);
         break;
 
     case MutationType::DrawState:
+#if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
+        Serial.println("DrawState");
+#endif
         reset_cache(Draw);
         break;
     

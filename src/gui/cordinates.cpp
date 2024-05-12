@@ -64,12 +64,12 @@ Size Size::operator-(const Vector &other) const
 
 bool Size::operator>(const Size &other) const
 {
-    return other.height > height or other.width > width;
+    return height > other.height or width > other.width;
 }
 
 bool Size::operator<(const Size &other) const
 {
-    return other > *this;
+    return height < other.height or width < other.width;
 }
 
 bool Size::operator==(const Size &other) const

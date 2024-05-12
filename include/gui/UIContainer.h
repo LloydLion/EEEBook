@@ -11,6 +11,9 @@ typedef UIContainer_ *UIContainer;
 
 class UIContainer_ : public UIElement_
 {
+private:
+    PaddingSize _p_padding;
+
 protected:
     GFX assume_padding(const GFX &gfx);
 
@@ -19,7 +22,7 @@ protected:
     void unsubscribe_child(UIElement element);
 
 public:
-    PaddingSize padding;
+    PROPERTY(PaddingSize, padding) AUTO_GET(_p_padding);
 
     virtual void c_notify_composition_mutation(UIElement element);
 

@@ -4,28 +4,57 @@
 #include "cordinates.h"
 #include "GFX.h"
 #include "std/property.h"
+#include "config.h"
 #include <Arduino.h>
 
+
+#define UI_PRINT_SELF Serial.print("[UI="); Serial.print((uint32_t)this, 16); Serial.print("|"); if (name) Serial.print(name); Serial.print("]: ");
 
 #define _UI_CACHE_SLOT_STATUS_FIELD(SLOT) __cache_status_##SLOT
 #define _UI_CACHE_SLOT_VALUE_FIELD(SLOT) __cache_value_##SLOT
 #define _UI_CACHE_SLOT_ACCESSOR_FUNCTION(SLOT) SLOT
 #define _UI_CACHE_SLOT_RESOLVER(SLOT) __cache_resolve_##SLOT
 
-#define DEFINE_CACHE_SLOT(TYPE, NAME, ...) bool _UI_CACHE_SLOT_STATUS_FIELD(NAME); TYPE _UI_CACHE_SLOT_VALUE_FIELD(NAME); TYPE _UI_CACHE_SLOT_RESOLVER(NAME)(__VA_ARGS__)
-#define CONNECT_CACHE_CHANNEL(NAME, CHANNEL) if (channel & CHANNEL) _UI_CACHE_SLOT_STATUS_FIELD(NAME) = false
-#define IMPLEMENT_CACHE_SLOT(TYPE, CLASS, NAME, ARGS, ARGS_) \
-    TYPE CLASS::_UI_CACHE_SLOT_ACCESSOR_FUNCTION(NAME)ARGS \
-    { \
-        if (_UI_CACHE_SLOT_STATUS_FIELD(NAME)) return _UI_CACHE_SLOT_VALUE_FIELD(NAME); \
-        else \
-        { \
-            _UI_CACHE_SLOT_STATUS_FIELD(NAME) = true; \
-            return _UI_CACHE_SLOT_VALUE_FIELD(NAME) = _UI_CACHE_SLOT_RESOLVER(NAME)ARGS_; \
-        } \
-    } \
-    TYPE CLASS::_UI_CACHE_SLOT_RESOLVER(NAME)ARGS
 
+#define DEFINE_CACHE_SLOT(TYPE, NAME, ...) bool _UI_CACHE_SLOT_STATUS_FIELD(NAME) = false; TYPE _UI_CACHE_SLOT_VALUE_FIELD(NAME); TYPE _UI_CACHE_SLOT_RESOLVER(NAME)(__VA_ARGS__)
+#define DEFINE_CACHE_SLOT_ACCESSOR(TYPE, NAME, ...) TYPE _UI_CACHE_SLOT_ACCESSOR_FUNCTION(NAME)(__VA_ARGS__)
+
+#if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
+    #define CONNECT_CACHE_CHANNEL(NAME, CHANNEL) UI_PRINT_SELF; if (channel & CHANNEL) { _UI_CACHE_SLOT_STATUS_FIELD(NAME) = false; Serial.print("\tReseting cache slot "); Serial.println(#NAME); } \
+        else { Serial.print("\tCache slot reseting skipped "); Serial.println(#NAME); }
+
+    #define IMPLEMENT_CACHE_SLOT(TYPE, CLASS, NAME, ARGS, ARGS_) \
+        TYPE CLASS::_UI_CACHE_SLOT_ACCESSOR_FUNCTION(NAME)ARGS \
+        { \
+            UI_PRINT_SELF; \
+            if (_UI_CACHE_SLOT_STATUS_FIELD(NAME)) \
+            { \
+                Serial.print("# Value restored from cache, slot: "); Serial.println(#NAME); \
+                return _UI_CACHE_SLOT_VALUE_FIELD(NAME); \
+            } \
+            else \
+            { \
+                Serial.print("# Cache miss, resolving value using resolver, slot: "); Serial.println(#NAME); \
+                _UI_CACHE_SLOT_STATUS_FIELD(NAME) = true; \
+                return _UI_CACHE_SLOT_VALUE_FIELD(NAME) = _UI_CACHE_SLOT_RESOLVER(NAME)ARGS_; \
+            } \
+        } \
+        TYPE CLASS::_UI_CACHE_SLOT_RESOLVER(NAME)ARGS
+#else
+    #define CONNECT_CACHE_CHANNEL(NAME, CHANNEL) if (channel & CHANNEL) _UI_CACHE_SLOT_STATUS_FIELD(NAME) = false
+    #define IMPLEMENT_CACHE_SLOT(TYPE, CLASS, NAME, ARGS, ARGS_) \
+        TYPE CLASS::_UI_CACHE_SLOT_ACCESSOR_FUNCTION(NAME)ARGS \
+        { \
+            if (_UI_CACHE_SLOT_STATUS_FIELD(NAME)) return _UI_CACHE_SLOT_VALUE_FIELD(NAME); \
+            else \
+            { \
+                _UI_CACHE_SLOT_STATUS_FIELD(NAME) = true; \
+                return _UI_CACHE_SLOT_VALUE_FIELD(NAME) = _UI_CACHE_SLOT_RESOLVER(NAME)ARGS_; \
+            } \
+        } \
+        TYPE CLASS::_UI_CACHE_SLOT_RESOLVER(NAME)ARGS
+
+#endif
 
 class UIElement_;
 typedef UIElement_ *UIElement;
@@ -39,7 +68,7 @@ private:
     transparent_color_t _p_foreground_color = color_t::Black;
     transparent_color_t _p_background_color = color_t::White;
     MarginSize _p_margin = MarginSize(0);
-    UIContainer _p_parent;
+    UIContainer _p_parent = nullptr;
 
     DEFINE_CACHE_SLOT(Size, min_size);
     DEFINE_CACHE_SLOT(Size, max_size);
@@ -71,6 +100,8 @@ protected:
     void trigger_mutation(MutationType type);
     
 public:
+    const char *name = nullptr;
+
     PROPERTY(transparent_color_t, foreground_color) AUTO_GET(_p_foreground_color);
     PROPERTY(transparent_color_t, background_color) AUTO_GET(_p_background_color);
     PROPERTY(MarginSize, margin) AUTO_GET(_p_margin);

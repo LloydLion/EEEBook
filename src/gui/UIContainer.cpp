@@ -2,7 +2,7 @@
 
 GFX UIContainer_::assume_padding(const GFX &gfx)
 {
-    return gfx.slice(padding);
+    return gfx.slice(padding());
 }
 
 void UIContainer_::subscribe_all_children()
@@ -21,6 +21,12 @@ void UIContainer_::subscribe_child(UIElement element)
 void UIContainer_::unsubscribe_child(UIElement element)
 {
     element->unbind_parent(this);
+}
+
+void UIContainer_::padding(PaddingSize value)
+{
+    trigger_mutation(CompositionState);
+    _p_padding = value;
 }
 
 void UIContainer_::c_notify_composition_mutation(UIElement child)
