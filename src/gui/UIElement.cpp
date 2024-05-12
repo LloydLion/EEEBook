@@ -6,11 +6,49 @@ void UIElement_::render(const GFX& gfx)
     GFX ngfx = gfx;
 
     Size max = max_size();
-    if (!max.is_null() and ngfx.size() > max)
-    {
         //TODO: alignment logic
-        ngfx = ngfx.slice(LocalBounds(Vector(), Size::intersect(max, ngfx.size())));
-    }
+        if(ngfx.size().width > max.width and max.width != 0)
+        {
+            cord_t start_pos_x;
+            switch (_p_alignment.horizontal)
+            {
+            case HorizontalAlignment::Left:
+                start_pos_x = 0;
+                break;
+
+            case HorizontalAlignment::Right:
+                start_pos_x = ngfx.size().width - max.width;
+                break;
+
+            case HorizontalAlignment::Center:
+                start_pos_x = (ngfx.size().width - max.width) / 2;
+                break;
+            }
+            ngfx = ngfx.slice(LocalBounds(Vector(start_pos_x, 0), Size(max.width, ngfx.size().height)));
+
+        }
+
+        if(ngfx.size().height > max.height and max.height != 0)
+        {
+            cord_t start_pos_y;
+            switch (_p_alignment.vertical)
+            {
+            case VerticalAlignment::Top:
+                start_pos_y = 0;
+                break;
+
+            case VerticalAlignment::Bottom:
+                start_pos_y = ngfx.size().height - max.height;
+                break;
+
+            case VerticalAlignment::Center:
+                start_pos_y = (ngfx.size().height - max.height) / 2;
+                break;
+            }
+            ngfx = ngfx.slice(LocalBounds(Vector(0, start_pos_y), Size(ngfx.size().height, max.height)));
+
+        }
+
 
     Size min = min_size();
     if (ngfx.size() < min)
@@ -61,6 +99,24 @@ void UIElement_::margin(MarginSize value)
 {
     trigger_mutation(CompositionState);
     _p_margin = value;
+}
+
+void UIElement_::alignment(Alignment value)
+{
+    trigger_mutation(DrawState);
+    _p_alignment = value;
+}
+
+void UIElement_::horizontal_alignment(HorizontalAlignment value)
+{
+    trigger_mutation(DrawState);
+    _p_alignment.horizontal = value;
+}
+
+void UIElement_::vertical_alignment(VerticalAlignment value)
+{
+    trigger_mutation(DrawState);
+    _p_alignment.vertical = value;
 }
 
 void UIElement_::reset_cache(CacheChannel channel)

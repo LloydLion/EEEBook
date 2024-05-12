@@ -5,6 +5,7 @@
 #include "GFX.h"
 #include "std/property.h"
 #include "config.h"
+#include "Alignment.h"
 #include <Arduino.h>
 
 
@@ -69,6 +70,7 @@ private:
     transparent_color_t _p_background_color = color_t::White;
     MarginSize _p_margin = MarginSize(0);
     UIContainer _p_parent = nullptr;
+    Alignment _p_alignment = Alignment();
 
     DEFINE_CACHE_SLOT(Size, min_size);
     DEFINE_CACHE_SLOT(Size, max_size);
@@ -106,6 +108,9 @@ public:
     PROPERTY(transparent_color_t, background_color) AUTO_GET(_p_background_color);
     PROPERTY(MarginSize, margin) AUTO_GET(_p_margin);
     PROPERTY(UIContainer, parent) AUTO_GET(_p_parent);
+    PROPERTY(Alignment, alignment) AUTO_GET(_p_alignment);
+    PROPERTY(VerticalAlignment, vertical_alignment) AUTO_GET(_p_alignment.vertical);
+    PROPERTY(HorizontalAlignment, horizontal_alignment) AUTO_GET(_p_alignment.horizontal);
 
     void bind_parent(UIContainer parent);
     void unbind_parent(UIContainer parent);

@@ -1,14 +1,14 @@
 #ifndef GUI_ALIGNMENT_H
 #define GUI_ALIGNMENT_H
 
-enum VerticalAlignment
+enum class VerticalAlignment
 {
     Top,
     Center,
     Bottom
 };
 
-enum HorizontalAlignment
+enum class HorizontalAlignment
 {
     Left,
     Center,
@@ -20,7 +20,7 @@ struct Alignment
     VerticalAlignment vertical;
     HorizontalAlignment horizontal;
     Alignment(): vertical(VerticalAlignment::Center), horizontal(HorizontalAlignment::Center) {}
-    Alignment(VerticalAlignment, HorizontalAlignment): vertical(vertical), horizontal(horizontal) {}
+    Alignment(VerticalAlignment vertical, HorizontalAlignment horizontal): vertical(vertical), horizontal(horizontal) {}
 };
 
 
