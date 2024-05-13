@@ -9,7 +9,7 @@
 class Grid_;
 typedef Grid_ *Grid;
 
-enum GridRCSizeType
+enum GridRCSizeType : uint8_t
 {
     Fixed,
     Auto,
@@ -20,6 +20,8 @@ struct GridRCDefinition
 {
     cord_t size;
     GridRCSizeType size_type;
+    cord_t min_size;
+    cord_t max_size;
 };
 
 enum GridRC
@@ -35,7 +37,9 @@ struct GridElement
     size_t column;
 };
 
-GridRCDefinition define_grid_rc(GridRCSizeType size_type, cord_t size = 0);
+GridRCDefinition define_grid_rc_auto(cord_t min_size = 0);
+GridRCDefinition define_grid_rc_fixed(cord_t size);
+GridRCDefinition define_grid_rc_proportional(cord_t proportion = 1, cord_t min_size = 0, cord_t max_size = 0);
 GridElement fit_into_grid(UIElement element, size_t row, size_t column);
 
 class Grid_ : public UIComposer_
@@ -74,9 +78,11 @@ private:
 
     SelectIterator<VectorIterator<GridElement>, GridElement, UIElement> _iterator;
     
-    cord_t get_auto_size(size_t index, GridRC row_or_column);
+    cord_t get_auto_rc_size(size_t index, GridRC row_or_column);
+    cord_t get_rc_elements_min_size(size_t index, GridRC row_or_column);
+    cord_t get_rc_sum_size(GridRC row_or_column, bool calc_min = true);
     void calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_column);
-    cord_t get_min_size_dimension(GridRC type);
+    std::vector<GridRCDefinition> *get_definitions(GridRC row_or_column);
 
 protected:
     void i_render(const GFX& gfx) override;

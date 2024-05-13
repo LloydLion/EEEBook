@@ -3,73 +3,73 @@
 
 void UIElement_::render(const GFX& gfx)
 {
-    GFX ngfx = gfx;
+    GFX new_gfx = gfx;
 
     Size max = max_size();
-        //TODO: alignment logic
-        if(ngfx.size().width > max.width and max.width != 0)
+    
+    if(new_gfx.size().width > max.width and max.width != 0)
+    {
+        cord_t start_pos_x;
+        switch (_p_alignment.horizontal)
         {
-            cord_t start_pos_x;
-            switch (_p_alignment.horizontal)
-            {
-            case HorizontalAlignment::Left:
-                start_pos_x = 0;
-                break;
+        case HorizontalAlignment::Left:
+            start_pos_x = 0;
+            break;
 
-            case HorizontalAlignment::Right:
-                start_pos_x = ngfx.size().width - max.width;
-                break;
+        case HorizontalAlignment::Right:
+            start_pos_x = new_gfx.size().width - max.width;
+            break;
 
-            case HorizontalAlignment::Center:
-                start_pos_x = (ngfx.size().width - max.width) / 2;
-                break;
-            }
-            ngfx = ngfx.slice(LocalBounds(Vector(start_pos_x, 0), Size(max.width, ngfx.size().height)));
-
+        case HorizontalAlignment::Center:
+            start_pos_x = (new_gfx.size().width - max.width) / 2;
+            break;
         }
+        new_gfx = new_gfx.slice(LocalBounds(Vector(start_pos_x, 0), Size(max.width, new_gfx.size().height)));
 
-        if(ngfx.size().height > max.height and max.height != 0)
+    }
+
+    if(new_gfx.size().height > max.height and max.height != 0)
+    {
+        cord_t start_pos_y;
+        switch (_p_alignment.vertical)
         {
-            cord_t start_pos_y;
-            switch (_p_alignment.vertical)
-            {
-            case VerticalAlignment::Top:
-                start_pos_y = 0;
-                break;
+        case VerticalAlignment::Top:
+            start_pos_y = 0;
+            break;
 
-            case VerticalAlignment::Bottom:
-                start_pos_y = ngfx.size().height - max.height;
-                break;
+        case VerticalAlignment::Bottom:
+            start_pos_y = new_gfx.size().height - max.height;
+            break;
 
-            case VerticalAlignment::Center:
-                start_pos_y = (ngfx.size().height - max.height) / 2;
-                break;
-            }
-            ngfx = ngfx.slice(LocalBounds(Vector(0, start_pos_y), Size(ngfx.size().height, max.height)));
-
+        case VerticalAlignment::Center:
+            start_pos_y = (new_gfx.size().height - max.height) / 2;
+            break;
         }
+        new_gfx = new_gfx.slice(LocalBounds(Vector(0, start_pos_y), Size(new_gfx.size().width, max.height)));
+
+    }
 
 
     Size min = min_size();
-    if (ngfx.size() < min)
+    if (new_gfx.size() < min)
     {
         UI_PRINT_SELF;
         Serial.printf("min Size(%d, %d), realm Size(%d, %d), prov Size(%d, %d)",
-            min.width, min.height, ngfx.size().width, ngfx.size().height, gfx.size().width, gfx.size().height);
+            min.width, min.height, new_gfx.size().width, new_gfx.size().height, gfx.size().width, gfx.size().height);
         Serial.println(" Min size restrict!");
-        ngfx.fill_screen(color_t::Black);
+        new_gfx.fill_screen(color_t::Black);
         return;
     }
 
-    ngfx = ngfx.slice(margin());
+    new_gfx = new_gfx.slice(margin());
     
-    if (ngfx.size() != _previous_size)
+    if (new_gfx.size() != _previous_size)
     {
-        _previous_size = ngfx.size();
+        _previous_size = new_gfx.size();
         reset_cache(Render);
     }
 
-    i_render(ngfx);
+    i_render(new_gfx);
 }
 
 IMPLEMENT_CACHE_SLOT(Size, UIElement_, min_size, (), ())

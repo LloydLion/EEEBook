@@ -90,7 +90,7 @@ void setup()
     recti1->background_color(transparent_color());
 
     Rectangle recti2 = new Rectangle_(5);
-    recti2->name = "Rect 2(1:0)";
+    recti2->name = "Rect 2(3:1)";
     recti2->foreground_color(color_t::Black);
     recti2->background_color(transparent_color());
     
@@ -105,9 +105,9 @@ void setup()
     recti4->background_color(transparent_color());
 
     Grid grid = new Grid_(
-        { define_grid_rc(Auto), define_grid_rc(Proportional, 1), define_grid_rc(Proportional, 1) },
-        { define_grid_rc(Auto), define_grid_rc(Proportional, 1) },
-        { fit_into_grid(label1, 0, 0), fit_into_grid(recti1, 0, 1), fit_into_grid(recti2, 1, 0), fit_into_grid(recti3, 1, 1), fit_into_grid(label2, 2, 0), fit_into_grid(recti4, 2, 1) }
+        { define_grid_rc_auto(), define_grid_rc_proportional(1, 0, 81), define_grid_rc_proportional(), define_grid_rc_proportional(1, 50, 0) },
+        { define_grid_rc_auto(), define_grid_rc_proportional() },
+        { fit_into_grid(label1, 0, 0), fit_into_grid(recti1, 0, 1), fit_into_grid(recti2, 3, 1), fit_into_grid(recti3, 1, 1), fit_into_grid(label2, 2, 0), fit_into_grid(recti4, 2, 1) }
     );
     grid->name = "Grid";
     grid->padding(PaddingSize(1));
@@ -130,12 +130,12 @@ void loop()
         delay(100);
         digitalWrite(2, LOW);
 
-        static uint8_t time = 0;
+        static uint8_t time = 50;
 
         Serial.println("----UPDATE----");
 
 
-        root->margin(MarginSize(time));
+        root->margin(MarginSize(time, time, 0, 0));
 
 
         Serial.println("----RENDER----");
@@ -150,7 +150,7 @@ void loop()
 
         engine->push(draw_settings);
 
-        time += 1;
+        time += 10;
 
         Serial.println("----DONE----");
 
@@ -162,7 +162,7 @@ void loop()
         Serial.println();
         Serial.println("----CRITICAL ERROR----");
         Serial.println("Manual restart required");
-        Serial.println();
+        Serial.println(err.what());
 
         while (1) delay(100);
     }

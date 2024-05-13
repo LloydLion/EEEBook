@@ -2,13 +2,35 @@
 #include <exception>
 #include <Arduino.h>
 
-GridRCDefinition define_grid_rc(GridRCSizeType size_type, cord_t size)
+GridRCDefinition define_grid_rc_auto(cord_t min_size)
 {
-    GridRCDefinition d;
-    d.size_type = size_type;
-    d.size = size;
-    return d;
+    GridRCDefinition rc;
+    rc.size_type = GridRCSizeType::Auto;
+    rc.min_size = min_size;
+
+    return rc;
 }
+
+GridRCDefinition define_grid_rc_fixed(cord_t size)
+{
+    GridRCDefinition rc;
+    rc.size_type = GridRCSizeType::Fixed;
+    rc.size = size;
+
+    return rc;
+}
+
+GridRCDefinition define_grid_rc_proportional(cord_t proportion, cord_t min_size, cord_t max_size)
+{
+    GridRCDefinition rc;
+    rc.size_type = GridRCSizeType::Proportional;
+    rc.size = proportion;
+    rc.min_size = min_size;
+    rc.max_size = max_size;
+
+    return rc;
+}
+
 
 GridElement fit_into_grid(UIElement element, size_t row, size_t column)
 {
@@ -19,8 +41,8 @@ GridElement fit_into_grid(UIElement element, size_t row, size_t column)
     return el;
 }
 
-UIElement &selector(GridElement &el) { return el.ui; }
 
+UIElement &selector(GridElement &el) { return el.ui; }
 
 Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements):
     _elements(elements), _iterator(VectorIterator<GridElement>(_elements), selector)
@@ -37,13 +59,14 @@ Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> c
 
 Size Grid_::i_min_size()
 {
-    auto size = Size(get_min_size_dimension(GridRC::Column), get_min_size_dimension(GridRC::Row));
+    auto size = Size(get_rc_sum_size(GridRC::Column), get_rc_sum_size(GridRC::Row));
     return size;
 }
 
 Size Grid_::i_max_size()
 {
-    return Size();
+    auto size = Size(get_rc_sum_size(GridRC::Column, false), get_rc_sum_size(GridRC::Row, false));
+    return size;
 }
 
 Iterator<UIElement> *Grid_::list_children()
@@ -128,14 +151,8 @@ IMPLEMENT_CACHE_SLOT(Grid_::ElementsLayout, Grid_, create_layout, (Size viewport
 
 void Grid_::calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_column)
 {
-    std::vector<GridRCDefinition> *target_collection = nullptr;
-    if (row_or_column == GridRC::Row)
-        target_collection = &_rows;
-    else if (row_or_column == GridRC::Column)
-        target_collection = &_columns;
-
+    std::vector<GridRCDefinition> *target_collection = get_definitions(row_or_column);
     size_t size = target_collection->size();
-
 
     cord_t rest_space = full_size;
 
@@ -148,17 +165,18 @@ void Grid_::calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_
         }
         else if (definition.size_type == GridRCSizeType::Auto)
         {
-            sizes[i] = get_auto_size(i, row_or_column);
+            sizes[i] = get_auto_rc_size(i, row_or_column);
         }
 
         rest_space -= sizes[i];
     }
 
+proportional_reset:
     cord_t proportional_sum = 0;
     for (size_t i = 0; i < size; i++)
     {
-        auto definition = target_collection->operator[](i);;
-        if (definition.size_type == GridRCSizeType::Proportional)
+        auto definition = target_collection->operator[](i);
+        if (sizes[i] == 0 && definition.size_type == GridRCSizeType::Proportional)
         {
             if (definition.size == 0)
                 throw std::runtime_error("Grid's proportional column/row with 0 size detected");
@@ -169,28 +187,70 @@ void Grid_::calculate_real_sizes(cord_t full_size, cord_t *sizes, GridRC row_or_
     if (proportional_sum != 0)
     {
         cord_t size_per_prop = rest_space / proportional_sum;
-        rest_space -= size_per_prop * proportional_sum;
 
-        for (size_t i = 0; i < size; i++)
+        for (size_t i = 0; i < size; i++) //Restricted rc processing
         {
-            auto definition = target_collection->operator[](i);;
-            if (definition.size_type == GridRCSizeType::Proportional)
+            auto definition = target_collection->operator[](i);
+            if (sizes[i] == 0 && definition.size_type == GridRCSizeType::Proportional)
             {
-                sizes[i] = definition.size * size_per_prop;
+                cord_t prop_size = definition.size * size_per_prop;
+
+                if (definition.max_size != 0 && prop_size > definition.max_size)
+                {
+                    sizes[i] = definition.max_size;
+                    rest_space -= definition.max_size;
+                    goto proportional_reset;
+                }
+                else if (prop_size < definition.min_size)
+                {
+                    if (rest_space < definition.min_size)
+                        throw std::runtime_error("No space rest for Grid proportional rc, min_size hit");
+                    sizes[i] = definition.min_size;
+                    rest_space -= definition.min_size;
+                    goto proportional_reset;
+                }
+            }
+        }
+
+        for (size_t i = 0; i < size; i++) //Unrestricted rc processing
+        {
+            auto definition = target_collection->operator[](i);
+            if (sizes[i] == 0 && definition.size_type == GridRCSizeType::Proportional)
+            {
+                cord_t prop_size = definition.size * size_per_prop;
+                sizes[i] = prop_size;
+                rest_space -= prop_size;
             }
         }
     }
 
+    bool has_free_scale_rc = false;
     for (size_t i = 0; rest_space != 0; i++)
     {
-        sizes[i % size] += 1;
-        rest_space -= 1;
+        size_t abs_i = i % size;
+        auto definition = target_collection->operator[](abs_i);
+
+        if (definition.size_type == GridRCSizeType::Proportional && (definition.max_size == 0 || sizes[abs_i] < definition.max_size))
+        {
+            sizes[abs_i] += 1;
+            rest_space -= 1;
+            has_free_scale_rc = true;
+        }
+
+        if (abs_i == size - 1)
+        {
+            if (has_free_scale_rc == false)
+                throw std::runtime_error("No free scale rc in Grid available for rest space distribution");
+            has_free_scale_rc = false;
+        }
     }
 }
 
-cord_t Grid_::get_auto_size(size_t index, GridRC row_or_column)
+cord_t Grid_::get_rc_elements_min_size(size_t index, GridRC row_or_column)
 {
+    GridRCDefinition definition = get_definitions(row_or_column)->operator[](index);
     cord_t result = 0;
+
     for (auto el : _elements)
     {
         if (row_or_column == GridRC::Column)
@@ -205,36 +265,56 @@ cord_t Grid_::get_auto_size(size_t index, GridRC row_or_column)
         }
     }
 
+    result = max(result, definition.min_size);
+
     return result;
 }
 
-cord_t Grid_::get_min_size_dimension(GridRC type)
+cord_t Grid_::get_rc_sum_size(GridRC type, bool min)
 {
-    std::vector<GridRCDefinition> *definitions = nullptr;
-    if (type == GridRC::Row)
-        definitions = &_rows;
-    else if (type == GridRC::Column)
-        definitions = &_columns;
+    std::vector<GridRCDefinition> *definitions = get_definitions(type);
 
-    cord_t min_size = 0;
+    cord_t size = 0;
+
     for (size_t i = 0; i < definitions->size(); i++)
     {
         GridRCDefinition definition = definitions->operator[](i);
         switch (definition.size_type)
         {
         case GridRCSizeType::Auto:
-            min_size += get_auto_size(i, GridRC::Column);
+            size += get_auto_rc_size(i, GridRC::Column);
             break;
 
         case GridRCSizeType::Fixed:
-            min_size += definition.size;
+            size += definition.size;
             break;
         
-        default:
-            //Do nothing
+        case GridRCSizeType::Proportional:
+            if (min)
+                size += definition.min_size;
+            else
+            {
+                if (definition.max_size != 0)
+                    size += definition.max_size;
+                else return 0;
+            }
             break;
         }
     }
 
-    return min_size;
+    return size;
+}
+
+cord_t Grid_::get_auto_rc_size(size_t index, GridRC row_or_column)
+{
+    cord_t min_size = get_definitions(row_or_column)->operator[](index).min_size;
+
+    return max(get_rc_elements_min_size(index, row_or_column), min_size);
+}
+
+std::vector<GridRCDefinition> *Grid_::get_definitions(GridRC row_or_column)
+{
+    if (row_or_column == Row)
+        return &_rows;
+    else return &_columns;
 }
