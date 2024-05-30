@@ -7,7 +7,7 @@ void UIElement_::render(const GFX& gfx)
 
     Size max = max_size();
     
-    if(new_gfx.size().width > max.width and max.width != 0)
+    if(new_gfx.size() % max & Size::Relationship::Wider)
     {
         cord_t start_pos_x;
         switch (_p_alignment.horizontal)
@@ -28,7 +28,7 @@ void UIElement_::render(const GFX& gfx)
 
     }
 
-    if(new_gfx.size().height > max.height and max.height != 0)
+    if(new_gfx.size() % max & Size::Relationship::Higher)
     {
         cord_t start_pos_y;
         switch (_p_alignment.vertical)
@@ -51,7 +51,7 @@ void UIElement_::render(const GFX& gfx)
 
 
     Size min = min_size();
-    if (new_gfx.size() < min)
+    if (new_gfx.size() % min & Size::Relationship::SmallerAnyDimension)
     {
         UI_PRINT_SELF;
         Serial.printf("min Size(%d, %d), realm Size(%d, %d), prov Size(%d, %d)",

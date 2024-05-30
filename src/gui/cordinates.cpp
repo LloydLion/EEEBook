@@ -64,20 +64,44 @@ Size Size::operator-(const Vector &other) const
 
 bool Size::operator>(const Size &other) const
 {
-    return height > other.height or width > other.width;
+    return operator%(other) & Relationship::Bigger;
 }
 
 bool Size::operator<(const Size &other) const
 {
-    return height < other.height or width < other.width;
+    return operator%(other) & Relationship::Smaller;
 }
 
 bool Size::operator==(const Size &other) const
 {
-    return width == other.width && height == other.height;
+    return operator%(other) & Relationship::Equal;
 }
 
 bool Size::operator!=(const Size &other) const DEFAULT_NOT_EQUAL_IMPL
+
+Size::Relationship Size::operator%(const Size &other) const
+{
+    if (other.width > width && other.height > height)
+        return Relationship::Bigger;
+    else if (other.width > width && other.height == height)
+        return Relationship::WiderEqualH;
+    else if (other.width > width && other.height < height)
+        return Relationship::WiderSmallerH;
+
+    else if (other.width == width && other.height > height)
+        return Relationship::EqualWHigher;
+    else if (other.width == width && other.height == height)
+        return Relationship::Equal;
+    else if (other.width == width && other.height < height)
+        return Relationship::EqualWSmallerH;
+
+    else if (other.width < width && other.height > height)
+        return Relationship::SmallerWHigher;
+    else if (other.width < width && other.height == height)
+        return Relationship::SmallerWEqualH;
+    else //if (other.width < width && other.height < height)
+        return Relationship::Smaller;
+}
 
 
 Bounds::Bounds(): start(), size() { }

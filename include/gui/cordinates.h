@@ -1,7 +1,9 @@
 #ifndef GUI_COORDINATES_H
 #define GUI_COORDINATES_H
+#include <Arduino.h>
 
-typedef unsigned int cord_t;
+typedef uint32_t cord_t;
+#define MAX_DIMENSION_SIZE 65535
 
 class Vector
 {
@@ -25,6 +27,42 @@ typedef Vector LocalVector;
 class Size
 {
 public:
+    enum Relationship : uint16_t;
+    enum Relationship : uint16_t
+    {
+        Smaller         = 0b100000000,
+        EqualWSmallerH  = 0b010000000,
+        WiderSmallerH   = 0b001000000,
+        SmallerWEqualH  = 0b000100000,
+        SmallerWHigher  = 0b000010000,
+        Equal           = 0b000001000,
+        WiderEqualH     = 0b000000100,
+        EqualWHigher    = 0b000000010,
+        Bigger          = 0b000000001,
+
+        //Derivatives
+        Wider = WiderSmallerH | WiderEqualH | Bigger,
+        EqualWide = EqualWSmallerH | Equal | EqualWHigher,
+        LessWide = Smaller | SmallerWEqualH | SmallerWHigher,
+
+        WiderOrEqual = Wider | EqualWide,
+        LessWideOrEqual = LessWide | EqualWide,
+        NotEqualWide = Wider | LessWide,
+
+        Higher = SmallerWHigher | EqualWHigher | Bigger,
+        EqualHigh = SmallerWEqualH | Equal | WiderEqualH,
+        LessHigh = Smaller | EqualWSmallerH | WiderSmallerH,
+
+        HigherOrEqual = Higher | EqualHigh,
+        LessHighOrEqual = LessHigh | EqualHigh,
+        NotEqualHigh = Higher | LessHigh,
+
+        SmallerAnyDimension = Smaller | SmallerWEqualH | EqualWSmallerH,
+        EqualOrSmaller = SmallerAnyDimension | Equal
+    };
+
+    static Size max_size() { return Size(MAX_DIMENSION_SIZE, MAX_DIMENSION_SIZE); }
+
     cord_t width;
     cord_t height;
 
@@ -46,6 +84,8 @@ public:
 
     bool operator==(const Size &other) const;
     bool operator!=(const Size &other) const;
+
+    Relationship operator%(const Size &other) const;
 };
 
 class Bounds;
