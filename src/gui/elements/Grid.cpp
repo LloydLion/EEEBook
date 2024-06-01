@@ -294,9 +294,9 @@ cord_t Grid_::get_rc_sum_size(GridRC type, bool min)
                 size += definition.min_size;
             else
             {
-                if (definition.max_size != 0)
+                if (definition.max_size != MAX_DIMENSION_SIZE)
                     size += definition.max_size;
-                else return 0;
+                else return MAX_DIMENSION_SIZE;
             }
             break;
         }

@@ -21,5 +21,5 @@ Size Rectangle_::i_min_size()
 
 Size Rectangle_::i_max_size()
 {
-    return Size();
+    return Size::max_size();
 }

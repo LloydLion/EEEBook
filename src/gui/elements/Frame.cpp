@@ -18,5 +18,5 @@ Size Frame_::i_min_size()
 Size Frame_::i_max_size()
 {
     //TODO: delete code repetition
-    return Distance4Sides(_thickness).expand(get_element()->max_size());
+    return Distance4Sides(_thickness).safe_expand(get_element()->max_size());
 }

@@ -1,6 +1,12 @@
 #include "gui/UIElement.h"
 #include "gui/UIContainer.h"
 
+UIElement_::UIElement_()
+{
+    _o_max_size = Size::max_size();
+    _o_min_size = Size();
+}
+
 void UIElement_::render(const GFX& gfx)
 {
     GFX new_gfx = gfx;
@@ -74,13 +80,14 @@ void UIElement_::render(const GFX& gfx)
 
 IMPLEMENT_CACHE_SLOT(Size, UIElement_, min_size, (), ())
 {
-    return margin().expand(i_min_size());
+    Size normal_min_size = margin().expand(i_min_size());
+    return clamp_size(normal_min_size);
 }
 
 IMPLEMENT_CACHE_SLOT(Size, UIElement_, max_size, (), ())
 {
-    Size max_size = i_max_size();
-    return max_size.is_null() ? Size() : margin().expand(max_size);
+    Size normal_max_size = margin().safe_expand(i_max_size());
+    return clamp_size(normal_max_size);
 }
 
 void UIElement_::foreground_color(transparent_color_t value)
@@ -133,6 +140,22 @@ void UIElement_::reset_cache(CacheChannel channel)
 #endif
 }
 
+void UIElement_::override_min_size(Size o_min_size)
+{
+    if (o_min_size % _o_max_size & Size::Relationship::EqualOrSmaller == false)
+        throw std::runtime_error("Min size override value cannot be bigger then max size override value");
+
+    _o_min_size = o_min_size;
+}
+
+void UIElement_::override_max_size(Size o_max_size)
+{
+    if (o_max_size % _o_min_size & Size::Relationship::BiggerOrEqual == false)
+        throw std::runtime_error("Max size override value cannot be smaller then min size override value");
+
+    _o_max_size = o_max_size;
+}
+
 void UIElement_::bind_parent(UIContainer parent)
 {
     if (_p_parent)
@@ -180,4 +203,9 @@ void UIElement_::trigger_mutation(MutationType type)
     default:
         break;
     }
+}
+
+Size UIElement_::clamp_size(Size size)
+{
+    return Size::intersect(Size::combine(size, _o_min_size), _o_max_size);
 }

@@ -58,7 +58,9 @@ public:
         NotEqualHigh = Higher | LessHigh,
 
         SmallerAnyDimension = Smaller | SmallerWEqualH | EqualWSmallerH,
-        EqualOrSmaller = SmallerAnyDimension | Equal
+        EqualOrSmaller = SmallerAnyDimension | Equal,
+
+        BiggerOrEqual = Equal | WiderEqualH | EqualWHigher | Bigger
     };
 
     static Size max_size() { return Size(MAX_DIMENSION_SIZE, MAX_DIMENSION_SIZE); }
@@ -71,7 +73,6 @@ public:
     Size(Vector start, Vector end);
 
     LocalVector start_to_end() const;
-    bool is_null() const;
 
     static Size intersect(Size a, Size b);
     static Size combine(Size a, Size b);
@@ -108,7 +109,6 @@ public:
     Bounds cast(LocalBounds local_bounds) const;
     Vector cast(LocalVector local_vector) const;
     Vector end() const;
-    bool is_null() const;
     
     static Bounds intersect(Bounds a, Bounds b);
     static Bounds combine(Bounds a, Bounds b);
@@ -131,6 +131,7 @@ public:
 
     Bounds cast(Bounds original_bounds) const;
     Size expand(Size original_size) const;
+    Size safe_expand(Size original_size) const;
 
     bool operator==(const Distance4Sides &other) const;
     bool operator!=(const Distance4Sides &other) const;

@@ -37,11 +37,6 @@ LocalVector Size::start_to_end() const
     return LocalVector(width - 1, height - 1);
 }
 
-bool Size::is_null() const
-{
-    return width == 0 and height == 0;
-}
-
 Size Size::intersect(Size a, Size b)
 {
     return Size(min(a.width, b.width), min(a.height, b.height));
@@ -121,7 +116,7 @@ bool Bounds::is_inside_abs(Vector absolute_vector) const
 
 bool Bounds::is_inside_local(LocalVector local_vector) const
 {
-    return local_vector.x <= size.width and local_vector.y <= size.height;
+    return local_vector.x < size.width and local_vector.y < size.height;
 }
 
 Vector Bounds::cast(LocalVector local_vector) const
@@ -166,6 +161,31 @@ Bounds Distance4Sides::cast(Bounds original_bounds) const
 Size Distance4Sides::expand(Size original_size) const
 {
     return Size(original_size.width + left + right, original_size.height + up + down);
+}
+
+Size Distance4Sides::safe_expand(Size original_size) const
+{
+    cord_t width = original_size.width + left;
+    if (width < original_size.width)
+        width = MAX_DIMENSION_SIZE;
+    else
+    {
+        cord_t width = original_size.width + right;
+        if (width < original_size.width)
+            width = MAX_DIMENSION_SIZE;
+    }
+    
+    cord_t height = original_size.height + up;
+    if (height < original_size.height)
+        height = MAX_DIMENSION_SIZE;
+    else
+    {
+        cord_t height = original_size.height + down;
+        if (height < original_size.height)
+            height = MAX_DIMENSION_SIZE;
+    }
+
+    return Size(width, height);
 }
 
 bool Distance4Sides::operator==(const Distance4Sides &other) const

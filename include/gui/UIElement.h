@@ -71,11 +71,15 @@ private:
     MarginSize _p_margin = MarginSize(0);
     UIContainer _p_parent = nullptr;
     Alignment _p_alignment = Alignment();
+    Size _o_max_size;
+    Size _o_min_size;
 
     DEFINE_CACHE_SLOT(Size, min_size);
     DEFINE_CACHE_SLOT(Size, max_size);
 
     Size _previous_size = Size();
+
+    Size clamp_size(Size size);
 
 protected:
     enum CacheChannel : uint8_t
@@ -102,6 +106,9 @@ protected:
     void trigger_mutation(MutationType type);
     
 public:
+
+    UIElement_();
+
     const char *name = nullptr;
 
     PROPERTY(transparent_color_t, foreground_color) AUTO_GET(_p_foreground_color);
@@ -111,6 +118,9 @@ public:
     PROPERTY(Alignment, alignment) AUTO_GET(_p_alignment);
     PROPERTY(VerticalAlignment, vertical_alignment) AUTO_GET(_p_alignment.vertical);
     PROPERTY(HorizontalAlignment, horizontal_alignment) AUTO_GET(_p_alignment.horizontal);
+    
+    void override_min_size(Size o_min_size);
+    void override_max_size(Size o_max_size);
 
     void bind_parent(UIContainer parent);
     void unbind_parent(UIContainer parent);

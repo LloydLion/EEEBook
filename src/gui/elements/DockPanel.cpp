@@ -46,9 +46,8 @@ Size DockPanel_::i_max_size()
     Size result;
     for (auto el : _elements)
     {
-        Size el_size = el.ui->max_size();
-        if (el_size.is_null()) continue;
-        Size required_size = padding().expand(el_size) + el.point;
+        Size el_size = padding().safe_expand(el.ui->max_size());
+        Size required_size = el_size + el.point;
         
         result = Size::combine(result, required_size);
     }
