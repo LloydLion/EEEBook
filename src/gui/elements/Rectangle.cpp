@@ -16,7 +16,7 @@ void Rectangle_::i_render(const GFX& gfx)
 
 Size Rectangle_::i_min_size()
 {
-    return Size(_thickness + 1, _thickness + 1);
+    return Size(_thickness + 1, _thickness + 1); //FIXME : thickness should be doubled
 }
 
 Size Rectangle_::i_max_size()

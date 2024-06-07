@@ -10,11 +10,45 @@ typedef DockPanel_ *DockPanel;
 
 struct DockElement
 {
+    struct CornerPostion
+    {
+        Corner origin;
+        LocalVector offset;
+
+        CornerPostion() { }
+    };
+
+    struct SidePosition
+    {
+        Side origin;
+        cord_t offset;
+
+        SidePosition() { }
+    };
+
+    enum PositionType
+    {
+        Corner,
+        Side
+    };
+
+    union Position
+    {
+        CornerPostion corner;
+        SidePosition side;
+
+        Position() { }
+    };
+
+    PositionType type;
+    Position position;
     UIElement ui;
-    Vector point;
+
+    DockElement() { }
 };
 
-DockElement fit_into_dock(UIElement element, Vector point);
+DockElement fit_into_dock(UIElement element, Corner origin, Vector point);
+DockElement fit_into_dock(UIElement element, Side origin, cord_t offset);
 
 class DockPanel_ : public UIComposer_
 {

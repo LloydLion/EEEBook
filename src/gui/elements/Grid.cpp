@@ -195,7 +195,7 @@ proportional_reset:
             {
                 cord_t prop_size = definition.size * size_per_prop;
 
-                if (definition.max_size != 0 && prop_size > definition.max_size)
+                if (prop_size > definition.max_size)
                 {
                     sizes[i] = definition.max_size;
                     rest_space -= definition.max_size;

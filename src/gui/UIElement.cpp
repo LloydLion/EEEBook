@@ -130,7 +130,6 @@ void UIElement_::reset_cache(CacheChannel channel)
 {
     CONNECT_CACHE_CHANNEL(min_size, CacheChannel::Composition);
     CONNECT_CACHE_CHANNEL(max_size, CacheChannel::Composition);
-
 #if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
     UI_PRINT_SELF;
     Serial.print("Cache has been reset, channel mask: ");

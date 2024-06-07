@@ -1,9 +1,5 @@
 #include "config.h"
-#include "gui/elements/Grid.h"
-#include "gui/elements/Rectangle.h"
-#include "gui/elements/Label.h"
-#include "gui/GraphicsEngine.h"
-#include "gui/elements/DockPanel.h"
+#include "ui.h"
 
 #if IS_VIRTUAL_DISPLAY_USED
 
@@ -45,12 +41,11 @@ GraphicsEngine create_graphics_engine()
 
 #endif
 
-Grid root;
+UIElement root;
 GraphicsEngine engine;
 
 void setup()
 {
-
     pinMode(2, OUTPUT);
     digitalWrite(2, HIGH);
     delay(100);
@@ -71,52 +66,8 @@ void setup()
     init_display();
 
     engine = create_graphics_engine();
-    
-    Label label1 = new Label_("Hello");
-    label1->name = "Label 1(0:0)";
-    label1->foreground_color(color_t::White);
-    label1->background_color(color_t::Black);
-    label1->set_font(engine->get_default_font());
-    
-    Label label2 = new Label_("World");
-    label2->name = "Label 2(2:0)";
-    label2->foreground_color(color_t::White);
-    label2->background_color(color_t::Black);
-    label2->set_font(engine->get_default_font());
+    root = setup_ui();
 
-    Rectangle recti1 = new Rectangle_(5);
-    recti1->name = "Rect 1(0:1)";
-    recti1->foreground_color(color_t::Black);
-    recti1->background_color(transparent_color());
-
-    Rectangle recti2 = new Rectangle_(5);
-    recti2->name = "Rect 2(3:1)";
-    recti2->foreground_color(color_t::Black);
-    recti2->background_color(transparent_color());
-    
-    Rectangle recti3 = new Rectangle_(5);
-    recti3->name = "Rect 3(1:1)";
-    recti3->foreground_color(color_t::Black);
-    recti3->background_color(transparent_color());
-    
-    Rectangle recti4 = new Rectangle_(5);
-    recti4->name = "Rect 4(2:1)";
-    recti4->foreground_color(color_t::Black);
-    recti4->background_color(transparent_color());
-
-    Grid grid = new Grid_(
-        { define_grid_rc_auto(), define_grid_rc_proportional(1, 0, 81), define_grid_rc_proportional(), define_grid_rc_proportional(1, 50, 0) },
-        { define_grid_rc_auto(), define_grid_rc_proportional() },
-        { fit_into_grid(label1, 0, 0), fit_into_grid(recti1, 0, 1), fit_into_grid(recti2, 3, 1), fit_into_grid(recti3, 1, 1), fit_into_grid(label2, 2, 0), fit_into_grid(recti4, 2, 1) }
-    );
-    grid->name = "Grid";
-    grid->padding(PaddingSize(1));
-    grid->foreground_color(transparent_color());
-    grid->background_color(transparent_color());
-
-    root = grid;
-
-    
 #if IS_VIRTUAL_DISPLAY_USED
     delay(4000); //Time to connect VScreen to ESP
 #endif
@@ -130,13 +81,11 @@ void loop()
         delay(100);
         digitalWrite(2, LOW);
 
-        static uint8_t time = 50;
+        static uint8_t time = 0;
 
         Serial.println("----UPDATE----");
 
-
-        root->margin(MarginSize(time, time, 0, 0));
-
+        update_ui(root, time);
 
         Serial.println("----RENDER----");
 
@@ -145,15 +94,12 @@ void loop()
 
         Serial.println("----DRAWING----");
 
-        DrawSettings draw_settings;
-        draw_settings.background_color = color_t::Red;
-
+        DrawSettings draw_settings = create_draw_settings(time);
         engine->push(draw_settings);
-
-        time += 10;
 
         Serial.println("----DONE----");
 
+        time += 1;
         delay(10000);
     }
     catch (const std::runtime_error &err)

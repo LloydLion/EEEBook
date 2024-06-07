@@ -74,28 +74,34 @@ bool Size::operator==(const Size &other) const
 
 bool Size::operator!=(const Size &other) const DEFAULT_NOT_EQUAL_IMPL
 
+Size::Relationship log(const Size *self, const Size &other, Size::Relationship result, const char *label)
+{
+    //Serial.printf("a=Size(%d, %d) b=Size(%d, %d) -> a%%b=%s\n", self->width, self->height, other.width, other.height, label);
+    return result;
+}
+
 Size::Relationship Size::operator%(const Size &other) const
 {
-    if (other.width > width && other.height > height)
-        return Relationship::Bigger;
-    else if (other.width > width && other.height == height)
-        return Relationship::WiderEqualH;
-    else if (other.width > width && other.height < height)
-        return Relationship::WiderSmallerH;
+    if (width > other.width && height > other.height)
+        return log(this, other, Relationship::Bigger, "Bigger");
+    else if (width > other.width && height == other.height)
+        return log(this, other, Relationship::WiderEqualH, "WiderEqualH");
+    else if (width > other.width && height < other.height)
+        return log(this, other, Relationship::WiderSmallerH, "WiderSmallerH");
 
-    else if (other.width == width && other.height > height)
-        return Relationship::EqualWHigher;
-    else if (other.width == width && other.height == height)
-        return Relationship::Equal;
-    else if (other.width == width && other.height < height)
-        return Relationship::EqualWSmallerH;
+    else if (width == other.width && height > other.height)
+        return log(this, other, Relationship::EqualWHigher, "EqualWHigher");
+    else if (width == other.width && height == other.height)
+        return log(this, other, Relationship::Equal, "Equal");
+    else if (width == other.width && height < other.height)
+        return log(this, other, Relationship::EqualWSmallerH, "EqualWSmallerH");
 
-    else if (other.width < width && other.height > height)
-        return Relationship::SmallerWHigher;
-    else if (other.width < width && other.height == height)
-        return Relationship::SmallerWEqualH;
-    else //if (other.width < width && other.height < height)
-        return Relationship::Smaller;
+    else if (width < other.width && height > other.height)
+        return log(this, other, Relationship::SmallerWHigher, "SmallerWHigher");
+    else if (width < other.width && height == other.height)
+        return log(this, other, Relationship::SmallerWEqualH, "SmallerWEqualH");
+    else //if (width < other.width && height < other.height)
+        return log(this, other, Relationship::Smaller, "Smaller");
 }
 
 

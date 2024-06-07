@@ -39,7 +39,7 @@ struct GridElement
 
 GridRCDefinition define_grid_rc_auto(cord_t min_size = 0);
 GridRCDefinition define_grid_rc_fixed(cord_t size);
-GridRCDefinition define_grid_rc_proportional(cord_t proportion = 1, cord_t min_size = 0, cord_t max_size = 0);
+GridRCDefinition define_grid_rc_proportional(cord_t proportion = 1, cord_t min_size = 0, cord_t max_size = MAX_DIMENSION_SIZE);
 GridElement fit_into_grid(UIElement element, size_t row, size_t column);
 
 class Grid_ : public UIComposer_

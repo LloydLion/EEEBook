@@ -5,6 +5,24 @@
 typedef uint32_t cord_t;
 #define MAX_DIMENSION_SIZE 65535
 
+// First bit represents vertical position (0=up, 1=down), second - horizontal postion (0=left, 1=right)
+enum class Corner
+{
+    LeftUp = 0b00,
+    LeftDown = 0b01,
+    RightUp = 0b10,
+    RightDown = 0b11
+};
+
+// If first bit is set, Side represents vertical side (up/down), else horizontal side (left/right)
+enum class Side
+{
+    Up = 0b00,
+    Down = 0b10,
+    Left = 0b01,
+    Right = 0b11,
+};
+
 class Vector
 {
 public:
@@ -27,7 +45,6 @@ typedef Vector LocalVector;
 class Size
 {
 public:
-    enum Relationship : uint16_t;
     enum Relationship : uint16_t
     {
         Smaller         = 0b100000000,
@@ -40,7 +57,7 @@ public:
         EqualWHigher    = 0b000000010,
         Bigger          = 0b000000001,
 
-        //Derivatives
+        //Derivativeso
         Wider = WiderSmallerH | WiderEqualH | Bigger,
         EqualWide = EqualWSmallerH | Equal | EqualWHigher,
         LessWide = Smaller | SmallerWEqualH | SmallerWHigher,
