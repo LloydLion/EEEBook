@@ -1,0 +1,18 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "GCC Linux",
+            "includePath": ["./include"],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": ["./include", "./src"]
+            },
+
+            "defines": ["Linux"],
+
+            "cStandard": "c17",
+            "cppStandard": "c++11"
+        }
+    ]
+}

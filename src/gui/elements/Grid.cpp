@@ -1,6 +1,7 @@
 #include "gui/elements/Grid.h"
-#include <exception>
-#include <Arduino.h>
+#include <stdexcept>
+#include <cstring>
+#include <stdint.h>
 
 #define MAX_GRID_SIZE 20
 
@@ -75,16 +76,16 @@ void Grid_::render(const GFX& pgfx)
 
     cord_t rows_rs[MAX_GRID_SIZE];
     cord_t columns_rs[MAX_GRID_SIZE];
-    memset(&rows_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
-    memset(&columns_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
+    std::memset(&rows_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
+    std::memset(&columns_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
 
     calculate_real_sizes(gfx.size().width, columns_rs, GridRC::Column);
     calculate_real_sizes(gfx.size().height, rows_rs, GridRC::Row);
 
     cord_t rows_pos[MAX_GRID_SIZE];
     cord_t columns_pos[MAX_GRID_SIZE];
-    memset(&rows_pos, 0, MAX_GRID_SIZE * sizeof(cord_t));
-    memset(&columns_pos, 0, MAX_GRID_SIZE * sizeof(cord_t));
+    std::memset(&rows_pos, 0, MAX_GRID_SIZE * sizeof(cord_t));
+    std::memset(&columns_pos, 0, MAX_GRID_SIZE * sizeof(cord_t));
 
     rows_pos[0] = 0;
     for (size_t i = 1; i <= _rows.size(); i++)
@@ -173,12 +174,12 @@ cord_t Grid_::get_auto_size(size_t index, GridRC row_or_column)
         if (row_or_column == GridRC::Column)
         {
             if (el.column == index)
-                result = max(result, padding.expand(el.ui->min_size()).width);
+                result = std::max(result, padding.expand(el.ui->min_size()).width);
         }
         else //GridRC::Row
         {
             if (el.row == index)
-                result = max(result, padding.expand(el.ui->min_size()).height);
+                result = std::max(result, padding.expand(el.ui->min_size()).height);
         }
     }
 

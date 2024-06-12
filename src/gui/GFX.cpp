@@ -47,7 +47,7 @@ void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, tr
     if (font == nullptr)
         font = get_default_font();
 
-    _engine->print_text(_bounds.cast(start), min(size().width - start.x, width_limit), text, len_limit, color.color, font);
+    _engine->print_text(_bounds.cast(start), std::min(size().width - start.x, width_limit), text, len_limit, color.color, font);
 }
 
 void GFX::print_text(LocalVector start, const char *text, transparent_color_t color, size_t len_limit, Font font) const

@@ -1,3 +1,7 @@
+#include "platform/platform.h"
+
+#if PLATFORM & PLATFORM_MCU_ESP32
+
 #include "config.h"
 #include "gui/elements/Grid.h"
 #include "gui/elements/Rectangle.h"
@@ -132,3 +136,5 @@ void loop()
         while (1) delay(100);
     }
 }
+
+#endif

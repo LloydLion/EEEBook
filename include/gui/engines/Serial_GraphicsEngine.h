@@ -2,8 +2,9 @@
 #define GUI_ENGINES_SERIAL_GRAPHICSENGINE_H
 #include "config.h"
 #include "../GraphicsEngine.h"
+#include "platform/platform.h"
 
-#if IS_VIRTUAL_DISPLAY_USED
+#if IS_VIRTUAL_DISPLAY_USED && (PLATFORM & PLATFORM_MCU_ESP32)
 
 class Serial_GraphicsEngine : public GraphicsEngine_
 {

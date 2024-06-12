@@ -1,0 +1,18 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "GCC Windows",
+            "includePath": ["./include"],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": ["./include", "./src"]
+            },
+
+            "defines": ["Windows"],
+
+            "cStandard": "c17",
+            "cppStandard": "c++17"
+        }
+    ]
+}

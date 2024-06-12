@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "(PC:Linux/gdb) Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/.pc/Linux/bin/program",
+            "cwd": ".",
+            "miDebuggerPath": "${workspaceRoot}/scripts/PC/Linux/debug.sh",
+            "stopAtEntry": false,
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb"
+        }
+    ]
+
+}

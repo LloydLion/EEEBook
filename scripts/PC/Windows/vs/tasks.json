@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "(PC:Windows/g++): Build and run",
+            "type": "shell",
+            "command": "python crossplay.py run PC:Windows",
+            "problemMatcher": ["$gcc"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        
+        {
+            "label": "(PC:Windows/g++): Build",
+            "type": "shell",
+            "command": "python crossplay.py run PC:Windows --build-only",
+            "problemMatcher": ["$gcc"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+
+            "group": "build"
+        }
+    ]
+}

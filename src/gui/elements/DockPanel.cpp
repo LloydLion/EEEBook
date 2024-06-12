@@ -35,8 +35,8 @@ Size DockPanel_::min_size()
         Size el_size = padding.expand(el.ui->min_size());
         Size required_size = el_size + el.point;
 
-        result.width = max(result.width, required_size.width);
-        result.height = max(result.height, required_size.height); 
+        result.width = std::max(result.width, required_size.width);
+        result.height = std::max(result.height, required_size.height); 
     }
 
     return margin.expand(result);
