@@ -16,6 +16,11 @@ Size::Size(Vector start, Vector end): Size(
 { }
 
 
+Size Size::concat(Size a, Size b, Axis along_axis)
+{
+    return Size(a[along_axis] + b[along_axis], max(a[~along_axis], b[~along_axis]), along_axis);
+}
+
 LocalVector Size::start_to_end() const
 {
     return LocalVector(width() - 1, height() - 1);

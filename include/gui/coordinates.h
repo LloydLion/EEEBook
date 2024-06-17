@@ -109,6 +109,7 @@ public:
     bool operator==(const TInheritor &other) const;
     bool operator!=(const TInheritor &other) const;
 
+    TInheritor with(cord_t value, Axis axis);
 
     //static_assert(std::is_base_of<TInheritor, CoordinateBase<TInheritor>>::value, "Inheritor must be inheritor of CoordinateBase");
 };
@@ -144,6 +145,7 @@ public:
 
     static Size intersect(Size a, Size b);
     static Size combine(Size a, Size b);
+    static Size concat(Size a, Size b, Axis along_axis);
 
     Size operator+(const Vector &other) const;
     Size operator-(const Vector &other) const;

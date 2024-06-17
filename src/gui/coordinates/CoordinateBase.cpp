@@ -50,5 +50,11 @@ Coordinates::Relationship CoordinateBase<TInheritor>::relate(TInheritor a, TInhe
         return Coordinates::Relationship::Smaller;
 }
 
+template<class TInheritor>
+TInheritor CoordinateBase<TInheritor>::with(cord_t value, Axis axis)
+{
+    return TInheritor(value, this->operator[](~axis), axis);
+}
+
 template class CoordinateBase<Vector>;
 template class CoordinateBase<Size>;
