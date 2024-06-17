@@ -1,7 +1,7 @@
 #ifndef GUI_ELEMENTS_GRID_H
 #define GUI_ELEMENTS_GRID_H
 
-#include "../cordinates.h"
+#include "../coordinates.h"
 #include "../UIComposer.h"
 
 #define MAX_GRID_SIZE 20

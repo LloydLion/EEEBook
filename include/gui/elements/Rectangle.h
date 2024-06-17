@@ -1,7 +1,7 @@
 #ifndef GUI_ELEMENTS_RECTANGLE_H
 #define GUI_ELEMENTS_RECTANGLE_H 
 
-#include "../cordinates.h"
+#include "../coordinates.h"
 #include "../UIElement.h"
 
 

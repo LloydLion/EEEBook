@@ -104,8 +104,8 @@ void Grid_::i_render(const GFX& gfx)
         size_t c = element.column;
 
         GFX new_gfx = assume_padding(gfx.slice(LocalBounds(
-            e_layout.get_column_position(c), e_layout.get_row_position(r),
-            e_layout.get_column_size(c, gfx.size().width), e_layout.get_row_size(r, gfx.size().height)
+            LocalVector(e_layout.get_column_position(c), e_layout.get_row_position(r)),
+            Size(e_layout.get_column_size(c, gfx.size().width()), e_layout.get_row_size(r, gfx.size().height()))
         )));
 
         element.ui->render(new_gfx);
@@ -119,8 +119,8 @@ IMPLEMENT_CACHE_SLOT(Grid_::ElementsLayout, Grid_, create_layout, (Size viewport
     memset(&rows_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
     memset(&columns_rs, 0, MAX_GRID_SIZE * sizeof(cord_t));
 
-    calculate_real_sizes(viewport.width, columns_rs, GridRC::Column);
-    calculate_real_sizes(viewport.height, rows_rs, GridRC::Row);
+    calculate_real_sizes(viewport.width(), columns_rs, GridRC::Column);
+    calculate_real_sizes(viewport.height(), rows_rs, GridRC::Row);
 
     ElementsLayout layout;
     memset(&layout.rows_positions, 0, (MAX_GRID_SIZE - 1) * sizeof(cord_t));
@@ -256,12 +256,12 @@ cord_t Grid_::get_rc_elements_min_size(size_t index, GridRC row_or_column)
         if (row_or_column == GridRC::Column)
         {
             if (el.column == index)
-                result = max(result, padding().expand(el.ui->min_size()).width);
+                result = max(result, padding().expand(el.ui->min_size()).width());
         }
         else //GridRC::Row
         {
             if (el.row == index)
-                result = max(result, padding().expand(el.ui->min_size()).height);
+                result = max(result, padding().expand(el.ui->min_size()).height());
         }
     }
 

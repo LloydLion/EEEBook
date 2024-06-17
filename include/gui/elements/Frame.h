@@ -1,7 +1,7 @@
 #ifndef GUI_ELEMENTS_FRAME_H
 #define GUI_ELEMENTS_FRAME_H 
 
-#include "../cordinates.h"
+#include "../coordinates.h"
 #include "gui/UIView.h"
 
 

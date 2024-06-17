@@ -1,7 +1,7 @@
 #ifndef GUI_ELEMENTS_LABEL_H
 #define GUI_ELEMENTS_LABEL_H
 
-#include "../cordinates.h"
+#include "../coordinates.h"
 #include "../TextElement.h"
 
 class Label_;

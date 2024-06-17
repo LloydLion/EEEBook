@@ -1,7 +1,7 @@
 #ifndef GUI_ELEMENTS_DOCK_PANEL_H
 #define GUI_ELEMENTS_DOCK_PANEL_H
 
-#include "../cordinates.h"
+#include "../coordinates.h"
 #include "../UIComposer.h"
 #include "std/iterator.h"
 

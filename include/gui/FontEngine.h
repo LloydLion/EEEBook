@@ -1,7 +1,7 @@
 #ifndef GUI_FONT_ENGINE_H
 #define GUI_FONT_ENGINE_H
 #include <Arduino.h>
-#include "gui/cordinates.h"
+#include "gui/coordinates.h"
 
 typedef uint8_t font_id_t;
 

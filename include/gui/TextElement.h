@@ -1,7 +1,7 @@
 #ifndef GUI_TEXT_ELEMENT_H
 #define GUI_TEXT_ELEMENT_H
 
-#include "cordinates.h"
+#include "coordinates.h"
 #include  "UIElement.h"
 #include "Font.h"
 

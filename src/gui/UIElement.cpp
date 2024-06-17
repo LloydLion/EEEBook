@@ -13,7 +13,7 @@ void UIElement_::render(const GFX& gfx)
 
     Size max = max_size();
     
-    if(new_gfx.size() % max & Size::Relationship::Wider)
+    if(Size::relate(new_gfx.size(), max) & Coordinates::Relationship::PBigger)
     {
         cord_t start_pos_x;
         switch (_p_alignment.horizontal)
@@ -23,18 +23,18 @@ void UIElement_::render(const GFX& gfx)
             break;
 
         case HorizontalAlignment::Right:
-            start_pos_x = new_gfx.size().width - max.width;
+            start_pos_x = new_gfx.size().width() - max.width();
             break;
 
         case HorizontalAlignment::Center:
-            start_pos_x = (new_gfx.size().width - max.width) / 2;
+            start_pos_x = (new_gfx.size().width() - max.width()) / 2;
             break;
         }
-        new_gfx = new_gfx.slice(LocalBounds(Vector(start_pos_x, 0), Size(max.width, new_gfx.size().height)));
+        new_gfx = new_gfx.slice(LocalBounds(Vector(start_pos_x, 0), Size(max.width(), new_gfx.size().height())));
 
     }
 
-    if(new_gfx.size() % max & Size::Relationship::Higher)
+    if(Size::relate(new_gfx.size(), max) & Coordinates::Relationship::SBigger)
     {
         cord_t start_pos_y;
         switch (_p_alignment.vertical)
@@ -44,24 +44,24 @@ void UIElement_::render(const GFX& gfx)
             break;
 
         case VerticalAlignment::Bottom:
-            start_pos_y = new_gfx.size().height - max.height;
+            start_pos_y = new_gfx.size().height() - max.height();
             break;
 
         case VerticalAlignment::Center:
-            start_pos_y = (new_gfx.size().height - max.height) / 2;
+            start_pos_y = (new_gfx.size().height() - max.height()) / 2;
             break;
         }
-        new_gfx = new_gfx.slice(LocalBounds(Vector(0, start_pos_y), Size(new_gfx.size().width, max.height)));
+        new_gfx = new_gfx.slice(LocalBounds(Vector(0, start_pos_y), Size(new_gfx.size().width(), max.height())));
 
     }
 
 
     Size min = min_size();
-    if (new_gfx.size() % min & Size::Relationship::SmallerAnyDimension)
+    if (Size::relate(new_gfx.size(), min) & Coordinates::Relationship::SmallerAnyDimension)
     {
         UI_PRINT_SELF;
         Serial.printf("min Size(%d, %d), realm Size(%d, %d), prov Size(%d, %d)",
-            min.width, min.height, new_gfx.size().width, new_gfx.size().height, gfx.size().width, gfx.size().height);
+            min.width(), min.height(), new_gfx.size().width(), new_gfx.size().height(), gfx.size().width(), gfx.size().height());
         Serial.println(" Min size restrict!");
         new_gfx.fill_screen(color_t::Black);
         return;
@@ -86,7 +86,7 @@ IMPLEMENT_CACHE_SLOT(Size, UIElement_, min_size, (), ())
 
 IMPLEMENT_CACHE_SLOT(Size, UIElement_, max_size, (), ())
 {
-    Size normal_max_size = margin().safe_expand(i_max_size());
+    Size normal_max_size = margin().expand(i_max_size());
     return clamp_size(normal_max_size);
 }
 
@@ -141,7 +141,7 @@ void UIElement_::reset_cache(CacheChannel channel)
 
 void UIElement_::override_min_size(Size o_min_size)
 {
-    if (o_min_size % _o_max_size & Size::Relationship::EqualOrSmaller == false)
+    if (Size::relate(o_min_size, _o_max_size) & Coordinates::Relationship::SmallerAnyDimensionOrEqual == false)
         throw std::runtime_error("Min size override value cannot be bigger then max size override value");
 
     _o_min_size = o_min_size;
@@ -149,7 +149,7 @@ void UIElement_::override_min_size(Size o_min_size)
 
 void UIElement_::override_max_size(Size o_max_size)
 {
-    if (o_max_size % _o_min_size & Size::Relationship::BiggerOrEqual == false)
+    if (Size::relate(o_max_size, _o_min_size) & Coordinates::Relationship::BiggerAnyDimensionOrEqual == false)
         throw std::runtime_error("Max size override value cannot be smaller then min size override value");
 
     _o_max_size = o_max_size;
