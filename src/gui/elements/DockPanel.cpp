@@ -50,9 +50,15 @@ void DockPanel_::i_render(const GFX& gfx)
             else if (side_position.origin == Side::Left)
                 new_gfx_bounds = LocalBounds(LocalVector(offset, 0), Size(min(constrained_cords_subtract(dock_size.width(), offset), max_size.width()), dock_size.height()));
             else if (side_position.origin == Side::Down)
-                new_gfx_bounds = LocalBounds(LocalVector(0, 0), Size(dock_size.width(), min(constrained_cords_subtract(dock_size.height(), offset), max_size.height())));
+            {
+                cord_t viewport_height = min(constrained_cords_subtract(dock_size.height(), offset), max_size.height());
+                new_gfx_bounds = LocalBounds(LocalVector(0, constrained_cords_subtract(dock_size.height(), safe_cords_sum(offset, viewport_height))), Size(dock_size.width(), viewport_height));
+            }
             else //if (side_position.origin == Side::Right)
-                new_gfx_bounds = LocalBounds(LocalVector(0, 0), Size(min(constrained_cords_subtract(dock_size.width(), offset), max_size.width()), dock_size.height()));
+            {
+                cord_t viewport_width = min(constrained_cords_subtract(dock_size.width(), offset), max_size.width());
+                new_gfx_bounds = LocalBounds(LocalVector(constrained_cords_subtract(dock_size.width(), safe_cords_sum(offset, viewport_width)), 0), Size(viewport_width, dock_size.height()));
+            }
         }
         else if (el.type == DockElement::PositionType::Corner)
         {
@@ -71,7 +77,7 @@ void DockPanel_::i_render(const GFX& gfx)
         }
         else throw std::runtime_error("Invalid dock element type");
 
-        UI_PRINT_SELF; Serial.printf("new_gfx_bounds: Bounds(%d, %d, %d, %d)", new_gfx_bounds.start.x(), new_gfx_bounds.start.y(), new_gfx_bounds.size.width(), new_gfx_bounds.size.height());
+        //UI_PRINT_SELF; Serial.printf("new_gfx_bounds: Bounds(%d, %d, %d, %d)", new_gfx_bounds.start.x(), new_gfx_bounds.start.y(), new_gfx_bounds.size.width(), new_gfx_bounds.size.height());
         el.ui->render(gfx.slice(new_gfx_bounds));
     }
 }
