@@ -7,62 +7,47 @@ UIElement_::UIElement_()
     _o_min_size = Size();
 }
 
+GFX apply_alignment(Axis axis, const GFX &original, Size max_size, int alignment_code)
+{
+    if(Size::relate(original.size(), max_size, axis) & Coordinates::Relationship::PBigger)
+    {
+        cord_t start_position;
+        switch (alignment_code)
+        {
+        case 0: // Axis start
+            start_position = 0;
+            break;
+
+        case 2: // Axis end
+            start_position = original.size()[axis] - max_size[axis];
+            break;
+
+        case 1: //Center
+            start_position = (original.size()[axis] - max_size[axis]) / 2;
+            break;
+        }
+        return original.slice(LocalBounds(Vector(start_position, 0, axis), original.size().with(max_size[axis], axis)));
+    }
+    else return original;
+}
+
 void UIElement_::render(const GFX& gfx)
 {
+    if (_p_visibility != UIVisibility::Visible)
+        return;
+
     GFX new_gfx = gfx;
 
     Size max = max_size();
-    
-    if(Size::relate(new_gfx.size(), max) & Coordinates::Relationship::PBigger)
-    {
-        cord_t start_pos_x;
-        switch (_p_alignment.horizontal)
-        {
-        case HorizontalAlignment::Left:
-            start_pos_x = 0;
-            break;
-
-        case HorizontalAlignment::Right:
-            start_pos_x = new_gfx.size().width() - max.width();
-            break;
-
-        case HorizontalAlignment::Center:
-            start_pos_x = (new_gfx.size().width() - max.width()) / 2;
-            break;
-        }
-        new_gfx = new_gfx.slice(LocalBounds(Vector(start_pos_x, 0), Size(max.width(), new_gfx.size().height())));
-
-    }
-
-    if(Size::relate(new_gfx.size(), max) & Coordinates::Relationship::SBigger)
-    {
-        cord_t start_pos_y;
-        switch (_p_alignment.vertical)
-        {
-        case VerticalAlignment::Top:
-            start_pos_y = 0;
-            break;
-
-        case VerticalAlignment::Bottom:
-            start_pos_y = new_gfx.size().height() - max.height();
-            break;
-
-        case VerticalAlignment::Center:
-            start_pos_y = (new_gfx.size().height() - max.height()) / 2;
-            break;
-        }
-        new_gfx = new_gfx.slice(LocalBounds(Vector(0, start_pos_y), Size(new_gfx.size().width(), max.height())));
-
-    }
-
+    new_gfx = apply_alignment(AxisX, new_gfx, max, (int)_p_alignment.horizontal);
+    new_gfx = apply_alignment(AxisY, new_gfx, max, (int)_p_alignment.vertical);
 
     Size min = min_size();
     if (Size::relate(new_gfx.size(), min) & Coordinates::Relationship::SmallerAnyDimension)
     {
         UI_PRINT_SELF;
-        Serial.printf("min Size(%d, %d), realm Size(%d, %d), prov Size(%d, %d)",
+        Serial.printf("Element min size restrict! required min Size(%d, %d), reaming Size(%d, %d), provided Size(%d, %d)\n",
             min.width(), min.height(), new_gfx.size().width(), new_gfx.size().height(), gfx.size().width(), gfx.size().height());
-        Serial.println(" Min size restrict!");
         new_gfx.fill_screen(color_t::Black);
         return;
     }
@@ -80,12 +65,16 @@ void UIElement_::render(const GFX& gfx)
 
 IMPLEMENT_CACHE_SLOT(Size, UIElement_, min_size, (), ())
 {
+    if (_p_visibility == UIVisibility::Collapsed) return Size();
+    
     Size normal_min_size = margin().expand(i_min_size());
     return clamp_size(normal_min_size);
 }
 
 IMPLEMENT_CACHE_SLOT(Size, UIElement_, max_size, (), ())
 {
+    if (_p_visibility == UIVisibility::Collapsed) return Size();
+
     Size normal_max_size = margin().expand(i_max_size());
     return clamp_size(normal_max_size);
 }
@@ -124,6 +113,16 @@ void UIElement_::vertical_alignment(VerticalAlignment value)
 {
     trigger_mutation(DrawState);
     _p_alignment.vertical = value;
+}
+
+void UIElement_::visibility(UIVisibility value)
+{
+    if (value == _p_visibility) return;
+    if (value == UIVisibility::Collapsed or _p_visibility == UIVisibility::Collapsed)
+        trigger_mutation(CompositionState);
+    else trigger_mutation(DrawState);
+
+    _p_visibility = value;
 }
 
 void UIElement_::reset_cache(CacheChannel channel)

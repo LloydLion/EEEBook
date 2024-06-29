@@ -38,7 +38,7 @@ void DockPanel_::i_render(const GFX& gfx)
     for (auto el : _elements)
     {
         LocalBounds new_gfx_bounds;
-        Size max_size = padding.expand(el.ui->max_size());
+        Size max_size = child_max_size(el.ui);
 
         if (el.type == DockElement::PositionType::Side)
         {
@@ -77,8 +77,7 @@ void DockPanel_::i_render(const GFX& gfx)
         }
         else throw std::runtime_error("Invalid dock element type");
 
-        //UI_PRINT_SELF; Serial.printf("new_gfx_bounds: Bounds(%d, %d, %d, %d)", new_gfx_bounds.start.x(), new_gfx_bounds.start.y(), new_gfx_bounds.size.width(), new_gfx_bounds.size.height());
-        el.ui->render(gfx.slice(new_gfx_bounds));
+        render_child(el.ui, gfx, new_gfx_bounds);
     }
 }
 
@@ -88,7 +87,7 @@ Size DockPanel_::i_min_size()
 
     for (auto el : _elements)
     {
-        Size el_size = el.ui->min_size();
+        Size el_size = child_min_size(el.ui);
         Size required_size;
 
         if (el.type == DockElement::PositionType::Side)

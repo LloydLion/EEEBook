@@ -63,6 +63,13 @@ typedef UIElement_ *UIElement;
 class UIContainer_;
 typedef UIContainer_ *UIContainer;
 
+enum class UIVisibility
+{
+    Visible = 0,
+    Hidden,
+    Collapsed
+};
+
 class UIElement_
 {
 private:
@@ -71,6 +78,7 @@ private:
     MarginSize _p_margin = MarginSize(0);
     UIContainer _p_parent = nullptr;
     Alignment _p_alignment = Alignment();
+    UIVisibility _p_visibility = UIVisibility::Visible;
     Size _o_max_size;
     Size _o_min_size;
 
@@ -118,6 +126,7 @@ public:
     PROPERTY(Alignment, alignment) AUTO_GET(_p_alignment);
     PROPERTY(VerticalAlignment, vertical_alignment) AUTO_GET(_p_alignment.vertical);
     PROPERTY(HorizontalAlignment, horizontal_alignment) AUTO_GET(_p_alignment.horizontal);
+    PROPERTY(UIVisibility, visibility) AUTO_GET(_p_visibility);
     
     void override_min_size(Size o_min_size);
     void override_max_size(Size o_max_size);

@@ -15,7 +15,10 @@ private:
     PaddingSize _p_padding;
 
 protected:
-    GFX assume_padding(const GFX &gfx);
+    Size child_max_size(UIElement element);
+    Size child_min_size(UIElement element);
+    void render_child(UIElement element, GFX gfx);
+    void render_child(UIElement element, GFX gfx, Bounds viewport);
 
     void subscribe_all_children();
     void subscribe_child(UIElement element);

@@ -1,8 +1,27 @@
 #include "gui/UIContainer.h"
 
-GFX UIContainer_::assume_padding(const GFX &gfx)
+Size UIContainer_::child_max_size(UIElement element)
 {
-    return gfx.slice(padding());
+    if (element->visibility() == UIVisibility::Collapsed)
+        return Size();
+    return _p_padding.expand(element->max_size());
+}
+
+Size UIContainer_::child_min_size(UIElement element)
+{
+    if (element->visibility() == UIVisibility::Collapsed)
+        return Size();
+    return _p_padding.expand(element->min_size());
+}
+
+void UIContainer_::render_child(UIElement element, GFX gfx)
+{
+    return element->render(gfx.slice(_p_padding));
+}
+
+void UIContainer_::render_child(UIElement element, GFX gfx, Bounds viewport)
+{
+    return element->render(gfx.slice(_p_padding.cast(viewport)));
 }
 
 void UIContainer_::subscribe_all_children()
