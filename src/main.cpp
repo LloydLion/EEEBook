@@ -43,6 +43,8 @@ GraphicsEngine create_graphics_engine()
 
 UIElement root;
 GraphicsEngine engine;
+DrawSettings draw_settings;
+
 
 void setup()
 {
@@ -66,6 +68,9 @@ void setup()
     delay(200);
 
     init_display();
+
+    draw_settings.background_color = color_t::White;
+    draw_settings.update_rule = new UpdateRule_(PartialUpdate, 3000, 0);
 
     engine = create_graphics_engine();
     root = setup_ui(engine);

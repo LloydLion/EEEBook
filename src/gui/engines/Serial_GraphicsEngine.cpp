@@ -33,7 +33,7 @@ void Serial_GraphicsEngine::print_text(Point start_point, const char* text)
     Serial.print('\n');
 }
 
-void Serial_GraphicsEngine::push()
+void Serial_GraphicsEngine::push(UpdateRule rule) // Ignoring UpdateRule b.s It doesn't matter for serial display
 {
     _clearing_required = true;
 }

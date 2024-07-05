@@ -4,6 +4,7 @@
 #include "gui/color.h"
 #include "gui/GraphicsEngine.h"
 #include <vector>
+#include "std/iterator.h"
 
 #if !IS_VIRTUAL_DISPLAY_USED
 
@@ -41,7 +42,7 @@ private:
         color_t color;
         DrawOpetationArgs args;
     };
-
+    
 
     class Fonts : public FontEngine_
     {
@@ -69,7 +70,6 @@ private:
         cord_t get_yoffset(font_id_t id);
     };
 
-
     std::vector<DrawOperation> _operation_queue;
     DISPLAY_TYPE *_display;
     Fonts _fonts;
@@ -90,6 +90,7 @@ public:
 
     font_id_t register_font(const GFXfont *font);
 };
+
 
 #endif
 #endif
