@@ -1,3 +1,4 @@
 .pio
-.vscode
 /include/config.h
+/include/ui.h
+.vscode

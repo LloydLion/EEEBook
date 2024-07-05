@@ -99,10 +99,10 @@ void GxEPD_GraphicsEngine::push(DrawSettings draw_settings)
 
         Serial.printf("[%d]: Bounds(%d, %d, %d, %d), color=%d | ",
             i,
-            operation.bounds.start.x,
-            operation.bounds.start.y,
-            operation.bounds.size.width,
-            operation.bounds.size.height,
+            operation.bounds.start.x(),
+            operation.bounds.start.y(),
+            operation.bounds.size.width(),
+            operation.bounds.size.height(),
             operation.color
         );
 
@@ -159,10 +159,10 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
             if (thickness == 0)
             {
                 _display->fillRect(
-                    bounds.start.x,
-                    bounds.start.y,
-                    bounds.size.width,
-                    bounds.size.height,
+                    bounds.start.x(),
+                    bounds.start.y(),
+                    bounds.size.width(),
+                    bounds.size.height(),
                     color
                 );
             }
@@ -172,11 +172,11 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
                 Vector end = bounds.end();
                 for (cord_t delta = 0; delta < thickness; delta++)
                 {
-                    _display->drawFastVLine(bounds.start.x + delta, bounds.start.y, bounds.size.height, color);   
-                    _display->drawFastVLine(end.x - delta, bounds.start.y, bounds.size.height, color);
+                    _display->drawFastVLine(bounds.start.x() + delta, bounds.start.y(), bounds.size.height(), color);   
+                    _display->drawFastVLine(end.x() - delta, bounds.start.y(), bounds.size.height(), color);
 
-                    _display->drawFastHLine(bounds.start.x, bounds.start.y + delta, bounds.size.width, color);
-                    _display->drawFastHLine(bounds.start.x, end.y - delta, bounds.size.width, color);
+                    _display->drawFastHLine(bounds.start.x(), bounds.start.y() + delta, bounds.size.width(), color);
+                    _display->drawFastHLine(bounds.start.x(), end.y() - delta, bounds.size.width(), color);
                 }
                 _display->endWrite();
             }
@@ -189,8 +189,8 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
             font_id_t font_id = operation.args.text.font->id();
             const GFXfont *font = _fonts.get_font(font_id);
 
-            uint16_t cursor_x = bounds.start.x;
-            uint16_t pos_y = bounds.start.y + _fonts.get_yoffset(font_id);
+            uint16_t cursor_x = bounds.start.x();
+            uint16_t pos_y = bounds.start.y() + _fonts.get_yoffset(font_id);
 
             size_t i = 0;
             while (char c = *text++)
@@ -207,7 +207,7 @@ void GxEPD_GraphicsEngine::do_operation(const DrawOperation &operation)
                     _display->drawFastVLine(cursor_x, bounds.start.y - 1, 5, color);
 #endif
 
-                    bool was_clipped = drawChar(glyph, font, color, pos_y, cursor_x, bounds.end().x, _display);
+                    bool was_clipped = drawChar(glyph, font, color, pos_y, cursor_x, bounds.end().x(), _display);
 
                     if (was_clipped)
                         break;
@@ -311,7 +311,7 @@ cord_t GxEPD_GraphicsEngine::Fonts::get_char_width(font_id_t font, char c)
 bool GxEPD_GraphicsEngine::Fonts::is_legit_char(font_id_t font, char c)
 {
     const GFXfont *adafruit_font =  _fonts[font].font;
-    return adafruit_font->first < c and c < adafruit_font->last;
+    return adafruit_font->first <= c and c <= adafruit_font->last;
 }
 
 size_t GxEPD_GraphicsEngine::Fonts::first_non_legit_char(font_id_t font, const char* str)

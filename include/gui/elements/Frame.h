@@ -1,7 +1,7 @@
 #ifndef GUI_ELEMENTS_FRAME_H
 #define GUI_ELEMENTS_FRAME_H 
 
-#include "../cordinates.h"
+#include "../coordinates.h"
 #include "gui/UIView.h"
 
 
@@ -13,13 +13,15 @@ class Frame_ : public UIView_
 public:
     Frame_(cord_t thickness, UIElement element);
 
-    void render(const GFX& gfx) override;
-    Size min_size() override;
-    UIElement get_element() override;
+    PROPERTY(cord_t, thickness) AUTO_GET(_p_thickness);
+
+protected:
+    void i_render(const GFX& gfx) override;
+    Size i_min_size() override;
+    Size i_max_size() override;
 
 private:
-    cord_t _thickness;
-    UIElement _element;
+    cord_t _p_thickness;
 };
 
 #endif
