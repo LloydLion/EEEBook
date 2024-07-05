@@ -1,7 +1,7 @@
 #ifndef GUI_UPDATE_RULE
 #define GUI_UPDATE_RULE
 #include "std/iterator.h"
-#include "cordinates.h"
+#include "coordinates.h"
 
 class UpdateRule_;
 
