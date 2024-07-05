@@ -1,9 +1,5 @@
 #include "config.h"
-#include "gui/elements/Grid.h"
-#include "gui/elements/Rectangle.h"
-#include "gui/elements/Label.h"
-#include "gui/GraphicsEngine.h"
-#include "gui/elements/DockPanel.h"
+#include "ui.h"
 
 #if IS_VIRTUAL_DISPLAY_USED
 
@@ -29,7 +25,7 @@ DISPLAY_TYPE display(DISPLAY_DRIVER(DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_
 
 void init_display()
 {
-    display.init(9600, true, 2, false);
+    display.init(115200, true, 2, false);
 #ifdef DISPLAY_ROTATION
     display.setRotation(DISPLAY_ROTATION);
 #endif
@@ -52,20 +48,23 @@ DrawSettings draw_settings;
 
 void setup()
 {
-    pinMode(2, OUTPUT);
-    digitalWrite(2, HIGH);
-    delay(100);
-    digitalWrite(2, LOW);
-    delay(100);
-    digitalWrite(2, HIGH);
-    delay(100);
-    digitalWrite(2, LOW);
+    delay(4000);
 
-    Serial.begin(9600);
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(100);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(100);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(100);
+    digitalWrite(LED_BUILTIN, LOW);
+
+    Serial.begin(115200);
     Serial.println();
     Serial.println();
     Serial.println("----RESTART----");
     Serial.println();
+
     delay(200);
 
     init_display();
@@ -74,8 +73,8 @@ void setup()
     draw_settings.update_rule = new UpdateRule_(PartialUpdate, 3000, 0);
 
     engine = create_graphics_engine();
-    
-    
+    root = setup_ui(engine);
+
 #if IS_VIRTUAL_DISPLAY_USED
     delay(4000); //Time to connect VScreen to ESP
 #endif
@@ -85,41 +84,30 @@ void loop()
 {
     try
     {
-        digitalWrite(2, HIGH);
+        digitalWrite(LED_BUILTIN, HIGH);
         delay(100);
-        digitalWrite(2, LOW);
+        digitalWrite(LED_BUILTIN, LOW);
 
-        static char* text = new char[40];
-        static cord_t y = 1;
+        static uint8_t time = 0;
 
-        strcpy(text, "HO_HO_HO_HO_HO");
+        Serial.println("----UPDATE----");
 
-        Label label1 = new Label_(text);
-        label1->foreground_color = color_t::Black;
-        label1->background_color = transparent_color();
+        update_ui(root, time);
 
-        Rectangle recti1 = new Rectangle_(5);
-        recti1->foreground_color = color_t::Black;
-        recti1->background_color = transparent_color();
-
-        DockPanel panel1 = new DockPanel_(std::vector<DockElement> { fit_into_dock(label1, Vector(0, 20 + y)), fit_into_dock(recti1, Vector(50, 50)) });
-        panel1->foreground_color = panel1->background_color = transparent_color();
-        panel1->padding = PaddingSize(13);
-
-        root = panel1;
+        Serial.println("----RENDER----");
 
         GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
         root->render(root_gfx);
 
+        Serial.println("----DRAWING----");
+
+        DrawSettings draw_settings = create_draw_settings(time);
         engine->push(draw_settings);
 
-        delete label1;
-        delete recti1;
-        delete panel1;
+        Serial.println("----DONE----");
 
-        y += 8;
-
-        delay(100*y);
+        time += 1;
+        delay(5000);
     }
     catch (const std::runtime_error &err)
     {

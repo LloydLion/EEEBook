@@ -1,6 +1,6 @@
 #ifndef GUI_GFX_H
 #define GUI_GFX_H 
-#include "cordinates.h"
+#include "coordinates.h"
 #include "GraphicsEngine.h"
 #include "Font.h"
 
