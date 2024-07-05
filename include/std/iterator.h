@@ -41,19 +41,21 @@ template<class T>
 class VectorIterator : public Iterator<T>
 {
 private:
-    std::vector<T> _vector;
+    std::vector<T> *_vector;
     size_t _current_index;
 public:
-    VectorIterator(std::vector<T> vector): _vector(vector), _current_index(-1) { }
+    VectorIterator(std::vector<T> *vector): _vector(vector), _current_index(-1) { }
 
     bool next() override
     {
         _current_index++;
-        return _vector.size() < _current_index;
+        return _current_index < _vector->size();
     }
 
     T &current() override
-    { return _vector[_current_index]; }
+    {
+        return _vector->operator[](_current_index);
+    }
 
     void reset() override
     { _current_index = -1; }
@@ -81,5 +83,28 @@ public:
     void reset() override
     { _state = false; }
 };
+
+template<class T>
+class EmptyIterator : public Iterator<T>
+{
+private:
+    static EmptyIterator<T> _instance;
+
+public:
+    static EmptyIterator<T> *instance()
+    { return &_instance; }
+
+    bool next() override
+    { return false; }
+
+    T &current() override
+    { return *((T*)nullptr); }
+
+    void reset() override
+    { }
+};
+
+template<class T>
+EmptyIterator<T> EmptyIterator<T>::_instance = EmptyIterator<T>();
 
 #endif

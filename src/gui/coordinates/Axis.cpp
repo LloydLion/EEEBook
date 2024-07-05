@@ -21,6 +21,11 @@ Axis Axis::operator~() const
     return _index == 0 ? create<1>() : create<0>();
 }
 
+bool Axis::operator==(const Axis &other) const
+{
+    return other._index == _index;
+}
+
 uint8_t Axis::index() const
 {
     return _index;

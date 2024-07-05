@@ -27,7 +27,7 @@ protected:
 public:
     PROPERTY(PaddingSize, padding) AUTO_GET(_p_padding);
 
-    virtual void c_notify_composition_mutation(UIElement element);
+    virtual void c_notify_composition_changed(UIElement element);
 
     virtual Iterator<UIElement> *list_children() = 0;
     virtual size_t count_children() = 0;

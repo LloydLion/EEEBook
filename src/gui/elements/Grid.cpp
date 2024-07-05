@@ -45,7 +45,7 @@ GridElement fit_into_grid(UIElement element, size_t row, size_t column)
 UIElement &selector(GridElement &el) { return el.ui; }
 
 Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements):
-    _elements(elements), _iterator(VectorIterator<GridElement>(_elements), selector)
+    _elements(elements), _iterator(VectorIterator<GridElement>(&_elements), selector)
 {
     if (rows.size() > MAX_GRID_SIZE)
         throw std::runtime_error("Rows are so many, max rows count is determined by MAX_GRID_SIZE define in Grid.h");
@@ -55,6 +55,9 @@ Grid_::Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> c
 
     _rows = rows;
     _columns = columns;
+    
+    subscribe_all_children();
+    finish_initialization();
 }
 
 Size Grid_::i_min_size()
@@ -82,14 +85,9 @@ size_t Grid_::count_children()
 
 void Grid_::reset_cache(CacheChannel channel)
 {
-    CONNECT_CACHE_CHANNEL(create_layout, CacheChannel::Render | CacheChannel::Composition);
+    CONNECT_CACHE_CHANNEL(create_layout, CacheChannel::View | CacheChannel::Composition | CacheChannel::ChildComposition);
 
     this->UIComposer_::reset_cache(channel);
-}
-
-void Grid_::c_notify_composition_mutation(UIElement element)
-{
-    reset_cache(CacheChannel::Render);
 }
 
 void Grid_::i_render(const GFX& gfx)
@@ -103,12 +101,12 @@ void Grid_::i_render(const GFX& gfx)
         size_t r = element.row;
         size_t c = element.column;
 
-        GFX new_gfx = assume_padding(gfx.slice(LocalBounds(
+        LocalBounds bounds = LocalBounds(
             LocalVector(e_layout.get_column_position(c), e_layout.get_row_position(r)),
             Size(e_layout.get_column_size(c, gfx.size().width()), e_layout.get_row_size(r, gfx.size().height()))
-        )));
+        );
 
-        element.ui->render(new_gfx);
+        render_child(element.ui, gfx, bounds);
     }
 }
 
@@ -256,12 +254,12 @@ cord_t Grid_::get_rc_elements_min_size(size_t index, GridRC row_or_column)
         if (row_or_column == GridRC::Column)
         {
             if (el.column == index)
-                result = max(result, padding().expand(el.ui->min_size()).width());
+                result = max(result, child_min_size(el.ui).width());
         }
         else //GridRC::Row
         {
             if (el.row == index)
-                result = max(result, padding().expand(el.ui->min_size()).height());
+                result = max(result, child_min_size(el.ui).height());
         }
     }
 
@@ -318,3 +316,35 @@ std::vector<GridRCDefinition> *Grid_::get_definitions(GridRC row_or_column)
         return &_rows;
     else return &_columns;
 }
+
+UIElement Grid_::element_at(size_t row, size_t column)
+{
+    for (auto element : _elements)
+        if (element.row == row and element.column == column)
+            return element.ui;
+    
+    return nullptr;
+}
+
+void Grid_::add_child(GridElement child)
+{
+    subscribe_child(child.ui);
+    _elements.push_back(child);
+    trigger_mutation(Composition);
+}
+
+void Grid_::modify_child(GridElement child)
+{
+    for (size_t i = 0; i < _elements.size(); i++)
+        if (_elements[i].ui == child.ui)
+        {
+            if (_elements[i].row == child.row and _elements[i].column == child.column)
+                return;
+
+            _elements[i].row = child.row;
+            _elements[i].column = child.column;
+            trigger_mutation(Composition);
+        }
+}
+
+DEFAULT_REMOVE_CHILD_IMPLEMENTATION(Grid_, _elements, .ui);

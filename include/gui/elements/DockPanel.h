@@ -66,6 +66,10 @@ public:
 
     Iterator<UIElement> *list_children() override;
     size_t count_children() override;
+
+    void add_child(DockElement child);
+    void modify_child(DockElement child);
+    void remove_child(UIElement child) override;
 };
 
 #endif

@@ -94,10 +94,13 @@ protected:
 public:
     Grid_(std::vector<GridRCDefinition> rows, std::vector<GridRCDefinition> columns, std::vector<GridElement> elements);
 
-    void c_notify_composition_mutation(UIElement element) override;
-
     Iterator<UIElement> *list_children() override;
     size_t count_children() override;
+    UIElement element_at(size_t row, size_t column);
+
+    void add_child(GridElement child);
+    void modify_child(GridElement child);
+    void remove_child(UIElement child) override;
 };
 
 #endif

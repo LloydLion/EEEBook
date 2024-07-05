@@ -19,6 +19,11 @@ struct transparent_color_t
 
     transparent_color_t(const color_t& other);
     transparent_color_t();
+
+    inline bool operator==(const transparent_color_t &other) const
+    {
+        return other.is_transparent == is_transparent and (is_transparent or other.color == color);
+    }
 };
 
 transparent_color_t transparent_color();

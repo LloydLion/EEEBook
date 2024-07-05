@@ -24,8 +24,11 @@ DockElement fit_into_dock(UIElement element, Side origin, cord_t offset)
 UIElement &selector(DockElement &el) { return el.ui; }
 
 DockPanel_::DockPanel_(std::vector<DockElement> elements):
-    _elements(elements), _iterator(VectorIterator<DockElement>(_elements), selector)
-{ }
+    _elements(elements), _iterator(VectorIterator<DockElement>(&_elements), selector)
+{
+    subscribe_all_children();
+    finish_initialization();
+}
 
 void DockPanel_::i_render(const GFX& gfx)
 {
@@ -105,7 +108,7 @@ Size DockPanel_::i_min_size()
         result = Size::combine(result, required_size);
     }
 
-    return padding().expand(result);
+    return result;
 }
 
 Size DockPanel_::i_max_size()
@@ -120,3 +123,24 @@ Iterator<UIElement> *DockPanel_::list_children()
 }
 
 size_t DockPanel_::count_children() { return _elements.size(); }
+
+void DockPanel_::add_child(DockElement child)
+{
+    subscribe_child(child.ui);
+    _elements.push_back(child);
+    trigger_mutation(Composition);
+}
+
+void DockPanel_::modify_child(DockElement child)
+{
+    for (size_t i = 0; i < _elements.size(); i++)
+        if (_elements[i].ui == child.ui)
+        {
+            //TODO: make 'not changed' scenario
+            _elements[i].type = child.type;
+            _elements[i].position = child.position;
+            trigger_mutation(Composition);
+        }
+}
+
+DEFAULT_REMOVE_CHILD_IMPLEMENTATION(DockPanel_, _elements, .ui);

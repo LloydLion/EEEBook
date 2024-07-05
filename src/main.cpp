@@ -46,14 +46,16 @@ GraphicsEngine engine;
 
 void setup()
 {
-    pinMode(2, OUTPUT);
-    digitalWrite(2, HIGH);
+    delay(4000);
+
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(100);
-    digitalWrite(2, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
     delay(100);
-    digitalWrite(2, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(100);
-    digitalWrite(2, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
 
     Serial.begin(115200);
     Serial.println();
@@ -66,7 +68,7 @@ void setup()
     init_display();
 
     engine = create_graphics_engine();
-    root = setup_ui();
+    root = setup_ui(engine);
 
 #if IS_VIRTUAL_DISPLAY_USED
     delay(4000); //Time to connect VScreen to ESP
@@ -77,9 +79,9 @@ void loop()
 {
     try
     {
-        digitalWrite(2, HIGH);
+        digitalWrite(LED_BUILTIN, HIGH);
         delay(100);
-        digitalWrite(2, LOW);
+        digitalWrite(LED_BUILTIN, LOW);
 
         static uint8_t time = 0;
 
@@ -100,7 +102,7 @@ void loop()
         Serial.println("----DONE----");
 
         time += 1;
-        delay(10000);
+        delay(5000);
     }
     catch (const std::runtime_error &err)
     {

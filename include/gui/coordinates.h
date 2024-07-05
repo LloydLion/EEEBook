@@ -25,6 +25,7 @@ public:
     static Axis create();
 
     Axis operator~() const;
+    bool operator==(const Axis& other) const;
 
     uint8_t index() const;
 };

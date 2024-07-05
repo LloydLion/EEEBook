@@ -19,8 +19,11 @@ struct Alignment
 {
     VerticalAlignment vertical;
     HorizontalAlignment horizontal;
+
     Alignment(): vertical(VerticalAlignment::Center), horizontal(HorizontalAlignment::Center) {}
     Alignment(VerticalAlignment vertical, HorizontalAlignment horizontal): vertical(vertical), horizontal(horizontal) {}
+
+    inline bool operator==(const Alignment &other) const { return vertical == other.vertical and horizontal == other.horizontal; }
 };
 
 

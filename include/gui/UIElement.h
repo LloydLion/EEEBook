@@ -57,6 +57,9 @@
 
 #endif
 
+#define DEFAULT_PROPERTY_SETTER_IMPLEMENTATION(CLASS, TYPE, NAME, FIELD, CACHE_CHANNEL) void CLASS::NAME(TYPE value) { if (FIELD == value) return; FIELD = value; trigger_mutation(CACHE_CHANNEL); }
+#define DEFAULT_PROPERTY_SETTER_IMPLEMENTATION_P(CLASS, TYPE, NAME, CACHE_CHANNEL) DEFAULT_PROPERTY_SETTER_IMPLEMENTATION(CLASS, TYPE, NAME, _p_##NAME, CACHE_CHANNEL)
+
 class UIElement_;
 typedef UIElement_ *UIElement;
 
@@ -81,11 +84,8 @@ private:
     UIVisibility _p_visibility = UIVisibility::Visible;
     Size _o_max_size;
     Size _o_min_size;
-
-    DEFINE_CACHE_SLOT(Size, min_size);
-    DEFINE_CACHE_SLOT(Size, max_size);
-
-    Size _previous_size = Size();
+    Size _cached_min_size, _cached_max_size;
+    Size _previous_viewport = Size();
 
     Size clamp_size(Size size);
 
@@ -95,15 +95,10 @@ protected:
         All = 0xFF,
         None = 0x00,
 
-        Draw = 0b10000000,
+        View = 0b10000000,
         Composition = 0b01000000,
         Render = 0b00100000,
-    };
-
-    enum MutationType : uint8_t
-    {
-        DrawState,
-        CompositionState,
+        ChildComposition = 0b00010000,
     };
 
     virtual void i_render(const GFX& gfx) = 0;
@@ -111,7 +106,13 @@ protected:
     virtual Size i_max_size() = 0;
 
     virtual void reset_cache(CacheChannel channel);
-    void trigger_mutation(MutationType type);
+    void trigger_mutation(CacheChannel channel);
+    void recalculate_composition();
+
+    Size resolve_min_size();
+    Size resolve_max_size();
+
+    void finish_initialization();
     
 public:
 
@@ -135,8 +136,8 @@ public:
     void unbind_parent(UIContainer parent);
 
     void render(const GFX& gfx);
-    Size min_size();
-    Size max_size();
+    inline Size min_size() { return _cached_min_size; }
+    inline Size max_size() { return _cached_max_size; };
 };
 
 #endif

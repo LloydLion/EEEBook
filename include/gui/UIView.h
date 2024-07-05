@@ -13,11 +13,15 @@ private:
 
 public:
     UIView_(UIElement element);
+    UIView_();
 
     UIElement get_element();
+
+    void change_child(UIElement new_child);
 
     Iterator<UIElement> *list_children() override;
     size_t count_children() override;
 };
+
 
 #endif
