@@ -2,5 +2,6 @@
 /.pc
 /.vscode
 /include/config.h
+/include/ui.h
 /crossplay-config.json
 __pycache__
