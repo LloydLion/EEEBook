@@ -1,9 +1,9 @@
 #ifndef GUI_ELEMENTS_IMAGE_H
 #define GUI_ELEMENTS_IMAGE_H
 
-#include "../cordinates.h"
+#include "gui/coordinates.h"
 #include "gui/UIElement.h"
-#include "../Bitmap.h"
+#include "gui/Bitmap.h"
 
 class Image_;
 typedef Image_ *Image;

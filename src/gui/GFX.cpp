@@ -46,9 +46,11 @@ void GFX::draw_ellipse(LocalBounds bounds, transparent_color_t color, cord_t thi
     RETURN_IF_COLOR_TRANSPARENT;
     _engine->draw_ellipse(_bounds.cast(bounds), color.color, thickness, pattern);
 }
-void GFX::draw_circle(LocalVector start_point, cord_t radius, transparent_color_t color, cord_t thickness = 0, Pattern pattern = Pattern::get_fill_pattern()) const
-    {draw_ellipse(LocalBounds(start_point, Size(radius*2, radius*2)), color.color, thickness, pattern);}
 
+void GFX::draw_circle(LocalVector start_point, cord_t radius, transparent_color_t color, cord_t thickness, Pattern pattern) const
+{
+    draw_ellipse(LocalBounds(start_point, Size(radius*2, radius*2)), color.color, thickness, pattern);
+}
 
 void GFX::fill_screen(transparent_color_t color) const
 {

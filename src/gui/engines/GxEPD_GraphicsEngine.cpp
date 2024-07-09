@@ -31,7 +31,7 @@ void GxEPD_GraphicsEngine::draw_line(Vector start_point, Vector end_point, color
     operation.bounds = Bounds(start_point,end_point);
     operation.color = color;
 
-    operation.args.line.is_main_diagonal = (start_point.x < end_point.x) ^ (start_point.y < end_point.y);
+    operation.args.line.is_main_diagonal = (start_point.x() < end_point.x()) ^ (start_point.y() < end_point.y());
     operation.args.line.thickness = thickness;
     operation.args.line.pattern = pattern;
 

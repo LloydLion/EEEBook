@@ -1,7 +1,7 @@
 #ifndef GUI_BITMAP_H
 #define GUI_BITMAP_H
 
-#include "cordinates.h"
+#include "coordinates.h"
 #include <Arduino.h>
 
 struct Bitmap
