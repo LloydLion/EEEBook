@@ -1,29 +1,13 @@
-#include "platform/platform.h"
-
-#if PLATFORM & PLATFORM_MCU_ESP32
-
 #include "config.h"
 #include "ui.h"
+#include "platform/platform.h"
+#include "platform/time.h"
+#include <stdexcept>
 
-#if IS_VIRTUAL_DISPLAY_USED
-
-#include "gui/engines/Serial_GraphicsEngine.h"
-
-void init_display()
-{
-
-}
-
-GraphicsEngine create_graphics_engine()
-{
-    return new Serial_GraphicsEngine();
-}
-
-#else
-
+#pragma region Engine specific
+#if ENGINE == ENGINE_GXEPD
 #include "gui/engines/GxEPD_GraphicsEngine.h"
-//#include "gui/fonts/FreeMonoBold12pt7b.h"
-#include <Fonts/FreeMonoBold12pt7b.h>
+#include <Fonts/Org_01.h>
 
 DISPLAY_TYPE display(DISPLAY_DRIVER(DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_PIN, DISPLAY_BUSY_PIN));
 
@@ -39,18 +23,33 @@ void init_display()
 GraphicsEngine create_graphics_engine()
 {
     auto engine = new GxEPD_GraphicsEngine(&display);
-    engine->register_font(&FreeMonoBold12pt7b);
+    engine->register_font(&Org_01);
     return engine;
 }
 
+#elif ENGINE == ENGINE_STDOUT
+#include "gui/engines/StdOut_GraphicsEngine.h"
+
+void init_display()
+{
+
+}
+
+GraphicsEngine create_graphics_engine()
+{
+    return new StdOut_GraphicsEngine();
+}
+
+#else
+#error "Unknown graphics engine"
 #endif
+#pragma endregion
 
-UIElement root;
-GraphicsEngine engine;
-DrawSettings draw_settings;
+#pragma region Platform specific
+#if PLATFORM & PLATFORM_MCU
+#include <Arduino.h>
 
-
-void setup()
+void say_hello()
 {
     delay(4000);
 
@@ -62,67 +61,72 @@ void setup()
     digitalWrite(LED_BUILTIN, HIGH);
     delay(100);
     digitalWrite(LED_BUILTIN, LOW);
-
-    Serial.begin(115200);
-    Serial.println();
-    Serial.println();
-    Serial.println("----RESTART----");
-    Serial.println();
-
-    delay(200);
-
-    init_display();
-
-    draw_settings.background_color = color_t::White;
-    draw_settings.update_rule = new UpdateRule_(PartialUpdate, 3000, 0);
-
-    engine = create_graphics_engine();
-    root = setup_ui(engine);
-
-#if IS_VIRTUAL_DISPLAY_USED
-    delay(4000); //Time to connect VScreen to ESP
-#endif
 }
 
-void loop()
+#define ON_ERROR_BEHAVIOR while(true) { digitalWrite(LED_BUILTIN, HIGH); delay(100); digitalWrite(LED_BUILTIN, LOW); delay(100); }
+#define ON_END_BEHAVIOR while(true) { digitalWrite(LED_BUILTIN, HIGH); delay(100); digitalWrite(LED_BUILTIN, LOW); delay(1000);}
+
+int main();
+void setup() { main(); }
+void loop() {  }
+
+#elif PLATFORM & PLATFORM_PC
+
+void say_hello()
+{
+    std_println("Program start OK");
+}
+
+#define ON_ERROR_BEHAVIOR return -1;
+#define ON_END_BEHAVIOR return 0;
+
+#else
+#error "Unknown platform"
+#endif
+#pragma endregion
+
+int main()
 {
     try
     {
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(100);
-        digitalWrite(LED_BUILTIN, LOW);
+        say_hello();
 
-        static uint8_t time = 0;
+        init_display();
+        GraphicsEngine engine = create_graphics_engine();
 
-        Serial.println("----UPDATE----");
+        DrawSettings draw_settings = create_draw_settings(0);
+        UIElement root = setup_ui(engine);
 
-        update_ui(root, time);
+        uint8_t time = 0;
+        while (true)
+        {
+        #ifdef TIME_LIMIT
+            if (time >= TIME_LIMIT) break;
+        #endif
 
-        Serial.println("----RENDER----");
+            time++;
 
-        GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
-        root->render(root_gfx);
+            std_println("----UPDATE----");
+            update_ui(root, time);
 
-        Serial.println("----DRAWING----");
+            std_println("----RENDER----");
+            GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+            root->render(root_gfx);
 
-        DrawSettings draw_settings = create_draw_settings(time);
-        engine->push(draw_settings);
+            std_println("----DRAWING----");
+            DrawSettings draw_settings = create_draw_settings(time);
+            engine->push(draw_settings);
 
-        Serial.println("----DONE----");
-
-        time += 1;
-        delay(5000);
+            std_println("----DONE----");
+            delay_ms(1000);
+        }
     }
-    catch (const std::runtime_error &err)
+    catch(const std::exception &err)
     {
-        Serial.println();
-        Serial.println();
-        Serial.println("----CRITICAL ERROR----");
-        Serial.println("Manual restart required");
-        Serial.println(err.what());
-
-        while (1) delay(100);
+        std_println("RUNTIME ERROR");
+        std_println(err.what());
+        ON_ERROR_BEHAVIOR;
     }
-}
 
-#endif
+    ON_END_BEHAVIOR;
+}

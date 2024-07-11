@@ -1,0 +1,25 @@
+{
+    "PC:Windows":
+    {
+        "wsl": "wsl",
+        "compiler": "x86_64-w64-mingw32-g++"
+    },
+
+    "PC:Linux":
+    {
+        "debugger": "dbg",
+        "compiler": "g++"
+    },
+
+    "MCU:ESP32":
+    {
+        "platformio": "platformio",
+        "environment": "esp32"
+    },
+
+    "MCU:ESP32-C3":
+    {
+        "platformio": "platformio",
+        "environment": "esp32_c3"
+    }
+}

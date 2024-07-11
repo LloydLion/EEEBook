@@ -17,4 +17,6 @@ def run(args: list[str], config):
 def setup_ide(args: list[str], config):
     shutil.copyfile('./scripts/PC/Windows/vs/tasks.json', './.vscode/tasks.json')
     shutil.copyfile('./scripts/PC/Windows/vs/c_cpp_properties.json', './.vscode/c_cpp_properties.json')
+    pc_shared._ensure_dir('.pc')
+    pc_shared._ensure_dir('.pc/Windows')
     pass

@@ -32,6 +32,10 @@ def debug(args: list[str]):
     platform_dependent({'PC:Linux': PC_Linux.debug}, args[0], args[1::])
 
 def main(args: list[str]):
+    if args[0].startswith('-CD='):
+        os.chdir(args[0][4::])
+        args = args[1::]
+
     global config
     with open('crossplay-config.json') as cnf:
         config = json.load(cnf)

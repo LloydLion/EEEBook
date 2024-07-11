@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <cstring>
 #include <stdint.h>
+#include <algorithm>
 
 GridRCDefinition define_grid_rc_auto(cord_t min_size)
 {
@@ -126,24 +127,24 @@ IMPLEMENT_CACHE_SLOT(Grid_::ElementsLayout, Grid_, create_layout, (Size viewport
     memset(&layout.columns_positions, 0, (MAX_GRID_SIZE - 1) * sizeof(cord_t));
 
     UI_PRINT_SELF;
-    Serial.println("Printing grid layout:");
-    Serial.print("\tRows:");
-    Serial.printf(" [v-v%d, ->%d]", rows_rs[0], layout.get_row_position(0));
+    std_println("Printing grid layout:");
+    std_print("\tRows:");
+    std_printf(" [v-v%d, ->%d]", rows_rs[0], layout.get_row_position(0));
     for (size_t row = 1; row < _rows.size(); row++)
     {
         layout.rows_positions[row - 1] += layout.get_row_position(row - 1) + rows_rs[row - 1];
-        Serial.printf(" [v-v%d, ->%d]", rows_rs[row], layout.get_row_position(row));
+        std_printf(" [v-v%d, ->%d]", rows_rs[row], layout.get_row_position(row));
     }
 
-    Serial.println();
-    Serial.print("\tColumns:");
-    Serial.printf(" [v-v%d, ->%d]", columns_rs[0], layout.get_column_position(0));
+    std_println();
+    std_print("\tColumns:");
+    std_printf(" [v-v%d, ->%d]", columns_rs[0], layout.get_column_position(0));
     for (size_t column = 1; column < _columns.size(); column++)
     {
         layout.columns_positions[column - 1] += layout.get_column_position(column - 1) + columns_rs[column - 1];
-        Serial.printf(" [v-v%d, ->%d]", columns_rs[column], layout.get_column_position(column));
+        std_printf(" [v-v%d, ->%d]", columns_rs[column], layout.get_column_position(column));
     }
-    Serial.println();
+    std_println();
 
     return layout;
 }
@@ -255,16 +256,16 @@ cord_t Grid_::get_rc_elements_min_size(size_t index, GridRC row_or_column)
         if (row_or_column == GridRC::Column)
         {
             if (el.column == index)
-                result = std::max(result, padding.expand(el.ui->min_size()).width());
+                result = std::max(result, child_min_size(el.ui).width());
         }
         else //GridRC::Row
         {
             if (el.row == index)
-                result = std::max(result, padding.expand(el.ui->min_size()).height());
+                result = std::max(result, child_max_size(el.ui).height());
         }
     }
 
-    result = max(result, definition.min_size);
+    result = std::max(result, definition.min_size);
 
     return result;
 }
@@ -308,7 +309,7 @@ cord_t Grid_::get_auto_rc_size(size_t index, GridRC row_or_column)
 {
     cord_t min_size = get_definitions(row_or_column)->operator[](index).min_size;
 
-    return max(get_rc_elements_min_size(index, row_or_column), min_size);
+    return std::max(get_rc_elements_min_size(index, row_or_column), min_size);
 }
 
 std::vector<GridRCDefinition> *Grid_::get_definitions(GridRC row_or_column)

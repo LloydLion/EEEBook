@@ -1,4 +1,5 @@
 #include "gui/elements/FloatNumberBox.h"
+#include <cstdio>
 
 
 FloatNumberBox_::FloatNumberBox_(Font font): TextElement_(font)

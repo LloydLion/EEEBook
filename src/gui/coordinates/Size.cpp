@@ -18,7 +18,7 @@ Size::Size(Vector start, Vector end): Size(
 
 Size Size::concat(Size a, Size b, Axis along_axis)
 {
-    return Size(a[along_axis] + b[along_axis], max(a[~along_axis], b[~along_axis]), along_axis);
+    return Size(a[along_axis] + b[along_axis], std::max(a[~along_axis], b[~along_axis]), along_axis);
 }
 
 LocalVector Size::start_to_end() const
@@ -28,12 +28,12 @@ LocalVector Size::start_to_end() const
 
 Size Size::intersect(Size a, Size b)
 {
-    return Size(min(a.width(), b.width()), min(a.height(), b.height()));
+    return Size(std::min(a.width(), b.width()), std::min(a.height(), b.height()));
 }
 
 Size Size::combine(Size a, Size b)
 {
-    return Size(max(a.width(), b.width()), max(a.height(), b.height()));
+    return Size(std::max(a.width(), b.width()), std::max(a.height(), b.height()));
 }
 
 Size Size::operator+(const Vector &other) const

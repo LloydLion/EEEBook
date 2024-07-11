@@ -1,6 +1,8 @@
 from .. import pc_shared
 from ...common import command, command_cwd
 import shutil
+import os
+import sys
 
 def run(args: list[str], config):
     compiler_call = config['compiler']
@@ -15,7 +17,9 @@ def setup_ide(args: list[str], config):
     shutil.copyfile('./scripts/PC/Linux/vs/tasks.json', './.vscode/tasks.json')
     shutil.copyfile('./scripts/PC/Linux/vs/c_cpp_properties.json', './.vscode/c_cpp_properties.json')
     shutil.copyfile('./scripts/PC/Linux/vs/launch.json', './.vscode/launch.json')
+    pc_shared._ensure_dir('.pc')
+    pc_shared._ensure_dir('.pc/Linux')
     pass
 
 def debug(args: list[str], config):
-    command_cwd("gdb " + ' '.join(map(lambda x: '"' + str(x) + '"', args)), './.pc/Linux/bin')
+    command_cwd(config["debugger"] + " " + ' '.join(map(lambda x: '"' + str(x) + '"', args)), './.pc/Linux/bin')

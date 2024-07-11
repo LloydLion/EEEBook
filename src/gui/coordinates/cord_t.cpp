@@ -1,4 +1,5 @@
 #include "gui/coordinates.h"
+#include <stdarg.h>
 
 cord_t __safe_cords_sum(size_t va_count, cord_t a, ...)
 {
