@@ -1,0 +1,1 @@
+python3 ../../../crossplay.py -CD=../../.. proxy-debug "$@"

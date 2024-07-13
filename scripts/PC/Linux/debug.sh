@@ -1,1 +1,0 @@
-python3 ../../../crossplay.py -CD=../../.. debug PC:Linux "$@"

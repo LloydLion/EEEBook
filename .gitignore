@@ -4,4 +4,5 @@
 /include/config.h
 /include/ui.h
 /crossplay-config.json
+/.crossplay-meta.json
 __pycache__

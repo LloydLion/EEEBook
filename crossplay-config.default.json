@@ -1,25 +1,45 @@
 {
-    "PC:Windows":
+    "ExecutionPlatform":
     {
-        "wsl": "wsl",
-        "compiler": "x86_64-w64-mingw32-g++"
+        "Linux":
+        {
+            "python": "python3"
+        },
+
+        "Windows":
+        {
+            "wsl": "wsl",
+            "wsl-python": "python3"
+        }
     },
 
-    "PC:Linux":
-    {
-        "debugger": "dbg",
-        "compiler": "g++"
-    },
+    "TargetPlatform":
+    {       
+        "PC:Windows":
+        {
+            "compiler": "x86_64-w64-mingw32-g++"
+        },
 
-    "MCU:ESP32":
-    {
-        "platformio": "platformio",
-        "environment": "esp32"
-    },
+        "PC:Linux":
+        {
+            "debugger": "gdb",
+            "compiler": "g++"
+        },
 
-    "MCU:ESP32-C3":
-    {
-        "platformio": "platformio",
-        "environment": "esp32_c3"
+
+        "MCU":
+        {
+            "platformio": "platformio",
+            
+            ":ESP32":
+            {
+                "environment": "esp32"
+            },
+
+            ":ESP32-C3":
+            {
+                "environment": "esp32_c3"
+            }
+        }
     }
 }
