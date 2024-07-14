@@ -1,12 +1,12 @@
 #ifndef GUI_BITMAP_H
 #define GUI_BITMAP_H
 
-#include "coordinates.h"
-#include <Arduino.h>
+#include "gui/coordinates.h"
+#include <cstddef>
 
 struct Bitmap
 {
-    byte *data;
+    std::byte *data;
     cord_t width;
     cord_t height;
 
@@ -15,7 +15,7 @@ struct Bitmap
         return Size(width, height);
     }
     
-    inline Bitmap(byte *data, cord_t width, cord_t height):
+    inline Bitmap(std::byte *data, cord_t width, cord_t height):
         data(data), width(width), height(height) {}
 };
 
