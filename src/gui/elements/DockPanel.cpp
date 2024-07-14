@@ -1,4 +1,5 @@
 #include "gui/elements/DockPanel.h"
+#include <stdexcept>
 
 DockElement fit_into_dock(UIElement element, Corner origin, Vector point)
 {
@@ -49,17 +50,17 @@ void DockPanel_::i_render(const GFX& gfx)
             cord_t offset = side_position.offset;
             
             if (side_position.origin == Side::Up)
-                new_gfx_bounds = LocalBounds(LocalVector(0, offset), Size(dock_size.width(), min(constrained_cords_subtract(dock_size.height(), offset), max_size.height())));
+                new_gfx_bounds = LocalBounds(LocalVector(0, offset), Size(dock_size.width(), std::min(constrained_cords_subtract(dock_size.height(), offset), max_size.height())));
             else if (side_position.origin == Side::Left)
-                new_gfx_bounds = LocalBounds(LocalVector(offset, 0), Size(min(constrained_cords_subtract(dock_size.width(), offset), max_size.width()), dock_size.height()));
+                new_gfx_bounds = LocalBounds(LocalVector(offset, 0), Size(std::min(constrained_cords_subtract(dock_size.width(), offset), max_size.width()), dock_size.height()));
             else if (side_position.origin == Side::Down)
             {
-                cord_t viewport_height = min(constrained_cords_subtract(dock_size.height(), offset), max_size.height());
+                cord_t viewport_height = std::min(constrained_cords_subtract(dock_size.height(), offset), max_size.height());
                 new_gfx_bounds = LocalBounds(LocalVector(0, constrained_cords_subtract(dock_size.height(), safe_cords_sum(offset, viewport_height))), Size(dock_size.width(), viewport_height));
             }
             else //if (side_position.origin == Side::Right)
             {
-                cord_t viewport_width = min(constrained_cords_subtract(dock_size.width(), offset), max_size.width());
+                cord_t viewport_width = std::min(constrained_cords_subtract(dock_size.width(), offset), max_size.width());
                 new_gfx_bounds = LocalBounds(LocalVector(constrained_cords_subtract(dock_size.width(), safe_cords_sum(offset, viewport_width)), 0), Size(viewport_width, dock_size.height()));
             }
         }

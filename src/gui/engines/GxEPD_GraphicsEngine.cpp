@@ -1,7 +1,8 @@
 #include "gui/engines/GxEPD_GraphicsEngine.h"
-#include <exception>
 
-#if !IS_VIRTUAL_DISPLAY_USED
+#if PLATFORM & PLATFORM_MCU
+
+#include <exception>
 
 bool drawChar(GFXglyph *glyph, const GFXfont *font, uint16_t color, uint16_t pos_y, uint16_t cursor_x, cord_t width_limit, DISPLAY_TYPE *display);
 

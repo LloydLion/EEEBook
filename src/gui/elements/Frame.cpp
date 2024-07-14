@@ -15,8 +15,6 @@ void Frame_::i_render(const GFX& gfx)
 {
     gfx.draw_rectangle(LocalBounds(Vector(), gfx.size()), foreground_color(), _p_thickness);
 
-    Serial.println(1);
-
     if (_p_thickness != 0)
     {
         gfx.slice(THICKNESS_DISTANCES).fill_screen(background_color());
@@ -24,7 +22,6 @@ void Frame_::i_render(const GFX& gfx)
     }
     else
     {
-        Serial.println(2);
         render_child(get_element(), gfx);
     }
 }

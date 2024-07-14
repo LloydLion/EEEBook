@@ -1,12 +1,16 @@
 #ifndef GUI_ENGINES_GXEPD_GRAPHICSENGINE_H
 #define GUI_ENGINES_GXEPD_GRAPHICSENGINE_H
+
+#include "platform/platform.h"
+
+#if PLATFORM & PLATFORM_MCU
+
 #include "config.h"
 #include "gui/color.h"
 #include "gui/GraphicsEngine.h"
 #include <vector>
 #include "std/iterator.h"
 
-#if !IS_VIRTUAL_DISPLAY_USED
 
 class GxEPD_GraphicsEngine : public GraphicsEngine_
 {

@@ -1,0 +1,22 @@
+#define PLATFORM_UNKNOWN        0b00000
+
+#define PLATFORM_MCU            0b000111
+#define PLATFORM_MCU_ESP32_C3   0b000001
+#define PLATFORM_MCU_ESP32      0b000010
+#define PLATFORM_MCU_UNKNOWN    0b000100
+
+#define PLATFORM_PC             0b111000
+#define PLATFORM_PC_LINUX       0b001000
+#define PLATFORM_PC_WINDOWS     0b010000
+#define PLATFORM_PC_UNKNOWN     0b100000
+
+
+#if ESP32
+    #define PLATFORM PLATFORM_MCU_ESP32
+#elif Windows
+    #define PLATFORM PLATFORM_PC_WINDOWS
+#elif Linux
+    #define PLATFORM PLATFORM_PC_LINUX
+#else
+    #define PLATFORM PLATFORM_UNKNOWN
+#endif

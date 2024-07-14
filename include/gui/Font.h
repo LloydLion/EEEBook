@@ -1,6 +1,5 @@
 #ifndef GUI_FONT_H
 #define GUI_FONT_H
-#include <Arduino.h>
 #include "gui/FontEngine.h"
 
 class Font_;

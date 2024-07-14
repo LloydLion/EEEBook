@@ -1,4 +1,5 @@
 #include "gui/elements/StackPanel.h"
+#include <stdexcept>
 
 StackPanel_::StackPanel_(std::vector<UIElement> elements):
     _elements(elements), _elements_iterator(&elements)
@@ -55,7 +56,11 @@ Size StackPanel_::i_min_size()
     }
 
     if (non_collapsed_counter != 0)
-        result.with(result[_p_orientation] + (_p_spacing * (non_collapsed_counter - 1)), _p_orientation);
+    {
+        cord_t delta = _p_spacing * (non_collapsed_counter - 1);
+        cord_t new_p = result[_p_orientation] + delta;
+        result = result.with(new_p, _p_orientation);
+    }
 
     return result;
 }

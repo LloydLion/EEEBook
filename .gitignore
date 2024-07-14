@@ -1,4 +1,8 @@
-.pio
+/.pio
+/.pc
+/.vscode
 /include/config.h
 /include/ui.h
-.vscode
+/crossplay-config.json
+/.crossplay-meta.json
+__pycache__

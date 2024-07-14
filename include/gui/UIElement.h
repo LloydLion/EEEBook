@@ -6,10 +6,11 @@
 #include "std/property.h"
 #include "config.h"
 #include "Alignment.h"
-#include <Arduino.h>
+#include "platform/stdout.h"
+#include "platform/pointer.h"
 
 
-#define UI_PRINT_SELF Serial.print("[UI="); Serial.print((uint32_t)this, 16); Serial.print("|"); if (name) Serial.print(name); Serial.print("]: ");
+#define UI_PRINT_SELF std_print("[UI="); std_print((ptr_int_t)this, 16); std_print("|"); if (name) std_print(name); std_print("]: ");
 
 #define _UI_CACHE_SLOT_STATUS_FIELD(SLOT) __cache_status_##SLOT
 #define _UI_CACHE_SLOT_VALUE_FIELD(SLOT) __cache_value_##SLOT
@@ -21,8 +22,8 @@
 #define DEFINE_CACHE_SLOT_ACCESSOR(TYPE, NAME, ...) TYPE _UI_CACHE_SLOT_ACCESSOR_FUNCTION(NAME)(__VA_ARGS__)
 
 #if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
-    #define CONNECT_CACHE_CHANNEL(NAME, CHANNEL) UI_PRINT_SELF; if (channel & CHANNEL) { _UI_CACHE_SLOT_STATUS_FIELD(NAME) = false; Serial.print("\tReseting cache slot "); Serial.println(#NAME); } \
-        else { Serial.print("\tCache slot reseting skipped "); Serial.println(#NAME); }
+    #define CONNECT_CACHE_CHANNEL(NAME, CHANNEL) UI_PRINT_SELF; if (channel & CHANNEL) { _UI_CACHE_SLOT_STATUS_FIELD(NAME) = false; std_print("\tReseting cache slot "); std_println(#NAME); } \
+        else { std_print("\tCache slot reseting skipped "); std_println(#NAME); }
 
     #define IMPLEMENT_CACHE_SLOT(TYPE, CLASS, NAME, ARGS, ARGS_) \
         TYPE CLASS::_UI_CACHE_SLOT_ACCESSOR_FUNCTION(NAME)ARGS \
@@ -30,12 +31,12 @@
             UI_PRINT_SELF; \
             if (_UI_CACHE_SLOT_STATUS_FIELD(NAME)) \
             { \
-                Serial.print("# Value restored from cache, slot: "); Serial.println(#NAME); \
+                std_print("# Value restored from cache, slot: "); std_println(#NAME); \
                 return _UI_CACHE_SLOT_VALUE_FIELD(NAME); \
             } \
             else \
             { \
-                Serial.print("# Cache miss, resolving value using resolver, slot: "); Serial.println(#NAME); \
+                std_print("# Cache miss, resolving value using resolver, slot: "); std_println(#NAME); \
                 _UI_CACHE_SLOT_STATUS_FIELD(NAME) = true; \
                 return _UI_CACHE_SLOT_VALUE_FIELD(NAME) = _UI_CACHE_SLOT_RESOLVER(NAME)ARGS_; \
             } \

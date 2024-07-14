@@ -1,0 +1,37 @@
+{
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": ["python", "crossplay.py", "build"],
+
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        },
+
+        {
+            "label": "Run",
+            "type": "shell",
+            "command": ["python", "crossplay.py", "run"]
+        },
+
+        {
+            "label": "Build and run",
+            "type": "shell",
+            "command": ["python", "crossplay.py", "-dont-save-meta", "platform", "--execution-platform", "=", "build", "=", "run"],
+            "problemMatcher": ["$gcc"]
+        },
+        
+        {
+            "label": "Clear",
+            "type": "shell",
+            "command": ["python", "crossplay.py", "clear"],
+            "problemMatcher": []
+        }
+    ],
+
+    "version": "2.0.0"
+}

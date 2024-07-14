@@ -1,6 +1,6 @@
 #ifndef GUI_COLOR_H
 #define GUI_COLOR_H
-#include <Arduino.h>
+#include <stdint.h>
 #include "config.h"
 
 enum color_t : uint8_t

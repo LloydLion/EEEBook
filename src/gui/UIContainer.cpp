@@ -1,4 +1,5 @@
 #include "gui/UIContainer.h"
+#include "platform/stdout.h"
 
 Size UIContainer_::child_max_size(UIElement element)
 {
@@ -16,13 +17,8 @@ Size UIContainer_::child_min_size(UIElement element)
 
 void UIContainer_::render_child(UIElement element, GFX gfx)
 {
-    Serial.println(3);
     if (element != nullptr and element->visibility() == UIVisibility::Visible)
-    {
-        Serial.println(4);
         element->render(gfx.slice(_p_padding));
-    }
-    else Serial.println(5);
 }
 
 void UIContainer_::render_child(UIElement element, GFX gfx, Bounds viewport)
@@ -40,7 +36,6 @@ void UIContainer_::subscribe_all_children()
         UIElement &value = iterator->current();
         UIElement value2 = value;
         subscribe_child(value2);
-
     }
 }
 
