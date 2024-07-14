@@ -1,6 +1,7 @@
 #ifndef STD_ITERATOR_H
 #define STD_ITERATOR_H
 #include <vector>
+#include <cstddef>
 
 template<class T>
 class Iterator

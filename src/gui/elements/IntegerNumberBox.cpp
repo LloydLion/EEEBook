@@ -1,4 +1,5 @@
 #include "gui/elements/IntegerNumberBox.h"
+#include <cstdio>
 
 
 IntegerNumberBox_::IntegerNumberBox_(Font font): TextElement_(font)

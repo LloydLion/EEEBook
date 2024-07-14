@@ -1,6 +1,8 @@
 #ifndef GUI_COORDINATES_H
 #define GUI_COORDINATES_H
-#include <Arduino.h>
+#include <inttypes.h>
+#include <stddef.h>
+#include <tuple>
 
 typedef uint32_t cord_t;
 #define MAX_DIMENSION_SIZE 65535

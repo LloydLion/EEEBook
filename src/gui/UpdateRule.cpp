@@ -1,5 +1,5 @@
 #include "gui/UpdateRule.h"
-#include <Arduino.h>
+#include "platform/time.h"
 
 UpdateRule_ FullRule = UpdateRule_(UpdateType::FullUpdate);
 UpdateRule_ PartialRule = UpdateRule_(UpdateType::PartialUpdate);
@@ -17,11 +17,11 @@ UpdateRule_::UpdateRule_(UpdateType type, int delay, int count): _default_type(t
 bool UpdateRule_::is_partial_update()
 {
     bool is_inverse_update =
-        (_update_delay != 0 && _update_delay <= millis() - _time) || //time condition 
+        (_update_delay != 0 && _update_delay <= current_time() - _time) || //time condition 
         (_update_count != 0 && _count % _update_count == 0) //count condition
     ;
 
-    _time = millis();
+    _time = current_time();
     _count++;
     
     return is_inverse_update ? 

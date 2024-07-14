@@ -1,5 +1,6 @@
 #include "gui/UIElement.h"
 #include "gui/UIContainer.h"
+#include <stdexcept>
 
 UIElement_::UIElement_()
 {
@@ -43,7 +44,7 @@ void UIElement_::render(const GFX& gfx)
     if (Size::relate(new_gfx.size(), min) & Coordinates::Relationship::SmallerAnyDimension)
     {
         UI_PRINT_SELF;
-        Serial.printf("Element min size restrict! required min Size(%d, %d), reaming Size(%d, %d), provided Size(%d, %d)\n",
+        std_printf("Element min size restrict! required min Size(%d, %d), reaming Size(%d, %d), provided Size(%d, %d)\n",
             min.width(), min.height(), new_gfx.size().width(), new_gfx.size().height(), gfx.size().width(), gfx.size().height());
         new_gfx.fill_screen(color_t::Black);
         return;
@@ -94,10 +95,10 @@ void UIElement_::reset_cache(CacheChannel channel)
 {
 #if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
     UI_PRINT_SELF;
-    Serial.print("Cache has been reset, channel mask: ");
+    std_print("Cache has been reset, channel mask: ");
     for (size_t bit = 0; bit < 8; bit++)
-        { Serial.print((bool)(channel & 0b10000000)); channel = (CacheChannel)(channel << 1); }
-    Serial.println();
+        { std_print((bool)(channel & 0b10000000)); channel = (CacheChannel)(channel << 1); }
+    std_println();
 #endif
 }
 
@@ -144,7 +145,7 @@ void UIElement_::trigger_mutation(CacheChannel channel)
 {
 #if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
     UI_PRINT_SELF;
-    Serial.println("Element mutation triggered");
+    std_println("Element mutation triggered");
 #endif
     reset_cache(channel);
     recalculate_composition();
@@ -169,17 +170,17 @@ void UIElement_::recalculate_composition()
             _p_parent->c_notify_composition_changed(this);
 
 #if GUI_DEBUG_OPTIONS & GUI_STATE_DEBUG
-            UI_PRINT_SELF; Serial.println("Element composition changed, parent notified");
+            UI_PRINT_SELF; std_println("Element composition changed, parent notified");
         }
         else
         {
-            UI_PRINT_SELF; Serial.println("Element composition changed, no parent to be notified");
+            UI_PRINT_SELF; std_println("Element composition changed, no parent to be notified");
 #endif
         }
     }
     else
     {
-        UI_PRINT_SELF; Serial.println("Element composition recalculated, no changes");
+        UI_PRINT_SELF; std_println("Element composition recalculated, no changes");
     }
 }
 

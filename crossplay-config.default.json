@@ -1,0 +1,45 @@
+{
+    "ExecutionPlatform":
+    {
+        "Linux":
+        {
+            "python": "python3"
+        },
+
+        "Windows":
+        {
+            "wsl": "wsl",
+            "wsl-python": "python3"
+        }
+    },
+
+    "TargetPlatform":
+    {       
+        "PC:Windows":
+        {
+            "compiler": "x86_64-w64-mingw32-g++"
+        },
+
+        "PC:Linux":
+        {
+            "debugger": "gdb",
+            "compiler": "g++"
+        },
+
+
+        "MCU":
+        {
+            "platformio": "platformio",
+            
+            ":ESP32":
+            {
+                "environment": "esp32"
+            },
+
+            ":ESP32-C3":
+            {
+                "environment": "esp32_c3"
+            }
+        }
+    }
+}
