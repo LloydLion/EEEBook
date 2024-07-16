@@ -3,62 +3,54 @@
 
 #include "gui/coordinates.h"
 #include "gui/color.h"
+#include "gui/drawing/Pattern.h"
 
-enum class DrawOperationType
+#define DRAW_AREA_MAX_SEGMENTATION 4
+
+enum class DrawAreaType : uint8_t
 {
     Rect,
-    Text,
     Ellipse,
     Line,
-    Bitmap
+    Text
 };
 
-union DrawOperationArgs
+union DrawAreaArgs
 {
-    struct Rect
-    {
+    struct {
         cord_t thickness;
-    };
+    } rect;
     
-    struct Text
-    {
+    struct {
         const char *text;
         size_t limit;
-    };
+    } text;
     
-    struct Ellipse
-    {
+    struct {
         cord_t thickness;
         Size virtual_size;
         Vector mask_position;
-    };
+    } ellipse;
 
-    struct Line
-    {
+    struct {
         cord_t thickness;
         bool is_anti_diagonal;
-    };
+    } line;
+};
 
-    struct Bitmap
-    {
-        std::byte *data;
-    };
-    
-
-    Rect rect;
-    Text text;
-    Ellipse ellipse;
-    Line line;
-    Bitmap bitmap;
+enum class CoordinateSystemType : uint8_t
+{
+    Classic,
+    PathBased
 };
 
 struct DrawOperation
 {
-    DrawOperationType type;
-    DrawOperationArgs arguments;
+    DrawAreaType area;
+    DrawAreaArgs arguments;
+    CoordinateSystemType coordinate;
+    Pattern patterns[DRAW_AREA_MAX_SEGMENTATION];
     Bounds bounds;
-    color_t color;
 };
-
 
 #endif

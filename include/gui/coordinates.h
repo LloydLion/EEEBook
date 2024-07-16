@@ -5,6 +5,7 @@
 #include <tuple>
 
 typedef uint32_t cord_t;
+typedef int32_t s_cord_t;
 #define MAX_DIMENSION_SIZE 65535
 
 #define safe_cords_sum(a, ...) __safe_cords_sum(std::tuple_size<decltype(std::make_tuple(__VA_ARGS__))>::value, a, __VA_ARGS__)
