@@ -1,42 +1,65 @@
 #include "gui/color.h"
 
+#if COLOR_MODEL == BW_COLOR_MODEL
 uint16_t color_to_rgb565(color_t color)
 {
     switch (color)
     {
-    case color_t::White:
-        return 0xFFFF;
-
-    case color_t::Black:
-        return 0x0000;
-
-#ifdef IS_RBW_DISPLAY
-    case color_t::Red:
-        return 0xF800;
-#endif
-
-    default:
-        return 0x0000;
+    case ColorMap::Black: return 0x0000;
+    case ColorMap::White: return 0xFFFF;
+    default: return 0x0000;
     }
 }
-
-
-transparent_color_t transparent_color()
+#elif COLOR_MODEL == BWR_COLOR_MODEL
+uint16_t color_to_rgb565(color_t color)
 {
-    transparent_color_t tcolor;
-    tcolor.is_transparent = true;
-    tcolor.color = color_t::Black;
-    return tcolor;
+    switch (color)
+    {
+    case ColorMap::Black: return 0x0000;
+    case ColorMap::White: return 0xFFFF;
+    case ColorMap::Red: return 0xF800;
+    default: return 0x0000;
+    }
+}
+#endif
+
+template<typename TColor>
+TColor ColorArrayBase<TColor>::get(size_t index) const
+{
+    size_t bit_offset = index * _depth;
+    size_t byte_index = bit_offset / 8;
+    uint16_t store;
+
+    store = (uint16_t)_array[byte_index];
+    if (byte_index + 1 < _array_size)
+        store = (uint16_t)_array[byte_index + 1] << 8;
+
+    size_t bit_offset_remaining = bit_offset - (8 * byte_index);
+
+    uint8_t value = (store >> bit_offset_remaining) & _mask;
+    return (TColor)value;
 }
 
-transparent_color_t::transparent_color_t(const color_t& other)
+template<typename TColor>
+void ColorArrayBase<TColor>::set(size_t index, TColor color)
 {
-    is_transparent = false;
-    color = other;
+    size_t bit_offset = index * _depth;
+    size_t byte_index = bit_offset / 8;
+    uint16_t store;
+
+    store = (uint16_t)_array[byte_index];
+    if (byte_index + 1 < _array_size)
+        store = (uint16_t)_array[byte_index + 1] << 8;
+
+    size_t bit_offset_remaining = bit_offset - (8 * byte_index);
+    
+    store &= ~(_mask << bit_offset_remaining);
+    store |= (uint16_t)color << bit_offset_remaining;
+
+    _array[byte_index] = (byte)store;
+    if (byte_index + 1 < _array_size)
+        _array[byte_index + 1] = (byte)(store >> 8);
 }
 
-transparent_color_t::transparent_color_t()
-{
-    is_transparent = true;
-    color = color_t::Black;
-}
+template class ColorArrayBase<color_t>;
+template class ColorArrayBase<transparent_color_t>;
