@@ -1,49 +1,9 @@
 #include "config.h"
+#include "gui/drawing/screens/GxEPD_EInk_Screen.h"
 #include "ui.h"
 #include "platform/platform.h"
 #include "platform/time.h"
 #include <stdexcept>
-
-#pragma region Engine specific
-#if ENGINE == ENGINE_GXEPD
-#include "gui/engines/GxEPD_GraphicsEngine.h"
-#include <Fonts/Org_01.h>
-
-DISPLAY_TYPE display(DISPLAY_DRIVER(DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_PIN, DISPLAY_BUSY_PIN));
-
-void init_display()
-{
-    display.init(115200, true, 2, false);
-#ifdef DISPLAY_ROTATION
-    display.setRotation(DISPLAY_ROTATION);
-#endif
-    display.fillScreen(GxEPD_WHITE);
-}
-
-GraphicsEngine create_graphics_engine()
-{
-    auto engine = new GxEPD_GraphicsEngine(&display);
-    engine->register_font(&Org_01);
-    return engine;
-}
-
-#elif ENGINE == ENGINE_STDOUT
-#include "gui/engines/StdOut_GraphicsEngine.h"
-
-void init_display()
-{
-
-}
-
-GraphicsEngine create_graphics_engine()
-{
-    return new StdOut_GraphicsEngine();
-}
-
-#else
-#error "Unknown graphics engine"
-#endif
-#pragma endregion
 
 #pragma region Platform specific
 #if PLATFORM & PLATFORM_MCU
@@ -89,12 +49,12 @@ int main()
 {
     try
     {
+        
         say_hello();
+        /*
 
         init_display();
-        GraphicsEngine engine = create_graphics_engine();
 
-        DrawSettings draw_settings = create_draw_settings(0);
         UIElement root = setup_ui(engine);
 
         uint8_t time = 0;
@@ -114,12 +74,37 @@ int main()
             root->render(root_gfx);
 
             std_println("----DRAWING----");
-            DrawSettings draw_settings = create_draw_settings(time);
             engine->push(draw_settings);
 
             std_println("----DONE----");
             delay_ms(1000);
         }
+        */
+
+        Serial.begin(2000000);
+
+        Screen screen = new GxEPD_EInk_Screen_();
+        Size size = screen->full_viewport_size();
+
+        screen->initialize();
+
+        screen->begin();
+        screen->clear();
+
+
+/*
+        for (cord_t x = 0; x < size.width(); x += 3)
+            for (cord_t y = 0; y < size.height(); y++)
+                if (!(y > 5 and y < 15))
+                    screen->draw_pixel(Vector(x, y), ColorMap::Black);
+*/
+
+
+        screen->draw_vertical_line(Vector(10, 15), 10, ColorMap::Red);        
+
+        screen->send();
+
+        delete screen;
     }
     catch(const std::exception &err)
     {

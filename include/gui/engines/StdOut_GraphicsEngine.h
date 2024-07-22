@@ -22,7 +22,7 @@ private:
 public:
     StdOut_GraphicsEngine();
 
-    void draw_rectangle(Bounds bounds, color_t color, cord_t thickness) override;
+    void draw_rectangle(Bounds bounds, color_t color, cord_t thickness);
     void print_text(Vector start_point, cord_t width_limit, const char *text, size_t len_limit, color_t color, Font font) override;
 
     Font get_default_font() override;
