@@ -1,6 +1,8 @@
 #ifndef STD_BYTE_H
 #define STD_BYTE_H
 
-enum class byte : unsigned char {};
+#include <cstdint>
+
+typedef uint8_t byte;
 
 #endif

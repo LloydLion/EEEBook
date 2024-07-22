@@ -77,8 +77,8 @@ enum class UIVisibility
 class UIElement_
 {
 private:
-    transparent_color_t _p_foreground_color = color_t::Black;
-    transparent_color_t _p_background_color = color_t::White;
+    transparent_color_t _p_foreground_color = ColorMap::Black;
+    transparent_color_t _p_background_color = ColorMap::White;
     MarginSize _p_margin = MarginSize(0);
     UIContainer _p_parent = nullptr;
     Alignment _p_alignment = Alignment();

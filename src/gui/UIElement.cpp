@@ -46,7 +46,7 @@ void UIElement_::render(const GFX& gfx)
         UI_PRINT_SELF;
         std_printf("Element min size restrict! required min Size(%d, %d), reaming Size(%d, %d), provided Size(%d, %d)\n",
             min.width(), min.height(), new_gfx.size().width(), new_gfx.size().height(), gfx.size().width(), gfx.size().height());
-        new_gfx.fill_screen(color_t::Black);
+        new_gfx.fill_screen(ColorMap::Black);
         return;
     }
 

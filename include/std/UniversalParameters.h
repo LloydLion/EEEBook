@@ -2,6 +2,7 @@
 #define STD_UNIVERSAL_PARAMETERS_H
 
 #include "std/byte.h"
+#include <cstddef>
 
 template<size_t size>
 struct UniversalParameters
