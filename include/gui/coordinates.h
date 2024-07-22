@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 #include <tuple>
+#include <algorithm>
 
 typedef uint32_t cord_t;
 typedef int32_t s_cord_t;

@@ -26,7 +26,7 @@ struct DockElement
         SidePosition() { }
     };
 
-    enum PositionType
+    enum class PositionType
     {
         Corner,
         Side
