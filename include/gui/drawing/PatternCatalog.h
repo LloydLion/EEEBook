@@ -8,13 +8,13 @@ class PatternCatalog
 {
 private:
     std::vector<PatternFunction> _patterns = { };
-    bool blocked = false;
+    mutable bool blocked = false;
 
 public:
-    static PatternCatalog *instance();
+    static const PatternCatalog *instance();
 
-    PatternFunctionId find(const char *name);
-    PatternFunction get(PatternFunctionId id);
+    PatternFunctionId find(const char *name) const;
+    PatternFunction get(PatternFunctionId id) const;
     PatternFunctionId register_pattern(PatternFunction function);
 };
 

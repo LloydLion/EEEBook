@@ -3,7 +3,7 @@
 #include "coordinates.h"
 #include "GraphicsEngine.h"
 #include "Font.h"
-#include "pattern.h"
+#include "gui/drawing/Pattern.h"
 
 class GFX
 {
@@ -15,10 +15,10 @@ private:
 public:
     GFX(GraphicsEngine engine, Size display_size);
 
-    void draw_rectangle(LocalBounds bounds, transparent_color_t color, cord_t thickness = 0, Pattern pattern = Pattern::get_fill_pattern()) const;
-    void draw_line(LocalVector start_point, LocalVector end_point, transparent_color_t color, cord_t thickness = 0, cord_t bias = 0, Pattern pattern = Pattern::get_fill_pattern()) const;
-    void draw_ellipse(LocalBounds bounds,transparent_color_t color, cord_t thickness = 0, Pattern pattern = Pattern::get_fill_pattern()) const;
-    void draw_circle(LocalVector start_point, cord_t radius, transparent_color_t color, cord_t thickness = 0, Pattern pattern = Pattern::get_fill_pattern()) const;
+    void draw_rectangle(LocalBounds bounds, transparent_color_t color, cord_t thickness = 0, Pattern pattern = Pattern()) const;
+    void draw_line(LocalVector start_point, LocalVector end_point, transparent_color_t color, cord_t thickness = 0, cord_t bias = 0, Pattern pattern = Pattern()) const;
+    void draw_ellipse(LocalBounds bounds,transparent_color_t color, cord_t thickness = 0, Pattern pattern = Pattern()) const;
+    void draw_circle(LocalVector start_point, cord_t radius, transparent_color_t color, cord_t thickness = 0, Pattern pattern = Pattern()) const;
     void fill_screen(transparent_color_t color) const;
 
     void print_text(LocalVector start, cord_t width_limit, const char *text, transparent_color_t color, size_t len_limit = -1, Font font = nullptr) const;

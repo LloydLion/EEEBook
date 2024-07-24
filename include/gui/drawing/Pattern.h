@@ -27,7 +27,7 @@ struct Pattern
         Flags flags;
     } decoration_options;
 
-    transparent_color_t perform(PatternCatalog *catalog, s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size)
+    transparent_color_t perform(const PatternCatalog *catalog, s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size) const
     {
         a += decoration_options.a_offset;
         a_size += decoration_options.a_offset;

@@ -114,13 +114,13 @@ void GxEPD_EInk_Screen_::draw_pixel(Vector position, color_t color)
 void GxEPD_EInk_Screen_::draw_vertical_line(Vector position, cord_t size, color_t color)
 {
     trace_log("draw_vertical_line({%d, %d}, %d) -> ", position.x(), position.y(), color);
-    draw_line(position, size, color, AxisX);
+    draw_line(position, size, color, AxisY);
 }
 
 void GxEPD_EInk_Screen_::draw_horizontal_line(Vector position, cord_t size, color_t color)
 {
     trace_log("draw_horizontal_line({%d, %d}, %d) -> ", position.x(), position.y(), color);
-    draw_line(position, size, color, AxisY);
+    draw_line(position, size, color, AxisX);
 }
 
 Size GxEPD_EInk_Screen_::full_viewport_size()
@@ -194,18 +194,18 @@ void GxEPD_EInk_Screen_::send()
 #else
     if (use_partial_update)
     {
-        _display.writeImage(black_frame_buffer, 0, 0, WIDTH, HEIGHT);
+        _display.writeImage(_black_frame_buffer, 0, 0, WIDTH, HEIGHT);
         _display.refresh(0, 0, WIDTH, HEIGHT);
         if (_display.hasFastPartialUpdate)
-            _display.writeImageAgain(black_frame_buffer, 0, 0, WIDTH, HEIGHT);
+            _display.writeImageAgain(_black_frame_buffer, 0, 0, WIDTH, HEIGHT);
     }
     else
     {
-        _display.writeImageForFullRefresh(black_frame_buffer, 0, 0, WIDTH, HEIGHT);
+        _display.writeImageForFullRefresh(_black_frame_buffer, 0, 0, WIDTH, HEIGHT);
         _display.refresh(false);
         if (_display.hasFastPartialUpdate)
         {
-            _display.writeImageAgain(black_frame_buffer, 0, 0, WIDTH, HEIGHT);
+            _display.writeImageAgain(_black_frame_buffer, 0, 0, WIDTH, HEIGHT);
             _display.powerOff();
         }
     }

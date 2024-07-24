@@ -55,7 +55,7 @@ void GFX::draw_circle(LocalVector start_point, cord_t radius, transparent_color_
 void GFX::fill_screen(transparent_color_t color) const
 {
     RETURN_IF_COLOR_TRANSPARENT;
-    _engine->draw_rectangle(_bounds, color.color(), 0, Pattern::get_fill_pattern());
+    _engine->draw_rectangle(_bounds, color.color(), 0, Pattern());
 }
 
 void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, transparent_color_t color, size_t len_limit, Font font) const

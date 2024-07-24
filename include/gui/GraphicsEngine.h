@@ -5,7 +5,7 @@
 #include "gui/color.h"
 #include "gui/UpdateRule.h"
 #include "gui/DrawSettings.h"
-#include "pattern.h"
+#include "gui/drawing/Pattern.h"
 
 class GraphicsEngine_;
 typedef GraphicsEngine_ *GraphicsEngine;

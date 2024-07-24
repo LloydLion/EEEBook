@@ -4,12 +4,12 @@
 
 PatternCatalog global_instance;
 
-PatternCatalog *PatternCatalog::instance()
+const PatternCatalog *PatternCatalog::instance()
 {
     return &global_instance;
 }
 
-PatternFunctionId PatternCatalog::find(const char *name)
+PatternFunctionId PatternCatalog::find(const char *name) const
 {
     blocked = true;
     for (size_t i = 0; i < _patterns.size(); i++)
@@ -19,7 +19,7 @@ PatternFunctionId PatternCatalog::find(const char *name)
     throw std::runtime_error("No pattern function found with given name");
 }
 
-PatternFunction PatternCatalog::get(PatternFunctionId id)
+PatternFunction PatternCatalog::get(PatternFunctionId id) const
 {
     blocked = true;
     return _patterns[id];

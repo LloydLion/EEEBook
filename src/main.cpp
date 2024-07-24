@@ -1,9 +1,11 @@
 #include "config.h"
 #include "gui/drawing/screens/GxEPD_EInk_Screen.h"
-#include "ui.h"
+//#include "ui.h"
+#include "platform/stdout.h"
 #include "platform/platform.h"
 #include "platform/time.h"
 #include <stdexcept>
+#include "gui/drawing/UniversalDrawer.h"
 
 #pragma region Platform specific
 #if PLATFORM & PLATFORM_MCU
@@ -83,28 +85,22 @@ int main()
 
         Serial.begin(2000000);
 
-        Screen screen = new GxEPD_EInk_Screen_();
+        GxEPD_EInk_Screen_ *screen = new GxEPD_EInk_Screen_();
         Size size = screen->full_viewport_size();
 
         screen->initialize();
-
         screen->begin();
         screen->clear();
+        UniversalDrawer drawer = new UniversalDrawer_(screen);
 
-
-/*
-        for (cord_t x = 0; x < size.width(); x += 3)
-            for (cord_t y = 0; y < size.height(); y++)
-                if (!(y > 5 and y < 15))
-                    screen->draw_pixel(Vector(x, y), ColorMap::Black);
-*/
-
-
-        screen->draw_vertical_line(Vector(10, 15), 10, ColorMap::Red);        
-
+        DrawOperation operation;
+        operation.area_type = DrawAreaType::Rect;
+        operation.arguments.rect.thickness = 3;
+        operation.bounds = Bounds(Vector(10,10), Size(100,100));
+        operation.patterns[0].palette[0] = ColorMap::Black;
+        drawer->draw(operation);
         screen->send();
 
-        delete screen;
     }
     catch(const std::exception &err)
     {
