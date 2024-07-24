@@ -6,6 +6,7 @@
 #include "platform/time.h"
 #include <stdexcept>
 #include "gui/drawing/UniversalDrawer.h"
+#include "gui/drawing/screens/BMP_File_Screen.h"
 
 #pragma region Platform specific
 #if PLATFORM & PLATFORM_MCU
@@ -47,6 +48,11 @@ void say_hello()
 #endif
 #pragma endregion
 
+uint8_t fill_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters)
+{
+    return 0;
+}
+
 int main()
 {
     try
@@ -83,24 +89,26 @@ int main()
         }
         */
 
-        Serial.begin(2000000);
+        PatternCatalog::instance()->register_pattern(PatternFunction(&fill_pattern, "fill"));
 
-        GxEPD_EInk_Screen_ *screen = new GxEPD_EInk_Screen_();
+        BMP_File_Screen_ *screen = new BMP_File_Screen_(Size(200, 200));
         Size size = screen->full_viewport_size();
 
         screen->initialize();
         screen->begin();
         screen->clear();
+
         UniversalDrawer drawer = new UniversalDrawer_(screen);
 
-        DrawOperation operation;
+
+        DrawOperation operation = DrawOperation::create_new();
         operation.area_type = DrawAreaType::Rect;
         operation.arguments.rect.thickness = 3;
         operation.bounds = Bounds(Vector(10,10), Size(100,100));
         operation.patterns[0].palette[0] = ColorMap::Black;
         drawer->draw(operation);
+        
         screen->send();
-
     }
     catch(const std::exception &err)
     {

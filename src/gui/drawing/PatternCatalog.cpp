@@ -4,7 +4,7 @@
 
 PatternCatalog global_instance;
 
-const PatternCatalog *PatternCatalog::instance()
+PatternCatalog *PatternCatalog::instance()
 {
     return &global_instance;
 }

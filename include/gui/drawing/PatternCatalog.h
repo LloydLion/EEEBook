@@ -11,7 +11,7 @@ private:
     mutable bool blocked = false;
 
 public:
-    static const PatternCatalog *instance();
+    static PatternCatalog *instance();
 
     PatternFunctionId find(const char *name) const;
     PatternFunction get(PatternFunctionId id) const;

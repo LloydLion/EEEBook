@@ -31,7 +31,10 @@ public:
 };
 #endif
 
+struct rgb888_color { uint8_t r, g, b; rgb888_color(uint8_t r, uint8_t g, uint8_t b): r(r), g(g), b(b) { } };
+
 uint16_t color_to_rgb565(color_t color);
+rgb888_color color_to_rgb888(color_t color);
 
 struct transparent_color_t
 {

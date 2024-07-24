@@ -65,6 +65,13 @@ struct DrawOperation
     CoordinateSystemType coordinate;
     Pattern patterns[DRAW_AREA_MAX_SEGMENTATION];
     Bounds bounds;
+
+    static DrawOperation create_new()
+    {
+        DrawOperation operation;
+        memset(&operation, 0, sizeof(DrawOperation));
+        return operation;
+    }
 };
 
 #endif

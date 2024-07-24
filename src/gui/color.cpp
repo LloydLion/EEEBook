@@ -10,6 +10,15 @@ uint16_t color_to_rgb565(color_t color)
     default: return 0x0000;
     }
 }
+std::tuple<uint8_t, uint8_t, uint8_t> color_to_rgb888(color_t color)
+{
+    switch (color)
+    {
+    case ColorMap::Black: return std::tuple<uint8_t, uint8_t, uint8_t>(0x00, 0x00, 0x00);
+    case ColorMap::White: return std::tuple<uint8_t, uint8_t, uint8_t>(0xFF, 0xFF, 0xFF);
+    default: return std::tuple<uint8_t, uint8_t, uint8_t>(0x00, 0x00, 0x00);
+    }
+}
 #elif COLOR_MODEL == BWR_COLOR_MODEL
 uint16_t color_to_rgb565(color_t color)
 {
@@ -19,6 +28,17 @@ uint16_t color_to_rgb565(color_t color)
     case ColorMap::White: return 0xFFFF;
     case ColorMap::Red: return 0xF800;
     default: return 0x0000;
+    }
+}
+
+rgb888_color color_to_rgb888(color_t color)
+{
+    switch (color)
+    {
+    case ColorMap::Black: return rgb888_color(0x00, 0x00, 0x00);
+    case ColorMap::White: return rgb888_color(0xFF, 0xFF, 0xFF);
+    case ColorMap::Red: return rgb888_color(0xFF, 0x00, 0x00);
+    default: return rgb888_color(0xFF, 0x00, 0x00);
     }
 }
 #endif
