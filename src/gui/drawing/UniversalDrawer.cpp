@@ -12,8 +12,7 @@ inline void draw_rect(const DrawOperation &operation, Screen screen);
 inline void draw_bitmap(const DrawOperation &operation, Screen screen);
 inline void draw_text(const DrawOperation &operation, Screen screen);
 
-
-UniversalDrawer_::UniversalDrawer_(Screen screen): _screen(screen) {}
+UniversalDrawer_::UniversalDrawer_(Screen screen) : _screen(screen) {}
 
 void UniversalDrawer_::draw(DrawOperationQueue queue)
 {
@@ -51,8 +50,7 @@ void UniversalDrawer_::draw(const DrawOperation &operation)
 inline bool get_bitmap_pixel(
     byte *bitmap, Bitmap::Flags flags,
     cord_t x, cord_t y,
-    cord_t width, cord_t height
-)
+    cord_t width, cord_t height)
 {
     size_t idx = flags & Bitmap::YPrimary ? y + x * height : x + y * width;
     size_t byte_idx = idx / 8;
@@ -142,7 +140,7 @@ inline bool draw_char(
     {
         cord_t xo = glyph->x_offset;
         cord_t yo = glyph->y_offset;
-        
+
         byte *bitmap = font->bitmap;
         uint16_t bo = glyph->bitmap_offset;
 
@@ -158,9 +156,10 @@ inline bool draw_char(
                 if (bits & 0x80)
                     if (cursor_x + xo + xx <= x_limit)
                         draw_pixel_using_pattern(operation,
-                            cursor_x + xo + xx,
-                            cursor_y + yo + yy, 0, screen);
-                    else was_clipped = true;
+                                                 cursor_x + xo + xx,
+                                                 cursor_y + yo + yy, 0, screen);
+                    else
+                        was_clipped = true;
 
                 bits <<= 1;
             }
@@ -168,7 +167,6 @@ inline bool draw_char(
     }
 
     return was_clipped;
-
 }
 
 inline void draw_text(const DrawOperation &operation, Screen screen)
@@ -183,7 +181,8 @@ inline void draw_text(const DrawOperation &operation, Screen screen)
     size_t i = 0;
     while (char c = *text++)
     {
-        if (i++ >= operation.arguments.text.limit) break;
+        if (i++ >= operation.arguments.text.limit)
+            break;
 
         uint8_t first = font->first;
         if ((c >= first) && (c <= font->last))
@@ -196,6 +195,45 @@ inline void draw_text(const DrawOperation &operation, Screen screen)
                 break;
 
             cursor_x += glyph->x_advance;
+        }
+    }
+}
+
+void draw_line(Vector start, Vector end, Pattern pattern, Screen screen, cord_t b_cord, cord_t b_size)
+{
+    if (end.x() < start.x())
+    {
+        std::swap(start,end);
+    }
+
+    Vector Dv = end - start;
+
+    s_cord_t y = 0;
+    cord_t x = 0;
+
+    bool step = Dv.y() < 0 ? -1 : 1;
+
+    bool swap = false;
+    if (Dv.y() / Dv.x() > 1)
+    {
+        start = Vector(start.y(), start.x());
+        end = Vector(end.y(), end.x());
+        swap = true;
+    }
+
+    s_cord_t P = 2 * Dv.x() - Dv.y();
+    cord_t total_iterations = end.x() - start.x() + 1;
+    while (start.x() + x <= end.x())
+    {
+        color_t color = pattern.perform(x, b_cord, total_iterations, b_size);
+        screen->draw_pixel(swap ? Vector(x + start.y() ,y + start.x()) : start + Vector(x, y), color);
+        x++;
+        if (P < 0)
+            P += 2 * Dv.y();
+        else
+        {
+            P += 2 * Dv.y() - 2 * Dv.x();
+            y += step;
         }
     }
 }

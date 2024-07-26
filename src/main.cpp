@@ -81,6 +81,8 @@ Screen create_screen()
 
 uint8_t fill_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters) { return 0; }
 
+void draw_line(Vector start, Vector end, Pattern pattern, Screen screen, cord_t b_cord, cord_t b_size);
+
 int main()
 {
     try
@@ -119,6 +121,7 @@ int main()
             screen->begin();
             screen->clear();
             drawer->draw(queue);
+            draw_line(Vector(130,80), Vector(1,1), Pattern(), screen, 0, 0);
             screen->send();
 
             std_println("----DONE----");
