@@ -66,12 +66,10 @@ struct DrawOperation
     CoordinateSystemType coordinate;
     Pattern patterns[DRAW_AREA_MAX_SEGMENTATION];
     Bounds bounds;
-
-    static DrawOperation create_new()
+    
+    inline DrawOperation()
     {
-        DrawOperation operation;
-        std::memset(&operation, 0, sizeof(DrawOperation));
-        return operation;
+        std::memset(this, 0, sizeof(DrawOperation));
     }
 };
 

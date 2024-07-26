@@ -1,6 +1,6 @@
 #include "config.h"
 #include "gui/drawing/screens/GxEPD_EInk_Screen.h"
-// #include "ui.h"
+#include "ui.h"
 #include "platform/stdout.h"
 #include "platform/platform.h"
 #include "platform/time.h"
@@ -63,22 +63,41 @@ void say_hello()
 #endif
 #pragma endregion
 
-uint8_t fill_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters)
+#pragma region Screen specific
+#if SCREEN_TYPE == SCREEN_BMP
+Screen create_screen()
 {
-    return 0;
+    return new BMP_File_Screen_(Size(BMP_SCREEN_WIDTH, BMP_SCREEN_HEIGHT));
 }
+#elif SCREEN_TYPE == SCREEN_GXEPD
+Screen create_screen()
+{
+    return new GxEPD_EInk_Screen();
+}
+#else
+    #error "Unknown screen"
+#endif
+#pragma endregion
+
+uint8_t fill_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters) { return 0; }
 
 int main()
 {
     try
     {
-
         say_hello();
-        /*
 
-        init_display();
+        DrawingContext::initialize();
 
-        UIElement root = setup_ui(engine);
+        DrawingContext::instance().pattern_catalog->register_pattern(PatternFunction(&fill_pattern, "fill"));
+        DrawingContext::instance().font_engine->register_font(&FreeMono12pt7b);
+
+        Screen screen = create_screen();
+        screen->initialize();
+        DrawOperationQueue queue = new DrawOperationQueue_();
+        UniversalDrawer drawer = new UniversalDrawer_(screen);
+
+        UIElement root = setup_ui();
 
         uint8_t time = 0;
         while (true)
@@ -93,48 +112,18 @@ int main()
             update_ui(root, time);
 
             std_println("----RENDER----");
-            GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+            GFX root_gfx(queue, screen->full_viewport_size());
             root->render(root_gfx);
 
             std_println("----DRAWING----");
-            engine->push(draw_settings);
+            screen->begin();
+            screen->clear();
+            drawer->draw(queue);
+            screen->send();
 
             std_println("----DONE----");
             delay_ms(1000);
         }
-        */
-
-        DrawingContext::initialize();
-
-        DrawingContext::instance().pattern_catalog->register_pattern(PatternFunction(&fill_pattern, "fill"));
-        DrawingContext::instance().font_engine->register_font(&FreeMono12pt7b);
-
-        BMP_File_Screen_ *screen = new BMP_File_Screen_(Size(300, 300));
-        Size size = screen->full_viewport_size();
-
-        screen->initialize();
-        screen->begin();
-        screen->clear();
-
-        UniversalDrawer drawer = new UniversalDrawer_(screen);
-
-        DrawOperation operation = DrawOperation::create_new();
-        operation.area_type = DrawAreaType::Rect;
-        operation.arguments.rect.thickness = 3;
-        operation.bounds = Bounds(Vector(10, 10), Size(100, 100));
-        operation.patterns[0].palette[0] = ColorMap::Black;
-        drawer->draw(operation);
-
-        operation = DrawOperation::create_new();
-        operation.area_type = DrawAreaType::Text;
-        operation.arguments.text.limit = -1;
-        operation.arguments.text.text = "Hello world";
-        operation.arguments.text.font = 0;
-        operation.bounds = Bounds(Vector(10, 120), Size(1000, 1000));
-        operation.patterns[0].palette[0] = ColorMap::Black;
-        drawer->draw(operation);
-
-        screen->send();
     }
     catch (const std::exception &err)
     {

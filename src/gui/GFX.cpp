@@ -1,17 +1,12 @@
 #include "gui/GFX.h"
 #include <limits>
 
-#define RETURN_IF_COLOR_TRANSPARENT if (color.is_transparent()) return
-
-GFX::GFX(GraphicsEngine engine, Bounds bounds): _engine(engine), _bounds(bounds)
+GFX::GFX(DrawOperationQueue queue, Bounds bounds) : _queue(queue), _bounds(bounds)
 {
-
 }
 
-GFX::GFX(GraphicsEngine engine, Size display_size):
-    _engine(engine), _bounds(Vector(0, 0), display_size)
+GFX::GFX(DrawOperationQueue queue, Size display_size) : _queue(queue), _bounds(Vector(0, 0), display_size)
 {
-
 }
 
 Size GFX::size() const
@@ -21,58 +16,88 @@ Size GFX::size() const
 
 GFX GFX::slice(LocalBounds local_bounds) const
 {
-    return GFX(_engine, _bounds.cast(local_bounds));
+    return GFX(_queue, _bounds.cast(local_bounds));
 }
 
 GFX GFX::slice(Distance4Sides distances) const
 {
-    return GFX(_engine, distances.cast(_bounds));
+    return GFX(_queue, distances.cast(_bounds));
 }
 
-void GFX::draw_rectangle(LocalBounds bounds, transparent_color_t color, cord_t thickness, Pattern pattern) const
+void GFX::draw_rectangle(LocalBounds bounds, transparent_color_t color, cord_t thickness) const
 {
-    RETURN_IF_COLOR_TRANSPARENT;
-    _engine->draw_rectangle(_bounds.cast(bounds), color.color(), thickness, pattern);
+    DrawOperation operation;
+    operation.area_type = DrawAreaType::Rect;
+    operation.arguments.rect.thickness = thickness;
+    operation.bounds = _bounds.cast(bounds);
+    operation.patterns[0].palette[0] = color;
+    _queue->enqueue(operation);
 }
 
-void GFX::draw_line(LocalVector start_point, LocalVector end_point, transparent_color_t color, cord_t thickness, cord_t bias, Pattern pattern) const
+void GFX::draw_rectangle(LocalBounds bounds, Pattern fill_pattern) const
 {
-    RETURN_IF_COLOR_TRANSPARENT;
-    _engine->draw_line(_bounds.cast(start_point), _bounds.cast(end_point), color.color(), thickness, bias, pattern);
+    DrawOperation operation;
+    operation.area_type = DrawAreaType::Rect;
+    operation.bounds = _bounds.cast(bounds);
+    operation.patterns[0] = fill_pattern;
+    _queue->enqueue(operation);
 }
 
-void GFX::draw_ellipse(LocalBounds bounds, transparent_color_t color, cord_t thickness, Pattern pattern) const
+void GFX::draw_rectangle(LocalBounds bounds, cord_t thickness, Pattern interior, Pattern boundary) const
 {
-    RETURN_IF_COLOR_TRANSPARENT;
-    _engine->draw_ellipse(_bounds.cast(bounds), color.color(), thickness, pattern);
+    draw_rectangle(bounds, thickness, interior, boundary, boundary, boundary);
 }
 
-void GFX::draw_circle(LocalVector start_point, cord_t radius, transparent_color_t color, cord_t thickness, Pattern pattern) const
+void GFX::draw_rectangle(LocalBounds bounds, cord_t thickness,
+                         Pattern interior, Pattern corners, Pattern vertical, Pattern horizontal) const
 {
-    draw_ellipse(LocalBounds(start_point, Size(radius*2, radius*2)), color.color(), thickness, pattern);
+    DrawOperation operation;
+    operation.area_type = DrawAreaType::Rect;
+    operation.bounds = _bounds.cast(bounds);
+    operation.arguments.rect.thickness = thickness;
+    operation.patterns[0] = interior;
+    operation.patterns[1] = horizontal;
+    operation.patterns[2] = vertical;
+    operation.patterns[3] = corners;
+    _queue->enqueue(operation);
 }
 
 void GFX::fill_screen(transparent_color_t color) const
 {
-    RETURN_IF_COLOR_TRANSPARENT;
-    _engine->draw_rectangle(_bounds, color.color(), 0, Pattern());
+    draw_rectangle(LocalBounds(LocalVector(), size()), color);
+}
+
+void GFX::fill_screen(Pattern pattern) const
+{
+    draw_rectangle(LocalBounds(LocalVector(), size()), pattern);
 }
 
 void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, transparent_color_t color, size_t len_limit, Font font) const
 {
-    RETURN_IF_COLOR_TRANSPARENT;
-    if (font == nullptr)
-        font = get_default_font();
-
-    _engine->print_text(_bounds.cast(start), std::min(size().width() - start.x(), width_limit), text, len_limit, color.color(), font);
+    DrawOperation operation;
+    operation.area_type = DrawAreaType::Text;
+    operation.bounds = _bounds.cast(LocalBounds(start, Size(width_limit, font.get_height())));
+    operation.arguments.text.font = font.id();
+    operation.arguments.text.limit = len_limit;
+    operation.arguments.text.text = text;
+    operation.patterns[0].palette[0] = color;
+    _queue->enqueue(operation);
 }
 
 void GFX::print_text(LocalVector start, const char *text, transparent_color_t color, size_t len_limit, Font font) const
 {
-    print_text(start, std::numeric_limits<cord_t>::max(), text, color, len_limit, font);
+    print_text(start, MAX_DIMENSION_SIZE, text, color, len_limit, font);
 }
 
-Font GFX::get_default_font() const
+void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, Pattern pattern, size_t len_limit, Font font) const
 {
-    return _engine->get_default_font();
+    DrawOperation operation;
+    operation.area_type = DrawAreaType::Text;
+    cord_t remaining_width = constrained_cords_subtract(size().width(), start.x());
+    operation.bounds = _bounds.cast(LocalBounds(start, Size(std::min(remaining_width, width_limit), font.get_height())));
+    operation.arguments.text.font = font.id();
+    operation.arguments.text.limit = len_limit;
+    operation.arguments.text.text = text;
+    operation.patterns[0] = pattern;
+    _queue->enqueue(operation);
 }
