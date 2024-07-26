@@ -15,8 +15,8 @@ void TextElement_::i_render(const GFX& gfx)
 
 Size TextElement_::i_min_size()
 {
-    cord_t width = font()->get_string_width(get_text());
-    cord_t height = font()->get_height();
+    cord_t width = font().get_string_width(get_text());
+    cord_t height = font().get_height();
 
     return Size(width, height);
 }

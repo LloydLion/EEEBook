@@ -4,15 +4,16 @@
 #include "gui/drawing/PatternFunction.h"
 #include <vector>
 
-class PatternCatalog
+class PatternCatalog_;
+typedef PatternCatalog_ *PatternCatalog; 
+
+class PatternCatalog_
 {
 private:
     std::vector<PatternFunction> _patterns = { };
     mutable bool blocked = false;
 
 public:
-    static PatternCatalog *instance();
-
     PatternFunctionId find(const char *name) const;
     PatternFunction get(PatternFunctionId id) const;
     PatternFunctionId register_pattern(PatternFunction function);

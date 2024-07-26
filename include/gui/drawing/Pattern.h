@@ -6,7 +6,7 @@
 #include "std/UniversalParameters.h"
 #include "gui/color.h"
 #include "gui/drawing/PatternFunction.h"
-#include "gui/drawing/PatternCatalog.h"
+#include "gui/drawing/DrawingContext.h"
 
 #define GUI_PATTERN_PALETTE_SIZE 4
 
@@ -27,7 +27,7 @@ struct Pattern
         Flags flags;
     } decoration_options;
 
-    transparent_color_t perform(const PatternCatalog *catalog, s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size) const
+    transparent_color_t perform(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size) const
     {
         a += decoration_options.a_offset;
         a_size += decoration_options.a_offset;
@@ -40,7 +40,7 @@ struct Pattern
             std::swap(a_size, b_size);
         }
 
-        uint8_t index = catalog->get(function).function(a, b, a_size, b_size, parameters);
+        uint8_t index = DrawingContext::instance().pattern_catalog->get(function).function(a, b, a_size, b_size, parameters);
 
         return palette[index];
     }

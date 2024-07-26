@@ -1,12 +1,13 @@
 #include "config.h"
 #include "gui/drawing/screens/GxEPD_EInk_Screen.h"
-//#include "ui.h"
+// #include "ui.h"
 #include "platform/stdout.h"
 #include "platform/platform.h"
 #include "platform/time.h"
 #include <stdexcept>
 #include "gui/drawing/UniversalDrawer.h"
 #include "gui/drawing/screens/BMP_File_Screen.h"
+#include "gui/drawing/fonts/buildin/FreeMono12pt7b.h"
 
 #pragma region Platform specific
 #if PLATFORM & PLATFORM_MCU
@@ -26,12 +27,26 @@ void say_hello()
     digitalWrite(LED_BUILTIN, LOW);
 }
 
-#define ON_ERROR_BEHAVIOR while(true) { digitalWrite(LED_BUILTIN, HIGH); delay(100); digitalWrite(LED_BUILTIN, LOW); delay(100); }
-#define ON_END_BEHAVIOR while(true) { digitalWrite(LED_BUILTIN, HIGH); delay(100); digitalWrite(LED_BUILTIN, LOW); delay(1000);}
+#define ON_ERROR_BEHAVIOR                \
+    while (true)                         \
+    {                                    \
+        digitalWrite(LED_BUILTIN, HIGH); \
+        delay(100);                      \
+        digitalWrite(LED_BUILTIN, LOW);  \
+        delay(100);                      \
+    }
+#define ON_END_BEHAVIOR                  \
+    while (true)                         \
+    {                                    \
+        digitalWrite(LED_BUILTIN, HIGH); \
+        delay(100);                      \
+        digitalWrite(LED_BUILTIN, LOW);  \
+        delay(1000);                     \
+    }
 
 int main();
 void setup() { main(); }
-void loop() {  }
+void loop() {}
 
 #elif PLATFORM & PLATFORM_PC
 
@@ -57,7 +72,7 @@ int main()
 {
     try
     {
-        
+
         say_hello();
         /*
 
@@ -89,9 +104,12 @@ int main()
         }
         */
 
-        PatternCatalog::instance()->register_pattern(PatternFunction(&fill_pattern, "fill"));
+        DrawingContext::initialize();
 
-        BMP_File_Screen_ *screen = new BMP_File_Screen_(Size(200, 200));
+        DrawingContext::instance().pattern_catalog->register_pattern(PatternFunction(&fill_pattern, "fill"));
+        DrawingContext::instance().font_engine->register_font(&FreeMono12pt7b);
+
+        BMP_File_Screen_ *screen = new BMP_File_Screen_(Size(300, 300));
         Size size = screen->full_viewport_size();
 
         screen->initialize();
@@ -100,17 +118,25 @@ int main()
 
         UniversalDrawer drawer = new UniversalDrawer_(screen);
 
-
         DrawOperation operation = DrawOperation::create_new();
         operation.area_type = DrawAreaType::Rect;
         operation.arguments.rect.thickness = 3;
-        operation.bounds = Bounds(Vector(10,10), Size(100,100));
+        operation.bounds = Bounds(Vector(10, 10), Size(100, 100));
         operation.patterns[0].palette[0] = ColorMap::Black;
         drawer->draw(operation);
-        
+
+        operation = DrawOperation::create_new();
+        operation.area_type = DrawAreaType::Text;
+        operation.arguments.text.limit = -1;
+        operation.arguments.text.text = "Hello world";
+        operation.arguments.text.font = 0;
+        operation.bounds = Bounds(Vector(10, 120), Size(1000, 1000));
+        operation.patterns[0].palette[0] = ColorMap::Black;
+        drawer->draw(operation);
+
         screen->send();
     }
-    catch(const std::exception &err)
+    catch (const std::exception &err)
     {
         std_println("RUNTIME ERROR");
         std_println(err.what());

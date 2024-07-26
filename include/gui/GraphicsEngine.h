@@ -1,7 +1,7 @@
 #ifndef GUI_GRAPHICS_ENGINE_H
 #define GUI_GRAPHICS_ENGINE_H
 #include "gui/coordinates.h"
-#include "gui/Font.h"
+#include "gui/drawing/fonts/Font.h"
 #include "gui/color.h"
 #include "gui/UpdateRule.h"
 #include "gui/DrawSettings.h"

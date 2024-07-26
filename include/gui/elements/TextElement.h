@@ -3,7 +3,7 @@
 
 #include "gui/coordinates.h"
 #include "gui/UIElement.h"
-#include "gui/Font.h"
+#include "gui/drawing/fonts/Font.h"
 #include "std/property.h"
 
 class TextElement_;

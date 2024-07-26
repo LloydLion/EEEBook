@@ -3,20 +3,25 @@
 
 #include "gui/coordinates.h"
 #include <cstddef>
+#include "std/byte.h"
 
 struct Bitmap
 {
-    std::byte *data;
-    cord_t width;
-    cord_t height;
-
-    inline Size size()
+    enum Flags : uint8_t
     {
-        return Size(width, height);
-    }
+        BigEndian = 0b001,
+        LittleEndian = 0b000,
+        Inverted = 0b010,
+        XPrimary = 0b000,
+        YPrimary = 0b100
+    };
+
+    byte *data;
+    Size size;
+    Flags flags;
     
-    inline Bitmap(std::byte *data, cord_t width, cord_t height):
-        data(data), width(width), height(height) {}
+    inline Bitmap(byte *data, Size size, Flags flags):
+        data(data), size(size), flags(flags) {}
 };
 
 #endif

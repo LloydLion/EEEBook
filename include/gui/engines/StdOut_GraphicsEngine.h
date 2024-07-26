@@ -9,11 +9,11 @@ private:
     class Fonts : public FontEngine_
     {
     public:
-        cord_t get_char_width(font_id_t font, char c) override;
-        cord_t get_height(font_id_t font) override;
+        cord_t get_char_width(FontId font, char c) override;
+        cord_t get_height(FontId font) override;
 
-        bool is_legit_char(font_id_t font, char c) override;
-        size_t first_non_legit_char(font_id_t font, const char* str) override;
+        bool is_legit_char(FontId font, char c) override;
+        size_t first_non_legit_char(FontId font, const char* str) override;
     };
 
     Fonts _fonts;

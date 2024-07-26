@@ -2,14 +2,7 @@
 #include <stdexcept>
 #include <cstring>
 
-PatternCatalog global_instance;
-
-PatternCatalog *PatternCatalog::instance()
-{
-    return &global_instance;
-}
-
-PatternFunctionId PatternCatalog::find(const char *name) const
+PatternFunctionId PatternCatalog_::find(const char *name) const
 {
     blocked = true;
     for (size_t i = 0; i < _patterns.size(); i++)
@@ -19,13 +12,13 @@ PatternFunctionId PatternCatalog::find(const char *name) const
     throw std::runtime_error("No pattern function found with given name");
 }
 
-PatternFunction PatternCatalog::get(PatternFunctionId id) const
+PatternFunction PatternCatalog_::get(PatternFunctionId id) const
 {
     blocked = true;
     return _patterns[id];
 }
 
-PatternFunctionId PatternCatalog::register_pattern(PatternFunction function)
+PatternFunctionId PatternCatalog_::register_pattern(PatternFunction function)
 {
     if (blocked)
         throw std::runtime_error("PatternCatalog is blocked, enable to register new patterns. Catalog blocks after any access operation");

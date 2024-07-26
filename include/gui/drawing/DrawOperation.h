@@ -5,6 +5,8 @@
 #include "gui/color.h"
 #include "gui/drawing/Pattern.h"
 #include "std/byte.h"
+#include "gui/drawing/Bitmap.h"
+#include <cstring>
 
 #define DRAW_AREA_MAX_SEGMENTATION 4
 
@@ -28,6 +30,7 @@ union DrawAreaArgs
     {
         const char *text;
         size_t limit;
+        FontId font;
     } text;
 
     struct
@@ -46,9 +49,7 @@ union DrawAreaArgs
     struct
     {
         byte *map;
-        bool is_inverted;
-        bool is_big_indian;
-        bool is_transposed;
+        Bitmap::Flags flags;
     } bitmap;
 };
 
@@ -69,7 +70,7 @@ struct DrawOperation
     static DrawOperation create_new()
     {
         DrawOperation operation;
-        memset(&operation, 0, sizeof(DrawOperation));
+        std::memset(&operation, 0, sizeof(DrawOperation));
         return operation;
     }
 };

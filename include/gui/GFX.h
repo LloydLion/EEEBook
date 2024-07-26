@@ -2,7 +2,6 @@
 #define GUI_GFX_H 
 #include "coordinates.h"
 #include "GraphicsEngine.h"
-#include "Font.h"
 #include "gui/drawing/Pattern.h"
 
 class GFX
