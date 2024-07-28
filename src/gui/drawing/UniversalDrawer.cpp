@@ -127,41 +127,31 @@ inline bool draw_char(
     const DrawFont::Glyph *glyph,
     const DrawFont *font,
     const DrawOperation &operation,
-    Screen screen,
-    cord_t cursor_y, cord_t cursor_x, cord_t x_limit)
+    Screen screen, Vector cursor, cord_t x_limit)
 {
+    Size bitmap_size = Size(glyph->width, glyph->height);
 
+    if (bitmap_size.width() == 0 or bitmap_size.height() == 0)
+        return false;
+
+    Vector bitmap_position = cursor + Vector(glyph->x_offset, glyph->y_offset);
+    byte *bitmap = font->bitmap + glyph->bitmap_offset;
     bool was_clipped = false;
 
-    cord_t width = glyph->width;
-    cord_t height = glyph->height;
-
-    if ((width > 0) && (height > 0))
+    for (uint8_t in_bitmap_x = 0; in_bitmap_x < bitmap_size.width(); in_bitmap_x++)
     {
-        cord_t xo = glyph->x_offset;
-        cord_t yo = glyph->y_offset;
-
-        byte *bitmap = font->bitmap;
-        uint16_t bo = glyph->bitmap_offset;
-
-        uint8_t bits = 0, bit = 0;
-
-        for (uint8_t yy = 0; yy < height; yy++)
+        for (uint8_t in_bitmap_y = 0; in_bitmap_y < bitmap_size.height(); in_bitmap_y++)
         {
-            for (uint8_t xx = 0; xx < width; xx++)
+            Vector current = bitmap_position + Vector(in_bitmap_x, in_bitmap_y);
+
+            bool state = get_bitmap_pixel(bitmap, font->bitmap_flags, in_bitmap_x, in_bitmap_y, bitmap_size.width(), bitmap_size.height());
+
+            if (state)
             {
-                if (!(bit++ & 7))
-                    bits = bitmap[bo++];
-
-                if (bits & 0x80)
-                    if (cursor_x + xo + xx <= x_limit)
-                        draw_pixel_using_pattern(operation,
-                                                 cursor_x + xo + xx,
-                                                 cursor_y + yo + yy, 0, screen);
-                    else
-                        was_clipped = true;
-
-                bits <<= 1;
+                if (current.x() <= x_limit)
+                    draw_pixel_using_pattern(operation, current.x(), current.y(), 0, screen);
+                else
+                    was_clipped = true;
             }
         }
     }
@@ -175,8 +165,8 @@ inline void draw_text(const DrawOperation &operation, Screen screen)
     FontId font_id = operation.arguments.text.font;
     const DrawFont *font = DrawingContext::instance().font_engine->get_raw(font_id);
 
-    uint16_t cursor_x = operation.bounds.start.x();
-    uint16_t pos_y = operation.bounds.start.y() + DrawingContext::instance().font_engine->get_y_offset(font_id);
+    Vector cursor = operation.bounds.start;
+    cursor = cursor + Vector(0, DrawingContext::instance().font_engine->get_y_offset(font_id));
 
     size_t i = 0;
     while (char c = *text++)
@@ -189,12 +179,12 @@ inline void draw_text(const DrawOperation &operation, Screen screen)
         {
             const DrawFont::Glyph *glyph = font->glyphs + (c - first);
 
-            bool was_clipped = draw_char(glyph, font, operation, screen, pos_y, cursor_x, operation.bounds.end().x());
+            bool was_clipped = draw_char(glyph, font, operation, screen, cursor, operation.bounds.end().x());
 
             if (was_clipped)
                 break;
 
-            cursor_x += glyph->x_advance;
+            cursor = cursor + Vector(glyph->x_advance, 0);
         }
     }
 }
