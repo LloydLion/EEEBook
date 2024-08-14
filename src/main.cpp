@@ -81,7 +81,10 @@ Screen create_screen()
 
 uint8_t fill_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters) { return 0; }
 
-void draw_line(Vector start, Vector end, Pattern pattern, Screen screen, cord_t b_cord, cord_t b_size);
+//void draw_subline(Vector start, SignedVector direction, cord_t offset, cord_t length, Screen output, bool c = true);
+
+void draw_subline(Vector start, SignedVector direction, cord_t length, Screen output, int cornered_mode);
+void draw_thick_line(Vector start, Vector end, cord_t thinkness, Screen output);
 
 int main()
 {
@@ -120,8 +123,27 @@ int main()
             std_println("----DRAWING----");
             screen->begin();
             screen->clear();
-            drawer->draw(queue);
-            draw_line(Vector(130,80), Vector(1,1), Pattern(), screen, 0, 0);
+            //drawer->draw(queue);
+            //draw_line(Vector(130,80), Vector(1,1), Pattern(), screen, 0, 0);
+
+            //execute_along_ray(Vector(20, 30), Vector(21, 32), screen->full_viewport_size(), -1, function, screen);
+            draw_thick_line(Vector(20, 100), Vector(20 + 20, 100 + 10), 8, screen);
+            draw_thick_line(Vector(50, 100), Vector(50 + 10, 100 + 20), 8, screen);
+            draw_thick_line(Vector(80, 100), Vector(80 - 10, 100 + 20), 8, screen);
+            draw_thick_line(Vector(110, 100), Vector(110 - 20, 100 + 10), 8, screen);
+            draw_thick_line(Vector(140, 100), Vector(140 - 20, 100 - 10), 8, screen);
+            draw_thick_line(Vector(170, 100), Vector(170 - 10, 100 - 20), 8, screen);
+            draw_thick_line(Vector(200, 100), Vector(200 + 10, 100 - 20), 8, screen);
+            draw_thick_line(Vector(230, 100), Vector(230 + 20, 100 - 10), 8, screen);
+
+            draw_subline(Vector(20, 50), SignedVector(1, 2), 20, screen, 0);
+
+            draw_subline(Vector(23, 50), SignedVector(1, 2), 20, screen, 1);
+
+            draw_subline(Vector(26, 50), SignedVector(1, 2), 20, screen, -1);
+
+
+
             screen->send();
 
             std_println("----DONE----");

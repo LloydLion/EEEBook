@@ -1,6 +1,9 @@
 #include "gui/color.h"
 
 #if COLOR_MODEL == BW_COLOR_MODEL
+constexpr color_t ColorMap::Black;
+constexpr color_t ColorMap::White;
+
 uint16_t color_to_rgb565(color_t color)
 {
     switch (color)
@@ -20,6 +23,10 @@ std::tuple<uint8_t, uint8_t, uint8_t> color_to_rgb888(color_t color)
     }
 }
 #elif COLOR_MODEL == BWR_COLOR_MODEL
+constexpr color_t ColorMap::Black;
+constexpr color_t ColorMap::White;
+constexpr color_t ColorMap::Red;
+
 uint16_t color_to_rgb565(color_t color)
 {
     switch (color)
@@ -40,6 +47,31 @@ rgb888_color color_to_rgb888(color_t color)
     case ColorMap::Red: return rgb888_color(0xFF, 0x00, 0x00);
     default: return rgb888_color(0xFF, 0x00, 0x00);
     }
+}
+#elif COLOR_MODEL == RGB_COLOR_MODEL
+constexpr color_t ColorMap::Black;
+constexpr color_t ColorMap::White;
+constexpr color_t ColorMap::Red;
+constexpr color_t ColorMap::Green;
+constexpr color_t ColorMap::Blue;
+constexpr color_t ColorMap::Yellow;
+
+uint16_t color_to_rgb565(color_t color)
+{
+    uint8_t red = (color & ColorMap::Red) << 1;
+    uint8_t green = (color & ColorMap::Green) >> 2;
+    uint8_t blue = (color & ColorMap::Blue) << 3;
+    
+    return (((uint16_t)(red | green)) << 8) | (uint16_t)blue;
+}
+
+rgb888_color color_to_rgb888(color_t color)
+{
+    uint8_t red = (color & ColorMap::Red) << 1;
+    uint8_t green = (color & ColorMap::Green) << 3;
+    uint8_t blue = (color & ColorMap::Blue) << 6;
+    
+    return rgb888_color(red, green, blue);
 }
 #endif
 

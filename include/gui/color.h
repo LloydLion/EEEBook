@@ -29,6 +29,19 @@ public:
     static constexpr color_t White = 1;
     static constexpr color_t Red = 2;
 };
+#elif COLOR_MODEL == RGB_COLOR_MODEL
+template<> struct ColorDepth<color_t> { static constexpr size_t depth = 7; };
+template<> struct ColorDepth<transparent_color_t> { static constexpr size_t depth = 8; };
+class ColorMap
+{
+public:
+    static constexpr color_t Black = 0b00000000;
+    static constexpr color_t White = 0b01111111;
+    static constexpr color_t Red = 0b01100000;
+    static constexpr color_t Green = 0b00011100;
+    static constexpr color_t Blue = 0b00000011;
+    static constexpr color_t Yellow = Green | Red;
+};
 #endif
 
 struct rgb888_color { uint8_t r, g, b; rgb888_color(uint8_t r, uint8_t g, uint8_t b): r(r), g(g), b(b) { } };

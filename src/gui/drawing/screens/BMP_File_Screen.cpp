@@ -16,7 +16,11 @@ bmp::Pixel color_to_pixel(color_t color)
 
 void BMP_File_Screen_::draw_pixel(Vector position, color_t color)
 {
-    _bitmap.set(position.x(), position.y(), color_to_pixel(color));
+    auto old = _bitmap.get(position.x(), position.y());
+    bmp::Pixel pixel = color_to_pixel(color);
+    if (old != bmp::White)
+        pixel = bmp::Pixel((pixel.r + old.r) / 2, (pixel.g + old.g) / 2, (pixel.b + old.b) / 2);
+    _bitmap.set(position.x(), position.y(), pixel);
 }
 
 void BMP_File_Screen_::draw_vertical_line(Vector position, cord_t size, color_t color)

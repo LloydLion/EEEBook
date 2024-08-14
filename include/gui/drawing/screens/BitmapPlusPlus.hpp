@@ -232,9 +232,9 @@ namespace bmp {
         return a.second < b.second;
       });
 
-      const auto [x_top, y_top] = vertices[0];
-      const auto [x_mid, y_mid] = vertices[1];
-      const auto [x_bot, y_bot] = vertices[2];
+      const auto x_top = vertices[0].first; const auto y_top = vertices[0].second;
+      const auto x_mid = vertices[1].first; const auto y_mid = vertices[1].second;
+      const auto x_bot = vertices[2].first; const auto y_bot = vertices[2].second;
 
       // Calculate the slopes of the left and right edges
       const float slope_left = static_cast<float>(x_mid - x_top) / (y_mid - y_top);
