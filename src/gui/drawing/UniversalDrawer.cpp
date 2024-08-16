@@ -285,9 +285,11 @@ void draw_line_pixel_using_pattern(
     }
     else
     {
+        Bounds line_box = Bounds(start, end);
+
         Bounds outline_box = Bounds(
-            Vector(constrained_cords_subtract(start.x(), thickness), constrained_cords_subtract(start.y(), thickness)),
-            Vector(end.x() + thickness, end.y() + thickness)
+            Vector(constrained_cords_subtract(line_box.start.x(), thickness), constrained_cords_subtract(line_box.start.y(), thickness)),
+            Vector(line_box.end().x() + thickness, line_box.end().y() + thickness)
         );
 
         Bounds limited_outline_box = Bounds::intersect(limits, outline_box);
@@ -325,9 +327,6 @@ void draw_sub_line(SignedVector start, SignedVector direction, cord_t thickness,
         SignedVector physical_position = algorithm.position(p_offset, start);
 
         DRAW_SUB_LINE_PIXEL_DRAW_CALL(physical_position);
-
-        if (physical_position.is_positive() and limits.is_inside_abs(physical_position.remove_sings()))
-            output->draw_pixel(physical_position.remove_sings(), ColorMap::Red);
 
         if (error_compensation_last_time && corner_mode == SubLineCornerMode::Post)
         {

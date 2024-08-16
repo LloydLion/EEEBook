@@ -81,7 +81,8 @@ Screen create_screen()
 
 uint8_t fill_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters) { return 0; }
 
-void draw_thick_line(Vector start, SignedVector end, cord_t length, cord_t thickness, Bounds limits, Screen output);
+uint8_t chess_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters)
+    { return (a + b) % 2; }
 
 int main()
 {
@@ -92,6 +93,7 @@ int main()
         DrawingContext::initialize();
 
         DrawingContext::instance().pattern_catalog->register_pattern(PatternFunction(&fill_pattern, "fill"));
+        DrawingContext::instance().pattern_catalog->register_pattern(PatternFunction(&chess_pattern, "chess"));
         DrawingContext::instance().font_engine->register_font(&FreeMono12pt7b);
 
         Screen screen = create_screen();
@@ -115,35 +117,20 @@ int main()
 
             std_println("----RENDER----");
             GFX root_gfx(queue, screen->full_viewport_size());
-            root->render(root_gfx);
+            //root->render(root_gfx);
+
+            Pattern p;
+            memset(&p, 0, sizeof(Pattern));
+            p.palette[0] = ColorMap::Blue;
+            p.palette[1] = ColorMap::Red;
+            p.function = 1;
+            root_gfx.draw_line(LocalVector(50, 50), SignedVector(2, -1), 20, p, 8);
 
             std_println("----DRAWING----");
             screen->begin();
             screen->clear();
-            //drawer->draw(queue);
-            //draw_line(Vector(130,80), Vector(1,1), Pattern(), screen, 0, 0);
 
-            //execute_along_ray(Vector(20, 30), Vector(21, 32), screen->full_viewport_size(), -1, function, screen);
-            Bounds bounds = Bounds(Vector(), screen->full_viewport_size());
-            draw_thick_line(Vector(20, 100), Vector(20 + 20, 100 + 10), 0, 8, bounds, screen);
-            draw_thick_line(Vector(50, 100), Vector(50 + 10, 100 + 20), 0, 8, bounds, screen);
-            draw_thick_line(Vector(80, 100), Vector(80 - 10, 100 + 20), 0, 8, bounds, screen);
-            draw_thick_line(Vector(110, 100), Vector(110 - 20, 100 + 10), 0, 8, bounds, screen);
-            draw_thick_line(Vector(140, 100), Vector(140 - 20, 100 - 10), 0, 8, bounds, screen);
-            draw_thick_line(Vector(170, 100), Vector(170 - 10, 100 - 20), 0, 8, bounds, screen);
-            draw_thick_line(Vector(200, 100), Vector(200 + 10, 100 - 20), 0, 8, bounds, screen);
-            draw_thick_line(Vector(230, 100), Vector(230 + 20, 100 - 10), 0, 8, bounds, screen);
-
-            DrawOperation dp = DrawOperation();
-            dp.area_type = DrawAreaType::Line;
-            dp.bounds = bounds;
-            dp.arguments.line.start_x = 260;
-            dp.arguments.line.start_y = 100;
-            dp.arguments.line.end_x = 261;
-            dp.arguments.line.end_y = 101;
-            dp.arguments.line.thickness = 12;
-            dp.arguments.line.length = 50;
-            drawer->draw(dp);
+            drawer->draw(queue);
 
             screen->send();
 

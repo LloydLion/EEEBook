@@ -102,7 +102,7 @@ void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, Pa
     _queue->enqueue(operation);
 }
 
-void GFX::draw_line(LocalVector start, LocalVector end, transparent_color_t color, cord_t thickness = 0, cord_t length = 0)
+void GFX::draw_line(LocalVector start, LocalVector end, transparent_color_t color, cord_t thickness, cord_t length)
 {
     DrawOperation operation; //TODO: GFX::draw_line(*) remove code duplication
     operation.area_type = DrawAreaType::Line;
@@ -117,7 +117,7 @@ void GFX::draw_line(LocalVector start, LocalVector end, transparent_color_t colo
     _queue->enqueue(operation);
 }
 
-void GFX::draw_line(LocalVector start, LocalVector end, Pattern pattern, cord_t thickness = 0, cord_t length = 0)
+void GFX::draw_line(LocalVector start, LocalVector end, Pattern pattern, cord_t thickness, cord_t length)
 {
     DrawOperation operation;
     operation.area_type = DrawAreaType::Line;
@@ -132,7 +132,7 @@ void GFX::draw_line(LocalVector start, LocalVector end, Pattern pattern, cord_t 
     _queue->enqueue(operation);
 }
 
-void GFX::draw_line(LocalVector start, SignedVector direction, cord_t length, Pattern pattern, cord_t thickness = 0)
+void GFX::draw_line(LocalVector start, SignedVector direction, cord_t length, Pattern pattern, cord_t thickness)
 {
     SignedVector end = direction + start;
     DrawOperation operation;

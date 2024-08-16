@@ -2,7 +2,7 @@
 
 Bounds::Bounds(): start(), size() { }
 Bounds::Bounds(Vector start, Size size): start(start), size(size) { }
-Bounds::Bounds(Vector start, Vector end): start(Vector(std::min(start.x(), start.x()), std::min(end.y(), end.y()))), size(start, end) { }
+Bounds::Bounds(Vector start, Vector end): start(Vector(std::min(start.x(), end.x()), std::min(start.y(), end.y()))), size(start, end) { }
     
 bool Bounds::is_inside_abs(Vector absolute_vector) const
 {
