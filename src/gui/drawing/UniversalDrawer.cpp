@@ -1,10 +1,9 @@
 #include "gui/drawing/UniversalDrawer.h"
 #include <stdexcept>
-#include "platform/stdout.h"
 
 inline void draw_pixel_using_pattern(const DrawOperation &operation, cord_t x, cord_t y, size_t pattern_index, Screen screen)
 {
-    transparent_color_t color = operation.patterns[0].perform(x, y, operation.bounds.size.width(), operation.bounds.size.height());
+    transparent_color_t color = operation.patterns[pattern_index].perform(x, y, operation.bounds.size.width(), operation.bounds.size.height());
     if (!color.is_transparent())
         screen->draw_pixel(operation.bounds.start + Vector(x, y), color);
 }
@@ -12,6 +11,7 @@ inline void draw_pixel_using_pattern(const DrawOperation &operation, cord_t x, c
 inline void draw_rect(const DrawOperation &operation, Screen screen);
 inline void draw_bitmap(const DrawOperation &operation, Screen screen);
 inline void draw_text(const DrawOperation &operation, Screen screen);
+inline void draw_thick_line(Vector start, SignedVector end, cord_t length, cord_t thickness, Bounds limits, Pattern pattern, Screen output);
 
 UniversalDrawer_::UniversalDrawer_(Screen screen) : _screen(screen) {}
 
@@ -37,7 +37,14 @@ void UniversalDrawer_::draw(const DrawOperation &operation)
 
         break;
     case DrawAreaType::Line:
-
+        {
+            auto arguments = operation.arguments.line;
+            draw_thick_line(
+                Vector(arguments.start_x, arguments.start_y),
+                SignedVector(arguments.end_x, arguments.end_y),
+                arguments.length, arguments.thickness, operation.bounds, operation.patterns[0], _screen
+            );
+        }
         break;
     case DrawAreaType::Text: // TODO
         draw_text(operation, _screen);
@@ -190,230 +197,200 @@ inline void draw_text(const DrawOperation &operation, Screen screen)
     }
 }
 
-void execute_along_ray(Vector start, Vector head, Size screen_size, cord_t limit, void (*p)(void*, Vector), void* parameter)
+class BresenhamAlgorithm
 {
-    cord_t x0 = start.x();
-    cord_t x1 = head.x();
-    cord_t y0 = start.y();
-    cord_t y1 = head.y();
+public:
+    Axis axis = AxisX;
+    cord_t delta_p;
+    cord_t delta_s;
+    s_cord_t p_direction;
+    s_cord_t s_direction;
+    s_cord_t error;
+    s_cord_t s_offset = 0;
 
-    bool steep = abs_cords_subtract(y1, y0) > abs_cords_subtract(x1, x0);
-    if (steep)
+    BresenhamAlgorithm(SignedVector direction)
     {
-        std::swap(x0, y0);
-        std::swap(x1, y1);
+        Vector abs_delta = direction.absolute();
+
+        axis = abs_delta.y() > abs_delta.x() ? AxisY : AxisX;
+
+        delta_p = abs_delta[axis];
+        error = delta_p / 2; 
+        delta_s = abs_delta[~axis];
+
+        p_direction = direction[axis] > 0 ? 1 : -1;
+        s_direction = direction[~axis] > 0 ? 1 : -1;
+    }
+
+    void step()
+    {
+        error -= delta_s;
+    }
+
+    bool should_compensate_error()
+    {
+        return error < 0;
+    }
+
+    void compensate_error()
+    {
+        s_offset += s_direction;
+        error += delta_p;
+    }
+
+    Vector position(s_cord_t p_offset, Vector start)
+    {
+        return Vector(start[axis] + p_offset, start[~axis] + s_offset, axis);
     }
     
-    if (x0 > x1)
+    SignedVector position(s_cord_t p_offset, SignedVector start)
     {
-        std::swap(x0, x1);
-        std::swap(y0, y1);
+        return SignedVector(start[axis] + p_offset, start[~axis] + s_offset, axis);
+    }
+};
+
+SignedVector ray_cast(Vector start, SignedVector direction, cord_t length)
+{
+    BresenhamAlgorithm algorithm(direction);
+
+    for (s_cord_t p_offset = 0; std::abs(p_offset) < length; p_offset += algorithm.p_direction)
+    {
+        algorithm.step();
+        if (algorithm.should_compensate_error())
+            algorithm.compensate_error();
     }
 
-    cord_t dx = x1 - x0;
-    cord_t dy = abs_cords_subtract(y1, y0);
-
-    s_cord_t error = dx / 2;
-    s_cord_t y_step = (y0 < y1) ? 1 : -1;
-
-    cord_t y = y0;
-    cord_t counter = 0;
-
-    for (int x = x0; true; x++)
-    {
-        Vector physical_position = Vector(steep ? y : x, steep ? x : y);
-        if (physical_position.x() >= screen_size.width() or physical_position.y() >= screen_size.height())
-            return;
-        p(parameter, physical_position);
-        counter++;
-        if (counter >= limit)
-            return;
-        error -= dy;
-        if (error < 0)
-        {
-            y += y_step;
-            error += dx;
-        }
-    }
+    return SignedVector(length * algorithm.p_direction, algorithm.s_offset, algorithm.axis);
 }
 
-void draw_line(Vector start, Vector end, Pattern pattern, Screen screen, cord_t b_cord, cord_t b_size)
+void draw_line_pixel_using_pattern(
+    cord_t length_position, cord_t length,
+    s_cord_t thickness_position, cord_t thickness,
+    Vector start, Vector end, Bounds limits, SignedVector position,
+    Pattern pattern, Screen output
+)
 {
-    if (end.x() < start.x())
+    if (position.is_positive() == false or limits.is_inside_abs(position.remove_sings()) == false)
+        return;
+
+    transparent_color_t color;
+    if (pattern.decoration_options.flags & Pattern::UsePathBasedCoordinateSystem)
     {
-        std::swap(start,end);
+        color = pattern.perform(
+            length_position,
+            thickness_position,
+            length,
+            thickness
+        );
+    }
+    else
+    {
+        Bounds outline_box = Bounds(
+            Vector(constrained_cords_subtract(start.x(), thickness), constrained_cords_subtract(start.y(), thickness)),
+            Vector(end.x() + thickness, end.y() + thickness)
+        );
+
+        Bounds limited_outline_box = Bounds::intersect(limits, outline_box);
+
+        LocalVector local_position = (position - limited_outline_box.start).remove_sings();
+
+        color = pattern.perform(
+            local_position.x(), local_position.y(),
+            limited_outline_box.size.width(), limited_outline_box.size.height()
+        );
     }
 
-    Vector Dv = (end - start).remove_sings();
-
-    s_cord_t y = 0;
-    cord_t x = 0;
-
-    bool step = Dv.y() < 0 ? -1 : 1;
-
-    bool swap = false;
-    if (Dv.y() / Dv.x() > 1)
-    {
-        start = Vector(start.y(), start.x());
-        end = Vector(end.y(), end.x());
-        swap = true;
-    }
-
-    s_cord_t P = 2 * Dv.x() - Dv.y();
-    cord_t total_iterations = end.x() - start.x() + 1;
-    while (start.x() + x <= end.x())
-    {
-        color_t color = pattern.perform(x, b_cord, total_iterations, b_size);
-        screen->draw_pixel(swap ? Vector(x + start.y() ,y + start.x()) : start + Vector(x, y), color);
-        x++;
-        if (P < 0)
-            P += 2 * Dv.y();
-        else
-        {
-            P += 2 * Dv.y() - 2 * Dv.x();
-            y += step;
-        }
-    }
+    if (color.is_transparent() == false)
+        output->draw_pixel(position.remove_sings(), color.color());
 }
 
-SignedVector raycast(Vector start, SignedVector direction, cord_t length)
+struct SubLinePatternParamters { cord_t length_position; cord_t length; s_cord_t thickness_position_offset; Pattern pattern; Vector line_start; Vector line_end; };
+enum class SubLineCornerMode { None, Post, Pre };
+
+#define DRAW_SUB_LINE_PIXEL_DRAW_CALL(position) \
+    draw_line_pixel_using_pattern( \
+        pp.length_position, pp.length, \
+        pp.thickness_position_offset + p_offset, thickness, \
+        pp.line_start, pp.line_end, limits, \
+        position, pp.pattern, output)
+
+void draw_sub_line(SignedVector start, SignedVector direction, cord_t thickness, Screen output, Bounds limits, SubLineCornerMode corner_mode, SubLinePatternParamters pp)
 {
-    SignedVector begin = start;
-    SignedVector imaginated_end = direction + begin;
+    BresenhamAlgorithm algorithm(direction);
 
-    Axis axis = std::abs(imaginated_end.y() - begin.y()) > std::abs(imaginated_end.x() - begin.x()) ? AxisY : AxisX;
+    bool error_compensation_last_time = false;
 
-    cord_t dp = abs_cords_subtract(imaginated_end[axis], begin[axis]);
-    cord_t ds = abs_cords_subtract(imaginated_end[~axis], begin[~axis]);
-
-    s_cord_t p_direction = (begin[axis] < imaginated_end[axis]) ? 1 : -1;
-    s_cord_t s_direction = (begin[~axis] < imaginated_end[~axis]) ? 1 : -1;
-    s_cord_t error = dp / 2;
-
-    s_cord_t offset_s = 0;
-
-    cord_t path_counter = 0;
-
-    for (s_cord_t offset_p = 0; true; offset_p += p_direction)
+    for (s_cord_t p_offset = 0; std::abs(p_offset) < thickness; p_offset += algorithm.p_direction)
     {
-        Vector physical_position = Vector(offset_p + begin[axis], offset_s + begin[~axis], axis);
+        SignedVector physical_position = algorithm.position(p_offset, start);
 
-        if (path_counter >= length)
-            return SignedVector(offset_p, offset_s, axis);
+        DRAW_SUB_LINE_PIXEL_DRAW_CALL(physical_position);
 
-        path_counter++;
-        error -= ds;
-        if (error < 0)
+        if (physical_position.is_positive() and limits.is_inside_abs(physical_position.remove_sings()))
+            output->draw_pixel(physical_position.remove_sings(), ColorMap::Red);
+
+        if (error_compensation_last_time && corner_mode == SubLineCornerMode::Post)
         {
-            offset_s += s_direction;
-            error += dp;
-        }
-    }
-}
-
-void draw_subline(Vector start, SignedVector direction, cord_t length, Screen output, int cornered_mode)
-{
-    SignedVector begin = start;
-    SignedVector imaginated_end = direction + begin;
-
-    Axis axis = std::abs(imaginated_end.y() - begin.y()) > std::abs(imaginated_end.x() - begin.x()) ? AxisY : AxisX;
-
-    cord_t dp = abs_cords_subtract(imaginated_end[axis], begin[axis]);
-    cord_t ds = abs_cords_subtract(imaginated_end[~axis], begin[~axis]);
-
-    s_cord_t p_direction = (begin[axis] < imaginated_end[axis]) ? 1 : -1;
-    s_cord_t s_direction = (begin[~axis] < imaginated_end[~axis]) ? 1 : -1;
-    s_cord_t error = dp / 2;
-
-    cord_t s_base = begin[~axis];
-    cord_t cursor_s = s_base;
-
-    cord_t path_counter = 0;
-
-    Size viewport = output->full_viewport_size();
-
-    bool error_corection_last_time = false;
-
-    for (s_cord_t p = begin[axis]; true; p += p_direction)
-    {
-        Vector physical_position = Vector(p, cursor_s, axis);
-
-        if (path_counter >= length)
-            return;
-
-        if (physical_position.x() < viewport.width() and physical_position.y() < viewport.height())
-            output->draw_pixel(physical_position, ColorMap::Red);
-
-        if (error_corection_last_time and cornered_mode == -1) //Post corner
-        {
-            physical_position = physical_position.with(physical_position[~axis] - s_direction, ~axis);
-            if (physical_position.x() >= viewport.width() or physical_position.y() >= viewport.height())
-                continue;
-            output->draw_pixel(physical_position, ColorMap::Green);
+            physical_position = physical_position.with(physical_position[~algorithm.axis] - algorithm.s_direction, ~algorithm.axis);
+            DRAW_SUB_LINE_PIXEL_DRAW_CALL(physical_position);
         }
 
-        path_counter++;
-
-        error -= ds;
-        error_corection_last_time = false;
-        if (error < 0)
+        algorithm.step();
+        error_compensation_last_time = false;
+        if (algorithm.should_compensate_error())
         {
-            error_corection_last_time = true;
-            cursor_s += s_direction;
-            error += dp;
+            error_compensation_last_time = true;
+            algorithm.compensate_error();
 
-            if (cornered_mode == 1) //Pre corner
+            if (corner_mode == SubLineCornerMode::Pre)
             {
-                physical_position = Vector(p, cursor_s, axis);
-                if (physical_position.x() >= viewport.width() or physical_position.y() >= viewport.height())
-                    continue;
-                output->draw_pixel(physical_position, ColorMap::Green);
+                DRAW_SUB_LINE_PIXEL_DRAW_CALL(algorithm.position(p_offset, start));
             }
         }
     }
 }
 
-void draw_thick_line(Vector start, Vector end, cord_t thinkness, Screen output)
+inline void draw_thick_line(Vector start, SignedVector end, cord_t length, cord_t thickness, Bounds limits, Pattern pattern, Screen output)
 {
-    Axis axis = abs_cords_subtract(end.y(), start.y()) > abs_cords_subtract(end.x(), start.x()) ? AxisY : AxisX;
+    if (thickness == 0) thickness = 1;
+    
+    SignedVector start_to_end = end - start;
+    SignedVector perpendicular = start_to_end.rotate_clockwise();
+    SignedVector offset = ray_cast(start, perpendicular.rotate_180(), thickness / 2);
+    SignedVector shifted_start = offset + start;
+    SignedVector shifted_end = offset + end;
 
-    if (start[axis] > end[axis])
-        std::swap(start, end);
+    BresenhamAlgorithm algorithm(start_to_end);
 
-    cord_t dp = end[axis] - start[axis];
-    cord_t ds = abs_cords_subtract(end[~axis], start[~axis]);
+    bool should_draw_next_sub_line_in_corner_mode = algorithm.error < algorithm.delta_s; //If should_compensate_error() after first iteration
 
-    s_cord_t s_direction = (start[~axis] < end[~axis]) ? 1 : -1;
-    s_cord_t error = dp / 2;
+    bool magic_characteristic = (algorithm.s_direction == 1) == (algorithm.p_direction == 1) == (algorithm.axis == AxisX);
+    SubLineCornerMode corner_mode = magic_characteristic ? SubLineCornerMode::Pre : SubLineCornerMode::Post;
 
-    SignedVector perpendicular = (end - start).rotate_clockwise();
+    cord_t total_steps = length == 0 ? algorithm.delta_p : length;
 
-    SignedVector offset = raycast(start, perpendicular.rotate_180(), thinkness / 2);
+    SubLinePatternParamters pp;
+    pp.length = length;
+    pp.line_start = start;
+    pp.line_end = end.constrain();
+    pp.pattern = pattern;
+    pp.thickness_position_offset = thickness / 2; //ray cast length
 
-    cord_t cursor_s = start[~axis] + offset[~axis];
 
-    bool should_draw_next_subline_in_cornred_mode = false;
-
-    bool magic_characteristic = (s_direction == 1) == (axis == AxisX);
-
-    //std_printf("s_direction: %d; primary axis: %d -> magic_characteristic: %d\n", s_direction, axis.index(), magic_characteristic);
-
-    for (s_cord_t p_offset = 0; p_offset <= dp; p_offset++)
+    for (s_cord_t p_offset = 0; std::abs(p_offset) <= total_steps; p_offset += algorithm.p_direction)
     {
-        Vector cursor = Vector(start[axis] + offset[axis] + p_offset, cursor_s, axis);
+        SignedVector cursor = algorithm.position(p_offset, shifted_start);
+        
+        pp.length_position = p_offset;
 
-        draw_subline(cursor, perpendicular, thinkness, output, should_draw_next_subline_in_cornred_mode ? (magic_characteristic ? 1 : -1) : 0);
-        should_draw_next_subline_in_cornred_mode = false;
+        draw_sub_line(cursor, perpendicular, thickness, output, limits, should_draw_next_sub_line_in_corner_mode ? corner_mode : SubLineCornerMode::None, pp);
+        should_draw_next_sub_line_in_corner_mode = false;
 
-        output->draw_pixel(cursor, ColorMap::Black);
-        output->draw_pixel(Vector(start[axis] + p_offset, cursor_s - offset[~axis], axis), ColorMap::Blue);
-
-        error -= ds;
-        if (error < 0)
+        algorithm.step();
+        if (algorithm.should_compensate_error())
         {
-            cursor_s += s_direction;
-            error += dp;
-            should_draw_next_subline_in_cornred_mode = true;
+            algorithm.compensate_error();
+            should_draw_next_sub_line_in_corner_mode = true;
         }
     }
 }

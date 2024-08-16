@@ -157,6 +157,8 @@ public:
 
     Vector remove_sings();
     Vector constrain();
+    Vector absolute();
+    bool is_positive();
     SignedVector rotate_clockwise();
     SignedVector rotate_counter_clockwise();
     SignedVector rotate_180();

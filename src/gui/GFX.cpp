@@ -101,3 +101,49 @@ void GFX::print_text(LocalVector start, cord_t width_limit, const char *text, Pa
     operation.patterns[0] = pattern;
     _queue->enqueue(operation);
 }
+
+void GFX::draw_line(LocalVector start, LocalVector end, transparent_color_t color, cord_t thickness = 0, cord_t length = 0)
+{
+    DrawOperation operation; //TODO: GFX::draw_line(*) remove code duplication
+    operation.area_type = DrawAreaType::Line;
+    operation.bounds = _bounds;
+    operation.patterns[0].palette[0] = color;
+    operation.arguments.line.start_x = start.x();
+    operation.arguments.line.start_y = start.y();
+    operation.arguments.line.end_x = end.x();
+    operation.arguments.line.end_y = end.y();
+    operation.arguments.line.thickness = thickness;
+    operation.arguments.line.length = length;
+    _queue->enqueue(operation);
+}
+
+void GFX::draw_line(LocalVector start, LocalVector end, Pattern pattern, cord_t thickness = 0, cord_t length = 0)
+{
+    DrawOperation operation;
+    operation.area_type = DrawAreaType::Line;
+    operation.bounds = _bounds;
+    operation.patterns[0] = pattern;
+    operation.arguments.line.start_x = start.x();
+    operation.arguments.line.start_y = start.y();
+    operation.arguments.line.end_x = end.x();
+    operation.arguments.line.end_y = end.y();
+    operation.arguments.line.thickness = thickness;
+    operation.arguments.line.length = length;
+    _queue->enqueue(operation);
+}
+
+void GFX::draw_line(LocalVector start, SignedVector direction, cord_t length, Pattern pattern, cord_t thickness = 0)
+{
+    SignedVector end = direction + start;
+    DrawOperation operation;
+    operation.area_type = DrawAreaType::Line;
+    operation.bounds = _bounds;
+    operation.patterns[0] = pattern;
+    operation.arguments.line.start_x = start.x();
+    operation.arguments.line.start_y = start.y();
+    operation.arguments.line.end_x = end.x();
+    operation.arguments.line.end_y = end.y();
+    operation.arguments.line.thickness = thickness;
+    operation.arguments.line.length = length;
+    _queue->enqueue(operation);
+}

@@ -43,7 +43,9 @@ union DrawAreaArgs
     struct
     {
         cord_t thickness;
-        bool is_anti_diagonal;
+        cord_t start_x, start_y;
+        s_cord_t end_x, end_y;
+        cord_t length;
     } line;
 
     struct
@@ -53,17 +55,10 @@ union DrawAreaArgs
     } bitmap;
 };
 
-enum class CoordinateSystemType : uint8_t
-{
-    Classic,
-    PathBased
-};
-
 struct DrawOperation
 {
     DrawAreaType area_type;
     DrawAreaArgs arguments;
-    CoordinateSystemType coordinate;
     Pattern patterns[DRAW_AREA_MAX_SEGMENTATION];
     Bounds bounds;
     

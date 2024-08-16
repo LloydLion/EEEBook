@@ -29,6 +29,10 @@ public:
     void print_text(LocalVector start, const char *text, transparent_color_t color, size_t len_limit = -1, Font font = Font()) const;
     void print_text(LocalVector start, cord_t width_limit, const char *text, Pattern pattern, size_t len_limit, Font font) const;
 
+    void draw_line(LocalVector start, LocalVector end, transparent_color_t color, cord_t thickness = 0, cord_t length = 0);
+    void draw_line(LocalVector start, LocalVector end, Pattern pattern, cord_t thickness = 0, cord_t length = 0);
+    void draw_line(LocalVector start, SignedVector direction, cord_t length, Pattern pattern, cord_t thickness = 0);
+
     GFX slice(LocalBounds local_bounds) const;
     GFX slice(Distance4Sides distances) const;
 

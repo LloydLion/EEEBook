@@ -33,6 +33,16 @@ Vector SignedVector::constrain()
     return Vector(std::max(0, x()), std::max(0, y()));
 }
 
+Vector SignedVector::absolute()
+{
+    return Vector(std::abs(x()), std::abs(y()));
+}
+
+bool SignedVector::is_positive()
+{
+    return x() >= 0 and y() >= 0;
+}
+
 SignedVector SignedVector::rotate_clockwise()
 {
     return SignedVector(-y(), x());

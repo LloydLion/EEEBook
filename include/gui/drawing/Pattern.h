@@ -15,6 +15,7 @@ struct Pattern
     enum Flags
     {
         TransposeCoordinates = 0b00000001,
+        UsePathBasedCoordinateSystem = 0b00000010
     };
 
     PatternFunctionId function;
