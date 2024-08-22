@@ -1,6 +1,7 @@
 #include "gui/drawing/UniversalDrawer.h"
 #include "gui/drawing/sub_drawers/RectSubDrawer.h"
 #include "gui/drawing/sub_drawers/LineSubDrawer.h"
+#include "gui/drawing/sub_drawers/BitmapSubDrawer.h"
 #include <stdexcept>
 
 inline void draw_pixel_using_pattern(const DrawOperation &operation, cord_t x, cord_t y, size_t pattern_index, Screen screen)
@@ -10,7 +11,6 @@ inline void draw_pixel_using_pattern(const DrawOperation &operation, cord_t x, c
         screen->draw_pixel(operation.bounds.start + Vector(x, y), color);
 }
 
-inline void draw_bitmap(const DrawOperation &operation, Screen screen);
 inline void draw_text(const DrawOperation &operation, Screen screen);
 
 UniversalDrawer_::UniversalDrawer_(Screen screen) : _screen(screen) {}
@@ -68,39 +68,22 @@ void UniversalDrawer_::draw(const DrawOperation &operation)
         draw_text(operation, _screen);
         break;
     case DrawAreaType::Bitmap:
-        draw_bitmap(operation, _screen);
+        {
+            auto args = operation.arguments.bitmap;
+            BitmapSubDrawer drawer(args.map, args.flags);
+            
+            drawer.output = _screen;
+            drawer.bounds = operation.bounds;
+
+            drawer.patterns.for_enabled = operation.patterns[0];
+            drawer.patterns.for_disabled = operation.patterns[1];
+
+            drawer.draw();
+        }
         break;
     }
 }
 
-inline bool get_bitmap_pixel(
-    byte *bitmap, Bitmap::Flags flags,
-    cord_t x, cord_t y,
-    cord_t width, cord_t height)
-{
-    size_t idx = flags & Bitmap::YPrimary ? y + x * height : x + y * width;
-    size_t byte_idx = idx / 8;
-    size_t bit_idx = flags & Bitmap::BigEndian ? 7 - idx % 8 : idx % 8;
-    bool state = bitmap[byte_idx] & (1 << bit_idx);
-    if (flags & Bitmap::Inverted)
-        state = !state;
-    return state;
-}
-
-inline void draw_bitmap(const DrawOperation &operation, Screen screen)
-{
-    cord_t width = operation.bounds.size.width();
-    cord_t height = operation.bounds.size.height();
-    auto operation_args = operation.arguments.bitmap;
-    for (cord_t x = 0; x < width; x++)
-        for (cord_t y = 0; y < height; y++)
-        {
-            bool state = get_bitmap_pixel(
-                operation.arguments.bitmap.map, operation.arguments.bitmap.flags,
-                x, y, width, height);
-            draw_pixel_using_pattern(operation, x, y, state ? 1 : 0, screen);
-        }
-}
 
 inline bool draw_char(
     const DrawFont::Glyph *glyph,
@@ -123,7 +106,8 @@ inline bool draw_char(
         {
             Vector current = bitmap_position + Vector(in_bitmap_x, in_bitmap_y);
 
-            bool state = get_bitmap_pixel(bitmap, font->bitmap_flags, in_bitmap_x, in_bitmap_y, bitmap_size.width(), bitmap_size.height());
+            //FIXME: fix this dependency problem, now in BitmapSubDrawer
+            bool state = false;//get_bitmap_pixel(bitmap, font->bitmap_flags, in_bitmap_x, in_bitmap_y, bitmap_size.width(), bitmap_size.height());
 
             if (state)
             {
