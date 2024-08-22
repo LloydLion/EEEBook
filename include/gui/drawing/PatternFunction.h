@@ -8,11 +8,29 @@
 
 #define GUI_PATTERN_PARAMETERS_SIZE 16
 
+struct CoordinateRangeValue
+{
+    s_cord_t start;
+    s_cord_t end;
+    s_cord_t value;
+
+    inline CoordinateRangeValue(s_cord_t value, s_cord_t start, s_cord_t end):
+        value(value), start(start), end(end)
+    { }
+
+    inline cord_t size() const { return std::abs(end - start); }
+    inline s_cord_t direction() const { return end >= start ? 1 : -1; }
+    inline s_cord_t inclusive_end() const { return end - 1; }
+    inline CoordinateRangeValue shift(s_cord_t offset) const
+        { return CoordinateRangeValue(value + offset, start + offset, end + offset); }
+
+    inline operator s_cord_t() const { return value; }
+};
+
 struct PatternFunction
 {
     using FunctionType = uint8_t (*)(
-        s_cord_t a, s_cord_t b,
-        cord_t a_size, cord_t b_size,
+        CoordinateRangeValue a, CoordinateRangeValue b,
         UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters
     );
 

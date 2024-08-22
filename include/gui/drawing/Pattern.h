@@ -12,36 +12,37 @@
 
 struct Pattern
 {
-    enum Flags
+    enum DecorationFlags : uint8_t
     {
         TransposeCoordinates = 0b00000001,
-        UsePathBasedCoordinateSystem = 0b00000010
+    };
+
+    enum InterpretationOptions : uint8_t
+    {
+        UsePathBasedCoordinateSystem = 0b00000001
     };
 
     PatternFunctionId function;
     UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters;
     transparent_color_t palette[GUI_PATTERN_PALETTE_SIZE];
+    InterpretationOptions interpretation_options;
 
     struct {
         s_cord_t a_offset;
         s_cord_t b_offset;
-        Flags flags;
+        DecorationFlags flags;
     } decoration_options;
 
-    transparent_color_t perform(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size) const
+
+    transparent_color_t perform(CoordinateRangeValue a, CoordinateRangeValue b) const
     {
-        a += decoration_options.a_offset;
-        a_size += decoration_options.a_offset;
-        b += decoration_options.b_offset;
-        b_size += decoration_options.b_offset;
+        a = a.shift(decoration_options.a_offset);
+        b = b.shift(decoration_options.b_offset);
 
-        if (decoration_options.flags & Flags::TransposeCoordinates)
-        {
+        if (decoration_options.flags & DecorationFlags::TransposeCoordinates)
             std::swap(a, b);
-            std::swap(a_size, b_size);
-        }
 
-        uint8_t index = DrawingContext::instance().pattern_catalog->get(function).function(a, b, a_size, b_size, parameters);
+        uint8_t index = DrawingContext::instance().pattern_catalog->get(function).function(a, b, parameters);
 
         return palette[index];
     }

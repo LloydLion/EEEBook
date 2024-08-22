@@ -79,10 +79,23 @@ Screen create_screen()
 #endif
 #pragma endregion
 
-uint8_t fill_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters) { return 0; }
+uint8_t fill_pattern(CoordinateRangeValue a, CoordinateRangeValue b, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters) { return 0; }
 
-uint8_t chess_pattern(s_cord_t a, s_cord_t b, cord_t a_size, cord_t b_size, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters)
-    { return (a + b) % 2; }
+uint8_t chess_pattern(CoordinateRangeValue a, CoordinateRangeValue b, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters)
+{
+    return a % 2;
+}
+
+uint8_t segments_pattern(CoordinateRangeValue a, CoordinateRangeValue b, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters)
+{
+    cord_t segment_size = a.size() / 3;
+    s_cord_t segment1_start = a.start + segment_size;
+    s_cord_t segment2_start = segment1_start + segment_size;
+
+    if (a < segment1_start) return 0;
+    else if (a < segment2_start) return 1;
+    else return 2;
+}
 
 int main()
 {
@@ -94,6 +107,7 @@ int main()
 
         DrawingContext::instance().pattern_catalog->register_pattern(PatternFunction(&fill_pattern, "fill"));
         DrawingContext::instance().pattern_catalog->register_pattern(PatternFunction(&chess_pattern, "chess"));
+        DrawingContext::instance().pattern_catalog->register_pattern(PatternFunction(&segments_pattern, "segments"));
         DrawingContext::instance().font_engine->register_font(&FreeMono12pt7b);
 
         Screen screen = create_screen();
@@ -121,10 +135,17 @@ int main()
 
             Pattern p;
             memset(&p, 0, sizeof(Pattern));
-            p.palette[0] = ColorMap::Blue;
-            p.palette[1] = ColorMap::Red;
-            p.function = 1;
-            root_gfx.draw_line(LocalVector(50, 50), SignedVector(2, -1), 20, p, 8);
+            p.palette[0] = ColorMap::Black;
+            p.palette[1] = ColorMap::Blue;
+            p.palette[2] = ColorMap::Green;
+            p.function = 2;
+            p.interpretation_options = Pattern::UsePathBasedCoordinateSystem;
+            p.decoration_options.flags = Pattern::TransposeCoordinates;
+            root_gfx.draw_line(LocalVector(50, 50), SignedVector(2, -1), 30, p, 10);
+            root_gfx.draw_line(LocalVector(100, 50), SignedVector(2, -1), 40, p, 10);
+            root_gfx.draw_line(LocalVector(150, 50), SignedVector(2, -1), 60, p, 10);
+            root_gfx.draw_line(LocalVector(200, 50), SignedVector(2, -1), 100, p, 10);
+            root_gfx.draw_line(LocalVector(250, 50), SignedVector(2, -1), 140, p, 10);
 
             std_println("----DRAWING----");
             screen->begin();
