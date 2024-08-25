@@ -1,7 +1,7 @@
 #include "gui/drawing/sub_drawers/LineSubDrawer.h"
 
 SignedVector ray_cast(SignedVector direction, cord_t length);
-Vector ray_cast_bounded(SignedVector direction, cord_t length, Bounds bounds, Vector start);
+Vector ray_cast_bounded(SignedVector direction, cord_t length, Bounds bounds, Vector start, cord_t *actual_length);
 
 LineSubDrawer::LineSubDrawer(Vector start, SignedVector pre_end, cord_t length, cord_t thickness):
     _start(start), _pre_end(pre_end), _length(length), _thickness(thickness) { }
@@ -14,7 +14,7 @@ void LineSubDrawer::draw()
 
     // End point determination
     if (_length != 0)
-        _end = ray_cast_bounded(_pre_end - _start, _length, bounds, _start);
+        _end = ray_cast_bounded(_pre_end - _start, _length, bounds, _start, &_length);
     else
         _end = _pre_end.remove_sings();
 
@@ -178,8 +178,6 @@ void LineSubDrawer::draw_line_pixel_using_pattern(cord_t length_position, s_cord
         output->draw_pixel(position.remove_sings(), color.color());
 }
 
-// /!\ length in ray_cast methods is count of steps that algorithm will do, it is not a pseudo line length
-
 SignedVector ray_cast(SignedVector direction, cord_t length)
 {
     BresenhamAlgorithm algorithm(direction);
@@ -194,7 +192,7 @@ SignedVector ray_cast(SignedVector direction, cord_t length)
     return SignedVector(length * algorithm.p_direction, algorithm.s_offset, algorithm.axis);
 }
 
-Vector ray_cast_bounded(SignedVector direction, cord_t length, Bounds bounds, Vector start)
+Vector ray_cast_bounded(SignedVector direction, cord_t length, Bounds bounds, Vector start, cord_t *actual_length)
 {
     if (bounds.is_inside_abs(start) == false)
         throw std::runtime_error("Enable to ray cast from out of bounds point");
@@ -208,7 +206,11 @@ Vector ray_cast_bounded(SignedVector direction, cord_t length, Bounds bounds, Ve
         SignedVector cursor_candidate = cursor_candidate_offset + start;
 
         if (cursor_candidate.is_positive() == false || bounds.is_inside_abs(cursor_candidate.remove_sings()) == false)
+        {
+            *actual_length = std::abs(p_offset);
             break; //Bad candidate
+        }
+
         cursor = cursor_candidate.remove_sings();
 
         algorithm.step();
