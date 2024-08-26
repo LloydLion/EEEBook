@@ -7,6 +7,7 @@
 #include "gui/color.h"
 #include "gui/drawing/PatternFunction.h"
 #include "gui/drawing/DrawingContext.h"
+#include <cstring> // Used to compile on pc
 
 #define GUI_PATTERN_PALETTE_SIZE 4
 

@@ -134,7 +134,7 @@ int main()
             root_gfx.draw_line(LocalVector(150, 50), SignedVector(2, -1), 60, p, 20);
             root_gfx.draw_line(LocalVector(200, 50), SignedVector(2, -1), 100, p, 20);
             root_gfx.draw_line(LocalVector(250, 50), SignedVector(2, -1), 140, p, 20);
-
+            root_gfx.print_text(Vector(0,0), "Test", ColorMap::Green, -1, Font());
             std_println("----DRAWING----");
             screen->begin();
             screen->clear();

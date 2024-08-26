@@ -22,6 +22,8 @@ struct Bitmap
     
     inline Bitmap(byte *data, Size size, Flags flags):
         data(data), size(size), flags(flags) {}
+
+    bool get_pixel(Vector position);
 };
 
 #endif
