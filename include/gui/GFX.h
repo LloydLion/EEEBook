@@ -26,12 +26,18 @@ public:
     void fill_screen(Pattern pattern) const;
 
     void print_text(LocalVector start, cord_t width_limit, const char *text, transparent_color_t color, size_t len_limit = -1, Font font = Font()) const;
+    void print_text(LocalVector start, cord_t width_limit, transparent_color_t background_color, const char *text, transparent_color_t color, size_t len_limit = -1, Font font = Font()) const;
     void print_text(LocalVector start, const char *text, transparent_color_t color, size_t len_limit = -1, Font font = Font()) const;
+    void print_text(LocalVector start, transparent_color_t background_color, const char *text, transparent_color_t color, size_t len_limit = -1, Font font = Font()) const;
     void print_text(LocalVector start, cord_t width_limit, const char *text, Pattern pattern, size_t len_limit, Font font) const;
+    void print_text(LocalVector start, cord_t width_limit, Pattern background_pattern, const char *text, Pattern pattern, size_t len_limit, Font font) const;
 
     void draw_line(LocalVector start, LocalVector end, transparent_color_t color, cord_t thickness = 0, cord_t length = 0);
     void draw_line(LocalVector start, LocalVector end, Pattern pattern, cord_t thickness = 0, cord_t length = 0);
     void draw_line(LocalVector start, SignedVector direction, cord_t length, Pattern pattern, cord_t thickness = 0);
+
+    void draw_bitmap(LocalVector start, Bitmap bitmap, transparent_color_t on_color, transparent_color_t off_color = transparent_color_t());
+    void draw_bitmap(LocalVector start, Bitmap bitmap, Pattern on_pattern, Pattern off_pattern);
 
     GFX slice(LocalBounds local_bounds) const;
     GFX slice(Distance4Sides distances) const;
