@@ -7,6 +7,7 @@
 #include "gui/drawing/Screen.h"
 #include "gui/drawing/fonts/FontEngine.h"
 #include "gui/drawing/fonts/Font.h"
+#include "gui/drawing/PatternBag.h"
 
 class TextSubDrawer
 {
@@ -19,7 +20,7 @@ private:
     bool draw_char(Vector cursor, const DrawFont::Glyph *glyph);
 public:
     Bounds bounds;
-    Pattern glyph_pattern, background_pattern;
+    PatternBag glyph_pattern, background_pattern;
     Screen output;
     void draw();
     TextSubDrawer(const char* text, size_t text_limit, FontId font_id);

@@ -4,6 +4,7 @@
 #include "gui/coordinates.h"
 #include "gui/drawing/Pattern.h"
 #include "gui/drawing/Screen.h"
+#include "gui/drawing/PatternBag.h"
 
 class LineSubDrawer
 {
@@ -25,7 +26,7 @@ private:
 public:
     Bounds bounds;
     Screen output;
-    Pattern pattern;
+    PatternBag pattern;
     
     LineSubDrawer(Vector start, SignedVector pre_end, cord_t length, cord_t thickness);
 

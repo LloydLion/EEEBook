@@ -119,7 +119,7 @@ int main()
             p.palette[0] = ColorMap::Black;
             p.palette[1] = ColorMap::Green;
             p.palette[2] = ColorMap::Blue;
-            p.parameters.write(0, builtin_pattern_functions::ChessFlags::UseAB);
+            p.parameters.set(builtin_pattern_functions::ChessFlags::UseAB);
             p.parameters.data[1] = 1;
             p.parameters.data[2] = 1;
             p.parameters.data[3] = 0;

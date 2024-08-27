@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <cstring>
 
-uint8_t fill_pattern_function(CoordinateRangeValue a, CoordinateRangeValue b, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters)
+uint8_t fill_pattern_function(CoordinateRangeValue a, CoordinateRangeValue b, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters, PatternState<GUI_PATTERN_STATE_SIZE> *cache)
 {
     return 0;
 }

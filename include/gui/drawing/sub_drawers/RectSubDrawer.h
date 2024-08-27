@@ -4,13 +4,14 @@
 #include "gui/coordinates.h"
 #include "gui/drawing/Pattern.h"
 #include "gui/drawing/Screen.h"
+#include "gui/drawing/PatternBag.h"
 
 class RectSubDrawer
 {
 private:
     cord_t _thickness;
 
-    inline void draw_pixel_using_pattern(cord_t offset_x, cord_t offset_y, const Pattern &pattern)
+    inline void draw_pixel_using_pattern(cord_t offset_x, cord_t offset_y, PatternBag &pattern)
     {
         transparent_color_t color = pattern.perform(CoordinateRangeValue(offset_x, 0, bounds.size.width()), CoordinateRangeValue(offset_y, 0, bounds.size.height()));
         if (!color.is_transparent())
@@ -20,10 +21,10 @@ public:
     Bounds bounds;
     Screen output;
     struct {
-        Pattern interior;
-        Pattern horizontal_strips;
-        Pattern vertical_strips;
-        Pattern corners;
+        PatternBag interior;
+        PatternBag horizontal_strips;
+        PatternBag vertical_strips;
+        PatternBag corners;
     } patterns;
     
     RectSubDrawer(cord_t thickness);

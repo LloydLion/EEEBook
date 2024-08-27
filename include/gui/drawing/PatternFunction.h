@@ -7,6 +7,7 @@
 #include "platform/pointer.h"
 
 #define GUI_PATTERN_PARAMETERS_SIZE 8
+#define GUI_PATTERN_STATE_SIZE 64
 
 struct CoordinateRangeValue
 {
@@ -38,11 +39,20 @@ struct CoordinateRangeValue
     inline operator s_cord_t() const { return value; }
 };
 
+template<size_t size>
+struct PatternState
+{
+    uint8_t state;
+    UniversalParameters<size> store;
+};
+
+
 struct PatternFunction
 {
     using FunctionType = uint8_t (*)(
         CoordinateRangeValue a, CoordinateRangeValue b,
-        UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters
+        UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters,
+        PatternState<GUI_PATTERN_STATE_SIZE> *cache
     );
 
     FunctionType function;

@@ -157,7 +157,7 @@ void LineSubDrawer::draw_line_pixel_using_pattern(cord_t length_position, s_cord
         return;
 
     transparent_color_t color;
-    if (pattern.interpretation_options & Pattern::UsePathBasedCoordinateSystem)
+    if (pattern.pattern.interpretation_options & Pattern::UsePathBasedCoordinateSystem)
     {
         color = pattern.perform(
             CoordinateRangeValue(length_position, 0, _length),

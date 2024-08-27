@@ -58,7 +58,7 @@ struct Pattern
         function = *cache;
     }
 
-    transparent_color_t perform(CoordinateRangeValue a, CoordinateRangeValue b) const
+    transparent_color_t perform(CoordinateRangeValue a, CoordinateRangeValue b, PatternState<GUI_PATTERN_STATE_SIZE> *cache) const
     {
         a = a.shift(decoration_options.a_offset);
         b = b.shift(decoration_options.b_offset);
@@ -75,7 +75,7 @@ struct Pattern
         if (decoration_options.flags & DecorationFlags::TransposeCoordinates)
             std::swap(a, b);
 
-        uint8_t index = DrawingContext::instance().pattern_catalog->get(function).function(a, b, parameters);
+        uint8_t index = DrawingContext::instance().pattern_catalog->get(function).function(a, b, parameters, cache);
 
         return palette[index];
     }

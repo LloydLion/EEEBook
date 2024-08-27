@@ -4,6 +4,7 @@
 #include "std/byte.h"
 #include <cstddef>
 #include <stdexcept>
+#include <cstring>
 
 template<size_t size>
 struct UniversalParameters
@@ -11,13 +12,13 @@ struct UniversalParameters
     byte data[size];
 
     template<class T>
-    T &read(size_t &position)
+    T &read(size_t *position)
     {
-        if (position + sizeof(T) >= size)
+        if (*position + sizeof(T) >= size)
             throw std::runtime_error("UniversalParameters instance too small");
-        void *pointer = data + position;
+        void *pointer = data + *position;
         T *data = (T*)pointer;
-        position += sizeof(T);
+        *position += sizeof(T);
         return *data;
     }
     
@@ -38,25 +39,25 @@ struct UniversalParameters
     }
 
     template<class T>
-    void write(size_t &position, const T &value)
+    void write(size_t *position, const T &value)
     {
-        if (position + sizeof(T) >= size)
+        if (*position + sizeof(T) >= size)
             throw std::runtime_error("UniversalParameters instance too small");
-        void *pointer = data + position;
+        void *pointer = data + *position;
         T *data = (T*)pointer;
-        position += sizeof(T);
+*        position += sizeof(T);
 
         *data = T(value);
     }
 
     template<class T>
-    void write(size_t &position, T &&value)
+    void write(size_t *position, T &&value)
     {
-        if (position + sizeof(T) >= size)
+        if (*position + sizeof(T) >= size)
             throw std::runtime_error("UniversalParameters instance too small");
-        void *pointer = data + position;
+        void *pointer = data + *position;
         T *data = (T*)pointer;
-        position += sizeof(T);
+        *position += sizeof(T);
 
         *data = T(value);
     }

@@ -4,6 +4,7 @@
 #include "gui/drawing/Pattern.h"
 #include "gui/coordinates.h"
 #include "gui/drawing/Screen.h"
+#include "gui/drawing/PatternBag.h"
 
 class BitmapSubDrawer
 {
@@ -19,8 +20,8 @@ public:
     Screen output;
     struct
     {
-        Pattern for_enabled;
-        Pattern for_disabled;
+        PatternBag for_enabled;
+        PatternBag for_disabled;
     } patterns;
 
     BitmapSubDrawer(byte *map, Bitmap::Flags flags);

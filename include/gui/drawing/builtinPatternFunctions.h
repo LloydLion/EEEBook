@@ -5,7 +5,7 @@
 
 #define BUILTIN_PATTERN_NAME(X) __builtin_pattern_function__##X
 #define BUILTIN_PATTERN(X) uint8_t BUILTIN_PATTERN_NAME(X)(CoordinateRangeValue a, \
-    CoordinateRangeValue b, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters)
+    CoordinateRangeValue b, UniversalParameters<GUI_PATTERN_PARAMETERS_SIZE> parameters, PatternState<GUI_PATTERN_STATE_SIZE> *cache)
 
 namespace builtin_pattern_functions
 {

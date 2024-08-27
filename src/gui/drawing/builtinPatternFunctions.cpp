@@ -15,18 +15,24 @@ namespace builtin_pattern_functions
 
     BUILTIN_PATTERN(chess)
     {
-        auto args = parameters.read<ChessFlags::Type>(0);
-
+        auto flags = parameters.as<ChessFlags::Type>();
         byte (&sizes)[4] = parameters.read<byte[4]>(1);
-        uint16_t diviner = 0;
-        for (size_t i = 0; i < 4; i++)
-            diviner += sizes[i];
-            
-        //=====
+
+        if (cache->state == 0)
+        {
+            uint16_t diviner = 0;
+            for (size_t i = 0; i < 4; i++)
+                diviner += sizes[i];
+
+            cache->store.set<uint16_t>(diviner);
+            cache->state = 1;
+        }
+        
+        uint16_t diviner = cache->store.as<uint16_t>();
         
         cord_t value =
-            (args & ChessFlags::IgnoreA ? 0 : a.value_from_zero()) +
-            (args & ChessFlags::IgnoreB ? 0 : b.value_from_zero());
+            (flags & ChessFlags::IgnoreA ? 0 : a.value_from_zero()) +
+            (flags & ChessFlags::IgnoreB ? 0 : b.value_from_zero());
 
         value = value % diviner;
 
@@ -42,26 +48,33 @@ namespace builtin_pattern_functions
     BUILTIN_PATTERN(segments)
     {
         byte (&proportions)[4] = parameters.as<byte[4]>();
-        uint16_t sum = 0;
-        for (size_t i = 0; i < 4; i++)
-            sum += proportions[i];
 
-        cord_t size = a.size();
-
-        cord_t size_per_unit = size / sum;
-
-        cord_t distribution[4] = {0, 0, 0, 0};
-        for (size_t i = 0; i < 4; i++)
-            distribution[i] = proportions[i] * size_per_unit;
-
-        cord_t remaining_space = size - (size_per_unit * sum);
-        for (size_t i = 0; remaining_space != 0; i++)
+        if (cache->state == 0)
         {
-            distribution[i % size] += 1;
-            remaining_space -= 1;
+            uint16_t sum = 0;
+            for (size_t i = 0; i < 4; i++)
+                sum += proportions[i];
+
+            cord_t size = a.size();
+
+            cord_t size_per_unit = size / sum;
+
+            cord_t distribution[4] = {0, 0, 0, 0};
+            for (size_t i = 0; i < 4; i++)
+                distribution[i] = proportions[i] * size_per_unit;
+
+            cord_t remaining_space = size - (size_per_unit * sum);
+            for (size_t i = 0; remaining_space != 0; i++)
+            {
+                distribution[i % size] += 1;
+                remaining_space -= 1;
+            }
+
+            memcpy(cache->store.data, distribution, sizeof(cord_t[4]));
+            cache->state = 1;
         }
 
-        //=====
+        cord_t (&distribution)[4] = cache->store.as<cord_t[4]>();
 
         cord_t value = a.value_from_zero();
         for (size_t i = 0; i < 4; i++)
