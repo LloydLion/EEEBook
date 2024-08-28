@@ -9,9 +9,9 @@ Vector Vector::operator+(const Vector &other) const
     return Vector(x() + other.x(), y() + other.y());
 }
 
-Vector Vector::operator-(const Vector &other) const
+SignedVector Vector::operator-(const Vector &other) const
 {
-    return Vector(x() - other.x(), y() - other.y());
+    return SignedVector(x() - (s_cord_t)other.x(), y() - (s_cord_t)other.y());
 }
 
 Vector Vector::operator-() const

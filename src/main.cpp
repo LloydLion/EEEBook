@@ -1,49 +1,14 @@
 #include "config.h"
+#include "gui/drawing/screens/GxEPD_EInk_Screen.h"
 #include "ui.h"
+#include "platform/stdout.h"
 #include "platform/platform.h"
 #include "platform/time.h"
 #include <stdexcept>
-
-#pragma region Engine specific
-#if ENGINE == ENGINE_GXEPD
-#include "gui/engines/GxEPD_GraphicsEngine.h"
-#include <Fonts/Org_01.h>
-
-DISPLAY_TYPE display(DISPLAY_DRIVER(DISPLAY_CS_PIN, DISPLAY_DC_PIN, DISPLAY_RST_PIN, DISPLAY_BUSY_PIN));
-
-void init_display()
-{
-    display.init(115200, true, 2, false);
-#ifdef DISPLAY_ROTATION
-    display.setRotation(DISPLAY_ROTATION);
-#endif
-    display.fillScreen(GxEPD_WHITE);
-}
-
-GraphicsEngine create_graphics_engine()
-{
-    auto engine = new GxEPD_GraphicsEngine(&display);
-    engine->register_font(&Org_01);
-    return engine;
-}
-
-#elif ENGINE == ENGINE_STDOUT
-#include "gui/engines/StdOut_GraphicsEngine.h"
-
-void init_display()
-{
-
-}
-
-GraphicsEngine create_graphics_engine()
-{
-    return new StdOut_GraphicsEngine();
-}
-
-#else
-#error "Unknown graphics engine"
-#endif
-#pragma endregion
+#include "gui/drawing/UniversalDrawer.h"
+#include "gui/drawing/screens/BMP_File_Screen.h"
+#include "gui/drawing/builtinPatternFunctions.h"
+#include "gui/drawing/fonts/buildin/FreeMono12pt7b.h"
 
 #pragma region Platform specific
 #if PLATFORM & PLATFORM_MCU
@@ -63,12 +28,26 @@ void say_hello()
     digitalWrite(LED_BUILTIN, LOW);
 }
 
-#define ON_ERROR_BEHAVIOR while(true) { digitalWrite(LED_BUILTIN, HIGH); delay(100); digitalWrite(LED_BUILTIN, LOW); delay(100); }
-#define ON_END_BEHAVIOR while(true) { digitalWrite(LED_BUILTIN, HIGH); delay(100); digitalWrite(LED_BUILTIN, LOW); delay(1000);}
+#define ON_ERROR_BEHAVIOR                \
+    while (true)                         \
+    {                                    \
+        digitalWrite(LED_BUILTIN, HIGH); \
+        delay(100);                      \
+        digitalWrite(LED_BUILTIN, LOW);  \
+        delay(100);                      \
+    }
+#define ON_END_BEHAVIOR                  \
+    while (true)                         \
+    {                                    \
+        digitalWrite(LED_BUILTIN, HIGH); \
+        delay(100);                      \
+        digitalWrite(LED_BUILTIN, LOW);  \
+        delay(1000);                     \
+    }
 
 int main();
 void setup() { main(); }
-void loop() {  }
+void loop() {}
 
 #elif PLATFORM & PLATFORM_PC
 
@@ -85,17 +64,40 @@ void say_hello()
 #endif
 #pragma endregion
 
+#pragma region Screen specific
+#if SCREEN_TYPE == SCREEN_BMP
+Screen create_screen()
+{
+    return new BMP_File_Screen_(Size(BMP_SCREEN_WIDTH, BMP_SCREEN_HEIGHT));
+}
+#elif SCREEN_TYPE == SCREEN_GXEPD
+Screen create_screen()
+{
+    return new GxEPD_EInk_Screen();
+}
+#else
+    #error "Unknown screen"
+#endif
+#pragma endregion
+
 int main()
 {
     try
     {
         say_hello();
 
-        init_display();
-        GraphicsEngine engine = create_graphics_engine();
+        DrawingContext::initialize();
 
-        DrawSettings draw_settings = create_draw_settings(0);
-        UIElement root = setup_ui(engine);
+        builtin_pattern_functions::register_all();
+
+        DrawingContext::instance().font_engine->register_font(&FreeMono12pt7b);
+
+        Screen screen = create_screen();
+        screen->initialize();
+        DrawOperationQueue queue = new DrawOperationQueue_();
+        UniversalDrawer drawer = new UniversalDrawer_(screen);
+
+        UIElement root = setup_ui();
 
         uint8_t time = 0;
         while (true)
@@ -110,18 +112,23 @@ int main()
             update_ui(root, time);
 
             std_println("----RENDER----");
-            GFX root_gfx(engine, Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+            GFX root_gfx(queue, screen->full_viewport_size());
             root->render(root_gfx);
-
+            
             std_println("----DRAWING----");
-            DrawSettings draw_settings = create_draw_settings(time);
-            engine->push(draw_settings);
+            screen->begin();
+            screen->clear();
+
+            drawer->draw(queue);
+
+            screen->send();
 
             std_println("----DONE----");
+
             delay_ms(1000);
         }
     }
-    catch(const std::exception &err)
+    catch (const std::exception &err)
     {
         std_println("RUNTIME ERROR");
         std_println(err.what());

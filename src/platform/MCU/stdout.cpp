@@ -33,8 +33,12 @@ void std_println(long long number, unsigned short base)
 void std_printf(const char* format, ...)
 {
     va_list args;
+    char buf[1000];
     va_start(args, format);
-    Serial.printf(format, args);
+
+    vsnprintf(buf, sizeof(buf), format, args);
+    std_print(buf);
+
     va_end(args);
 }
 

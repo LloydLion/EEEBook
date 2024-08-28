@@ -3,8 +3,10 @@
 #include <inttypes.h>
 #include <stddef.h>
 #include <tuple>
+#include <algorithm>
 
 typedef uint32_t cord_t;
+typedef int32_t s_cord_t;
 #define MAX_DIMENSION_SIZE 65535
 
 #define safe_cords_sum(a, ...) __safe_cords_sum(std::tuple_size<decltype(std::make_tuple(__VA_ARGS__))>::value, a, __VA_ARGS__)
@@ -95,27 +97,30 @@ public:
     };
 };
 
-template<typename TInheritor>
+template<typename TInheritor, typename TCord = cord_t>
 class CoordinateBase
 {
 private:
-    cord_t _elements[2];
+    TCord _elements[2];
 
 public:
     
-    CoordinateBase(cord_t p, cord_t s, Axis p_axis);
+    CoordinateBase(TCord p, TCord s, Axis p_axis);
 
     static Coordinates::Relationship relate(TInheritor a, TInheritor b, Axis p_axis);
     inline static Coordinates::Relationship relate(TInheritor a, TInheritor b) { return relate(a, b, AxisX); };
 
-    cord_t operator[](const Axis &axis) const;
+    TCord operator[](const Axis &axis) const;
     bool operator==(const TInheritor &other) const;
     bool operator!=(const TInheritor &other) const;
 
-    TInheritor with(cord_t value, Axis axis);
+    TInheritor with(TCord value, Axis axis);
 
     //static_assert(std::is_base_of<TInheritor, CoordinateBase<TInheritor>>::value, "Inheritor must be inheritor of CoordinateBase");
 };
+
+class Vector;
+class SignedVector;
 
 class Vector : public CoordinateBase<Vector>
 {
@@ -126,13 +131,38 @@ public:
 
     Vector operator+(const Vector &other) const;
     Vector operator-() const;
-    Vector operator-(const Vector &other) const;
+    SignedVector operator-(const Vector &other) const;
 
     inline cord_t x() const { return this->operator[](AxisX); }
     inline cord_t y() const { return this->operator[](AxisY); }
 };
 
 typedef Vector LocalVector;
+
+
+class SignedVector : public CoordinateBase<SignedVector, s_cord_t>
+{
+public:
+    SignedVector();
+    SignedVector(Vector vector);
+    SignedVector(s_cord_t x, s_cord_t y);
+    SignedVector(s_cord_t p, s_cord_t s, Axis p_axis);
+
+    SignedVector operator+(const SignedVector &other) const;
+    SignedVector operator-() const;
+    SignedVector operator-(const SignedVector &other) const;
+
+    inline s_cord_t x() const { return this->operator[](AxisX); }
+    inline s_cord_t y() const { return this->operator[](AxisY); }
+
+    Vector remove_sings();
+    Vector constrain();
+    Vector absolute();
+    bool is_positive();
+    SignedVector rotate_clockwise();
+    SignedVector rotate_counter_clockwise();
+    SignedVector rotate_180();
+};
 
 class Size : public CoordinateBase<Size>
 {
