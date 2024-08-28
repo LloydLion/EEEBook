@@ -1,5 +1,5 @@
-#ifndef GUI_BITMAP_H
-#define GUI_BITMAP_H
+#ifndef GUI_DRAWING_BITMAP_H
+#define GUI_DRAWING_BITMAP_H
 
 #include "gui/coordinates.h"
 #include <cstddef>

@@ -113,28 +113,8 @@ int main()
 
             std_println("----RENDER----");
             GFX root_gfx(queue, screen->full_viewport_size());
-            //root->render(root_gfx);
-
-            Pattern p(builtin_pattern_functions::Chess);
-            p.palette[0] = ColorMap::Black;
-            p.palette[1] = ColorMap::Green;
-            p.palette[2] = ColorMap::Blue;
-            p.parameters.set(builtin_pattern_functions::ChessFlags::UseAB);
-            p.parameters.data[1] = 1;
-            p.parameters.data[2] = 1;
-            p.parameters.data[3] = 0;
-            p.parameters.data[4] = 0;
-            p.interpretation_options = Pattern::UsePathBasedCoordinateSystem;
-            p.decoration_options.flags = (Pattern::DecorationFlags)(Pattern::TransposeCoordinates);
-            p.decoration_options.a_tiling_size = 5;
-            p.decoration_options.b_tiling_size = 3;
-
-            root_gfx.draw_line(LocalVector(50, 50), SignedVector(1, -1), 30, p, 20);
-            root_gfx.draw_line(LocalVector(100, 50), SignedVector(1, -1), 40, p, 20);
-            root_gfx.draw_line(LocalVector(150, 50), SignedVector(1, -1), 60, p, 20);
-            root_gfx.draw_line(LocalVector(200, 50), SignedVector(1, -1), 100, p, 20);
-            root_gfx.draw_line(LocalVector(250, 50), SignedVector(1, -1), 140, p, 20);
-            root_gfx.print_text(Vector(0,0), "Test", ColorMap::Green, -1, Font());
+            root->render(root_gfx);
+            
             std_println("----DRAWING----");
             screen->begin();
             screen->clear();
